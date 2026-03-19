@@ -1,0 +1,4 @@
+# Temporary fix file to track the issue
+# The problem: flutter_secure_storage_linux has deprecated C++ literal operators
+# Solution: Remove flutter_secure_storage from pubspec.yaml for Linux build
+# Or: Use a version that fixes this issue

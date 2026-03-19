@@ -18,9 +18,11 @@ import '../core/services/database_service.dart';
 import '../shared/widgets/user_profile_card.dart' as profile_widgets;
 import '../shared/widgets/filter_panel.dart';
 import '../core/services/index.dart';
+import '../core/providers/species_provider.dart';
 import '../widgets/index.dart';
 import 'species_detail_screen.dart';
 import '../utils/app_utils.dart';
+import '../core/services/image_cache_service.dart';
 
 
 // ============================================================================
@@ -47,8 +49,6 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredAnimals = AnimalDataset.searchAnimals(_searchQuery);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Browse Species'),
@@ -89,35 +89,95 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
             ),
           ),
           Expanded(
-            child: filteredAnimals.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No species found',
-                          style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: filteredAnimals.length,
-                    itemBuilder: (context, index) {
-                      final animal = filteredAnimals[index];
-                      return _buildSpeciesCard(context, animal);
-                    },
-                  ),
+            child: _buildSpeciesList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSpeciesCard(BuildContext context, Animal animal) {
+  Widget _buildSpeciesList() {
+    return FutureBuilder<List<SpeciesData>>(
+      future: _loadSpecies(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
+                const SizedBox(height: 16),
+                Text('Error loading species: ${snapshot.error}'),
+              ],
+            ),
+          );
+        }
+
+        final species = snapshot.data ?? [];
+        final filtered = species
+            .where((s) =>
+                s.commonName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                s.scientificName.toLowerCase().contains(_searchQuery.toLowerCase()))
+            .toList();
+
+        if (filtered.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
+                const SizedBox(height: 16),
+                Text(
+                  'No species found',
+                  style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: filtered.length,
+          itemBuilder: (context, index) {
+            final speciesData = filtered[index];
+            return _buildSpeciesCard(context, speciesData);
+          },
+        );
+      },
+    );
+  }
+
+  Future<List<SpeciesData>> _loadSpecies() async {
+    final jsonString = await rootBundle.loadString('assets/species_data.json');
+    final jsonList = jsonDecode(jsonString) as List;
+    
+    final species = jsonList
+        .map((item) => SpeciesData.fromJson(item as Map<String, dynamic>))
+        .toList();
+    
+    // Sort by common name for easier browsing
+    species.sort((a, b) => a.commonName.compareTo(b.commonName));
+    
+    return species;
+  }
+
+  Widget _buildSpeciesCard(BuildContext context, SpeciesData speciesData) {
+    // Create Animal object for navigation to detail screen
+    final animal = Animal(
+      name: speciesData.commonName,
+      scientificName: speciesData.scientificName,
+      description: speciesData.description,
+      conservationStatus: speciesData.conservationStatus,
+      iucnUrl: speciesData.iucnUrl,
+      imageUrl: speciesData.imageUrl,
+      additionalImageUrls: speciesData.additionalImageUrls,
+    );
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
@@ -134,19 +194,11 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
           child: Row(
             children: [
               // Species Thumbnail
-              ClipRRect(
+              SpeciesImageCacheManager.speciesImage(
+                imageUrl: speciesData.imageUrl,
+                width: 80,
+                height: 80,
                 borderRadius: BorderRadius.circular(12),
-                child: animal.imageUrl.isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: animal.imageUrl,
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => _buildLoadingImage(),
-                        errorWidget: (context, url, error) => _buildFallbackImage(),
-                        cacheKey: 'species_${animal.name}',
-                      )
-                    : _buildFallbackImage(),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -154,7 +206,7 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      animal.name,
+                      speciesData.commonName,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -163,7 +215,7 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      animal.scientificName,
+                      speciesData.scientificName,
                       style: TextStyle(
                         fontSize: 14,
                         fontStyle: FontStyle.italic,
@@ -174,11 +226,11 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: AppUtils.getStatusColor(animal.conservationStatus),
+                        color: AppUtils.getStatusColor(speciesData.conservationStatus),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        animal.conservationStatus,
+                        speciesData.conservationStatus,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
@@ -231,4 +283,5 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
 // ============================================================================
 // SPECIES DETAIL SCREEN
 // ============================================================================
+
 

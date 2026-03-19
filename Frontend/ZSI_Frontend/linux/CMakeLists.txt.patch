@@ -1,0 +1,11 @@
+# This file explains the fix for the JSON.hpp compilation errors
+
+The error comes from:
+flutter_secure_storage_linux -> json.hpp (C++ dependency)
+
+The issue: Newer C++ compilers treat deprecated literal operators as errors with -Werror
+
+Solution: Modify the CMakeLists.txt to not treat warnings as errors
+
+In your CMakeLists.txt, find the line that sets compiler flags and modify:
+-Werror should be removed or -Wno-deprecated-literal-operator should be added

@@ -43,8 +43,8 @@ dependencies:
   sqflite: ^2.3.0             # NEW: For local database
   share_plus: ^7.2.1          # NEW: For sharing CSV exports
   cached_network_image: ^3.3.0 # NEW: For efficient image loading
-  flutter_image_compress: ^1.1.0 # NEW: For image compression before upload
-  flutter_secure_storage: ^9.0.0 # NEW: For secure credential storage
+  flutter_image_compress: any # NEW: For image compression before upload
+  flutter_secure_storage: ^9.2.4 # NEW: For secure credential storage
   shared_preferences: ^2.0.15
   google_fonts: ^6.1.0         # NEW: Modern typography
   path: ^1.9.1

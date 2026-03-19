@@ -18,7 +18,11 @@ import '../core/services/database_service.dart';
 import '../shared/widgets/user_profile_card.dart' as profile_widgets;
 import '../shared/widgets/filter_panel.dart';
 import '../core/services/index.dart';
+import '../core/services/image_cache_service.dart';
+import '../core/services/species_lookup_service.dart';
+import '../core/services/feedback_service.dart';
 import '../widgets/index.dart';
+import '../widgets/ai_feedback_panel.dart';
 import 'species_detail_screen.dart';
 import '../utils/app_utils.dart';
 import 'metadata_form_screen.dart';
@@ -42,6 +46,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
   List<IdentificationResult>? _results;
   bool _isProcessing = true;
   bool _smsSent = false;
+  Map<String, Animal> _speciesCache = {}; // Cache species data
 
   late AnimationController _slideController;
   late AnimationController _resultController;
@@ -58,7 +63,9 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
     _resultAnimation = CurvedAnimation(parent: _resultController, curve: Curves.easeOutBack);
     
     _slideController.forward();
-    _processImage(); // FIXED: Removed location stuff
+    
+    // Load species data before processing
+    _loadSpeciesData();
   }
 
   @override
@@ -66,6 +73,33 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
     _slideController.dispose();
     _resultController.dispose();
     super.dispose();
+  }
+
+  /// Load species data from JSON and cache it
+  Future<void> _loadSpeciesData() async {
+    try {
+      final species = await SpeciesLookupService.getAllSpecies();
+      if (mounted) {
+        setState(() {
+          for (var animal in species) {
+            _speciesCache[animal.name.toLowerCase()] = animal;
+          }
+        });
+        // Start processing after species are loaded
+        _processImage();
+      }
+    } catch (e) {
+      debugPrint('Failed to load species data: $e');
+      // Still process image even if species loading fails
+      if (mounted) {
+        _processImage();
+      }
+    }
+  }
+
+  /// Get animal by name from cache (or return null)
+  Animal? _getAnimalFromCache(String name) {
+    return _speciesCache[name.toLowerCase()];
   }
 
   Future<void> _processImage() async {
@@ -132,8 +166,8 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
     final topResult = _results!.first;
     if (topResult.confidence < 0.6) return;
     
-    final animal = AnimalDataset.findAnimalByName(topResult.label);
-    if (animal == null || !animal.isEndangered || AuthService.currentUserPhone == null) return;
+    final animal = await SpeciesLookupService.findByCommonName(topResult.label);
+    if (animal == null || AuthService.currentUserPhone == null) return;
     
     setState(() => _smsSent = true);
     final success = await SMSService.sendEndangeredSpeciesAlert(
@@ -227,19 +261,67 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
 
   Widget _buildResults() {
     final topResult = _results!.first;
-    final isHighConfidence = topResult.confidence > 0.6;
-    final animal = AnimalDataset.findAnimalByName(topResult.label);
+    final isHighConfidence = topResult.confidence >= 0.90;
+    final isModerateConfidence = topResult.confidence >= 0.70;
+    final animal = _getAnimalFromCache(topResult.label);
 
     return ScaleTransition(
       scale: _resultAnimation,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Low confidence warning banner
+          if (!isHighConfidence) ...[
+            Card(
+              color: Colors.orange[50],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.orange[300]!),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.warning, color: Colors.orange[700], size: 24),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Lower Confidence Detected',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange[900],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'The AI is less certain about this identification. Please review the suggested species carefully and verify manually if possible, especially with similar-looking species like eagle rays and manta rays.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.orange[800],
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+
           const Text(
             'Identification Results',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryColor),
           ),
           const SizedBox(height: 16),
+          
+          // Top result card
           Card(
             elevation: 6,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -259,7 +341,11 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
-                          color: isHighConfidence ? Colors.green : Colors.orange,
+                          color: isHighConfidence
+                              ? Colors.green
+                              : isModerateConfidence
+                                  ? Colors.orange
+                                  : Colors.red,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -273,25 +359,45 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
                   LinearProgressIndicator(
                     value: topResult.confidence,
                     backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(isHighConfidence ? Colors.green : Colors.orange),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      isHighConfidence
+                          ? Colors.green
+                          : isModerateConfidence
+                              ? Colors.orange
+                              : Colors.red,
+                    ),
                     minHeight: 8,
                   ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
                       Icon(
-                        isHighConfidence ? Icons.check_circle : Icons.info,
-                        color: isHighConfidence ? Colors.green[700] : Colors.orange[700],
+                        isHighConfidence
+                            ? Icons.check_circle
+                            : isModerateConfidence
+                                ? Icons.info
+                                : Icons.error_outline,
+                        color: isHighConfidence
+                            ? Colors.green[700]
+                            : isModerateConfidence
+                                ? Colors.orange[700]
+                                : Colors.red[700],
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          isHighConfidence 
-                            ? 'High confidence - reliable match!' 
-                            : 'Moderate confidence - upload saved for expert verification.',
+                          isHighConfidence
+                              ? '✓ High confidence - reliable match!'
+                              : isModerateConfidence
+                                  ? '⚠ Moderate confidence - verify manually'
+                                  : '✗ Low confidence - expert verification needed',
                           style: TextStyle(
-                            color: isHighConfidence ? Colors.green[700] : Colors.orange[700],
+                            color: isHighConfidence
+                                ? Colors.green[700]
+                                : isModerateConfidence
+                                    ? Colors.orange[700]
+                                    : Colors.red[700],
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -350,46 +456,102 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
             ),
             const SizedBox(height: 12),
             ..._results!.skip(1).map((result) {
-              final otherAnimal = AnimalDataset.findAnimalByName(result.label);
+              final otherAnimal = _getAnimalFromCache(result.label);
+              final confidence = result.confidence;
+              final isGood = confidence >= 0.70;
+              
               return Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  leading: otherAnimal != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: CachedNetworkImage(
-                            imageUrl: otherAnimal.imageUrl,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              width: 50,
-                              height: 50,
-                              color: Colors.grey[200],
+                margin: const EdgeInsets.only(bottom: 12),
+                color: isGood ? Colors.green[50] : Colors.grey[50],
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: otherAnimal != null && otherAnimal.imageUrl.isNotEmpty
+                            ? SpeciesImageCacheManager.speciesImage(
+                                imageUrl: otherAnimal.imageUrl,
+                                width: 60,
+                                height: 60,
+                              )
+                            : Container(
+                                width: 60,
+                                height: 60,
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.pets, size: 28),
+                              ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              result.label,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                             ),
-                            errorWidget: (context, url, error) => Container(
-                              width: 50,
-                              height: 50,
-                              color: Colors.grey[300],
-                              child: const Icon(Icons.pets, size: 24),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: LinearProgressIndicator(
+                                    value: confidence,
+                                    backgroundColor: Colors.grey[300],
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      isGood ? Colors.green : Colors.orange,
+                                    ),
+                                    minHeight: 6,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: isGood ? Colors.green : Colors.orange,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    '${(confidence * 100).toStringAsFixed(1)}%',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        )
-                      : const Icon(Icons.pets, size: 40),
-                  title: Text(result.label, style: const TextStyle(fontWeight: FontWeight.w500)),
-                  subtitle: Text('${(result.confidence * 100).toStringAsFixed(1)}% confidence'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: otherAnimal != null
-                      ? () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => SpeciesDetailScreen(animal: otherAnimal)),
-                          );
-                        }
-                      : null,
+                          ],
+                        ),
+                      ),
+                      if (otherAnimal != null)
+                        IconButton(
+                          icon: const Icon(Icons.info_outline),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) => SpeciesDetailScreen(animal: otherAnimal)),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
                 ),
               );
             }),
           ],
+          const SizedBox(height: 24),
+          
+          // Feedback panel for wrong identifications
+          AIFeedbackPanel(
+            imageFile: widget.imageFile,
+            predictedSpecies: topResult.label,
+            confidence: topResult.confidence,
+            onFeedbackSubmitted: () {
+              // Optional: Show confirmation or update UI after feedback
+              debugPrint('User submitted feedback for: ${topResult.label}');
+            },
+          ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,

@@ -18,6 +18,7 @@ import '../core/services/database_service.dart';
 import '../shared/widgets/user_profile_card.dart' as profile_widgets;
 import '../shared/widgets/filter_panel.dart';
 import '../utils/app_utils.dart';
+import '../core/services/image_cache_service.dart';
 
 
 // ============================================================================
@@ -43,26 +44,15 @@ class SpeciesDetailScreen extends StatelessWidget {
           children: [
             // Hero Image
             if (animal.imageUrl.isNotEmpty)
-              CachedNetworkImage(
-                imageUrl: animal.imageUrl,
+              SizedBox(
                 width: double.infinity,
                 height: 300,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
+                child: SpeciesImageCacheManager.speciesImage(
+                  imageUrl: animal.imageUrl,
                   width: double.infinity,
                   height: 300,
-                  color: Colors.grey[200],
-                  child: const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
+                  fit: BoxFit.cover,
                 ),
-                errorWidget: (context, url, error) => Container(
-                  width: double.infinity,
-                  height: 300,
-                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                  child: const Icon(Icons.pets, size: 100, color: AppTheme.primaryColor),
-                ),
-                cacheKey: 'species_detail_${animal.name}',
               )
             else
               Container(
