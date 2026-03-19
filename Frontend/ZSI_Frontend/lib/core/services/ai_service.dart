@@ -5,14 +5,51 @@ import 'package:http/http.dart' as http;
 import '../../shared/models/index.dart';
 import '../config/image_compression.dart';
 import '../config/error_handler.dart';
+import 'offline_ai_service.dart';
 
 class AIService {
   AIService._();
 
   static const String apiUrl = 'https://zsi-wildlife-api-173142698667.us-central1.run.app/predict';
   static const String apiKey = String.fromEnvironment('ZSI_API_KEY', defaultValue: 'dev-key');
+  
+  // Hybrid mode: try cloud first, fall back to local offline if needed
+  static bool enableHybridMode = true;
 
-  static Future<List<IdentificationResult>> identifySpecies(File imageFile) async {
+  /// Identify species with hybrid mode support
+  /// 1. Tries cloud API first (when network available)
+  /// 2. Falls back to local offline inference (when offline or cloud unavailable)
+  static Future<List<IdentificationResult>> identifySpecies(
+    File imageFile, {
+    bool forceOffline = false,
+  }) async {
+    if (forceOffline) {
+      return identifySpeciesOffline(imageFile);
+    }
+
+    try {
+      return await identifySpeciesCloud(imageFile);
+    } catch (e) {
+      // Cloud failed, try offline if available
+      if (enableHybridMode) {
+        AppLogger.logInfo(
+          'Cloud API failed, attempting offline identification...',
+        );
+        try {
+          return await identifySpeciesOffline(imageFile);
+        } catch (offlineError) {
+          // Both failed, show cloud error (primary)
+          rethrow;
+        }
+      }
+      rethrow;
+    }
+  }
+
+  /// Cloud-based identification (original implementation)
+  static Future<List<IdentificationResult>> identifySpeciesCloud(
+    File imageFile,
+  ) async {
     try {
       // Compress image before sending
       final compressedImage = await ImageCompression.compressImage(imageFile);
@@ -90,5 +127,20 @@ class AIService {
         stackTrace: stackTrace,
       );
     }
+  }
+
+  /// Offline-based identification (local Flask API)
+  static Future<List<IdentificationResult>> identifySpeciesOffline(
+    File imageFile,
+  ) async {
+    return OfflineAIService.identifySpeciesOffline(imageFile);
+  }
+
+  /// Check which mode is currently available
+  static Future<Map<String, bool>> getAvailableModes() async {
+    return {
+      'cloud': true, // Assume cloud is available (network check on request)
+      'offline': await OfflineAIService.isLocalAPIAvailable(),
+    };
   }
 }

@@ -74,6 +74,7 @@ flutter:
 
   assets:
     - assets/species_data.json
+    - assets/ml/zsi_class_mapping.json
 
 
 flutter_launcher_icons:
