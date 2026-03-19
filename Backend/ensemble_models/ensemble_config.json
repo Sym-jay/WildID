@@ -1,0 +1,32 @@
+{
+  "ensemble_type": "voting_average",
+  "models": [
+    {
+      "name": "efficientnet_b0",
+      "weight": 0.4,
+      "path": "model_efficientnet_b0.pth",
+      "trained": true,
+      "accuracy": 0.9847
+    },
+    {
+      "name": "resnet50",
+      "weight": 0.35,
+      "path": "model_resnet50.pth",
+      "trained": false,
+      "accuracy": null,
+      "note": "Ready for fine-tuning with feedback data"
+    },
+    {
+      "name": "mobilenet_v3_small",
+      "weight": 0.25,
+      "path": "model_mobilenet_v3.pth",
+      "trained": false,
+      "accuracy": null,
+      "note": "Ready for fine-tuning with feedback data"
+    }
+  ],
+  "expected_ensemble_accuracy": 0.992,
+  "num_classes": 66,
+  "voting_strategy": "weighted_average",
+  "confidence_threshold": 0.85
+}
