@@ -1,0 +1,402 @@
+{
+  "scientific_to_idx": {
+    "Acroteriobatus variegatus": 0,
+    "Aetomyleus milvus": 1,
+    "Aetomyleus verspartlio": 2,
+    "Alopias pelagicus": 3,
+    "Alopias superciliosus": 4,
+    "Alopias vulpinus": 5,
+    "Anoxypristis cuspidata": 6,
+    "Carcharhinus albimarginatus": 7,
+    "Carcharhinus altimus": 8,
+    "Carcharhinus amblyrhynchoides": 9,
+    "Carcharhinus amblyrhynchos": 10,
+    "Carcharhinus amboinensis": 11,
+    "Carcharhinus brevipinna": 12,
+    "Carcharhinus dussumieri": 13,
+    "Carcharhinus falciformis": 14,
+    "Carcharhinus hemiodon": 15,
+    "Carcharhinus limbatus": 16,
+    "Carcharhinus longimanus": 17,
+    "Carcharhinus macloti": 18,
+    "Carcharhinus melanopterus": 19,
+    "Carcharhinus obscurus": 20,
+    "Carcharhinus plumbeus": 21,
+    "Carcharhinus sealei": 22,
+    "Carcharhinus sorrah": 23,
+    "Channa barca": 24,
+    "Epinephelus lanceolatus": 25,
+    "Eusphyra blochii": 26,
+    "Glaucostegus granulatus": 27,
+    "Glaucostegus obtusus": 28,
+    "Glaucostegus thouin": 29,
+    "Glucostegus typus": 30,
+    "Glyphis gangeticus": 31,
+    "Hippocampus borboniensis": 32,
+    "Isurus oxyrhynchus": 33,
+    "Isurus paucus": 34,
+    "Lamiopsis temminckii": 35,
+    "Loxodon macrorhinus": 36,
+    "Mobula alfredi": 37,
+    "Mobula birostris": 38,
+    "Mobula kuhli": 39,
+    "Mobula mobular": 40,
+    "Mobula tarapacana": 41,
+    "Mobula thurstoni": 42,
+    "Negaprion acutidens": 43,
+    "Prionace glauca": 44,
+    "Pristis clavata": 45,
+    "Pristis zijsron": 46,
+    "Rhina anchylostomus": 47,
+    "Rhincodon typus": 48,
+    "Rhinobatos annandalei": 49,
+    "Rhinobatos lionotus": 50,
+    "Rhinobatos punctifer": 51,
+    "Rhizoprionodon acutus": 52,
+    "Rhizoprionodon oligolinx": 53,
+    "Rhynchobatus australiae": 54,
+    "Rhynchobatus laevis": 55,
+    "Scoliodon laticaudus": 56,
+    "Sphyrna lewini": 57,
+    "Sphyrna mokarran": 58,
+    "Sphyrna zygaena": 59,
+    "Triaenodon obesus": 60,
+    "Urogymnus asperrimus": 61,
+    "Urogymnus polylepis": 62,
+    "aenigmachanna gollum": 63,
+    "carcharhinus longimanus": 64,
+    "pristis pristis": 65
+  },
+  "idx_to_info": {
+    "0": {
+      "scientific_name": "Acroteriobatus variegatus",
+      "common_name": "Variegated Eagle Ray",
+      "image_count": 10
+    },
+    "1": {
+      "scientific_name": "Aetomyleus milvus",
+      "common_name": "Bull Ray",
+      "image_count": 4
+    },
+    "2": {
+      "scientific_name": "Aetomyleus verspartlio",
+      "common_name": "Ornate Eagle Ray",
+      "image_count": 8
+    },
+    "3": {
+      "scientific_name": "Alopias pelagicus",
+      "common_name": "Pelagic Thresher Shark",
+      "image_count": 5
+    },
+    "4": {
+      "scientific_name": "Alopias superciliosus",
+      "common_name": "Bigeye Thresher Shark",
+      "image_count": 13
+    },
+    "5": {
+      "scientific_name": "Alopias vulpinus",
+      "common_name": "Common Thresher Shark",
+      "image_count": 10
+    },
+    "6": {
+      "scientific_name": "Anoxypristis cuspidata",
+      "common_name": "Knifetooth Sawfish",
+      "image_count": 3
+    },
+    "7": {
+      "scientific_name": "Carcharhinus albimarginatus",
+      "common_name": "Carcharhinus albimarginatus",
+      "image_count": 13
+    },
+    "8": {
+      "scientific_name": "Carcharhinus altimus",
+      "common_name": "Carcharhinus altimus",
+      "image_count": 6
+    },
+    "9": {
+      "scientific_name": "Carcharhinus amblyrhynchoides",
+      "common_name": "Carcharhinus amblyrhynchoides",
+      "image_count": 5
+    },
+    "10": {
+      "scientific_name": "Carcharhinus amblyrhynchos",
+      "common_name": "Carcharhinus amblyrhynchos",
+      "image_count": 10
+    },
+    "11": {
+      "scientific_name": "Carcharhinus amboinensis",
+      "common_name": "Carcharhinus amboinensis",
+      "image_count": 11
+    },
+    "12": {
+      "scientific_name": "Carcharhinus brevipinna",
+      "common_name": "Carcharhinus brevipinna",
+      "image_count": 14
+    },
+    "13": {
+      "scientific_name": "Carcharhinus dussumieri",
+      "common_name": "Carcharhinus dussumieri",
+      "image_count": 18
+    },
+    "14": {
+      "scientific_name": "Carcharhinus falciformis",
+      "common_name": "Carcharhinus falciformis",
+      "image_count": 18
+    },
+    "15": {
+      "scientific_name": "Carcharhinus hemiodon",
+      "common_name": "Pondicherry Shark",
+      "image_count": 2
+    },
+    "16": {
+      "scientific_name": "Carcharhinus limbatus",
+      "common_name": "Carcharhinus limbatus",
+      "image_count": 18
+    },
+    "17": {
+      "scientific_name": "Carcharhinus longimanus",
+      "common_name": "Carcharhinus longimanus",
+      "image_count": 16
+    },
+    "18": {
+      "scientific_name": "Carcharhinus macloti",
+      "common_name": "Carcharhinus macloti",
+      "image_count": 11
+    },
+    "19": {
+      "scientific_name": "Carcharhinus melanopterus",
+      "common_name": "Carcharhinus melanopterus",
+      "image_count": 18
+    },
+    "20": {
+      "scientific_name": "Carcharhinus obscurus",
+      "common_name": "Carcharhinus obscurus",
+      "image_count": 7
+    },
+    "21": {
+      "scientific_name": "Carcharhinus plumbeus",
+      "common_name": "Carcharhinus plumbeus",
+      "image_count": 13
+    },
+    "22": {
+      "scientific_name": "Carcharhinus sealei",
+      "common_name": "Carcharhinus sealei",
+      "image_count": 8
+    },
+    "23": {
+      "scientific_name": "Carcharhinus sorrah",
+      "common_name": "Carcharhinus sorrah",
+      "image_count": 12
+    },
+    "24": {
+      "scientific_name": "Channa barca",
+      "common_name": "Barca Snakehead",
+      "image_count": 8
+    },
+    "25": {
+      "scientific_name": "Epinephelus lanceolatus",
+      "common_name": "Giant Grouper",
+      "image_count": 7
+    },
+    "26": {
+      "scientific_name": "Eusphyra blochii",
+      "common_name": "Winghead Shark",
+      "image_count": 7
+    },
+    "27": {
+      "scientific_name": "Glaucostegus granulatus",
+      "common_name": "Glaucostegus granulatus",
+      "image_count": 15
+    },
+    "28": {
+      "scientific_name": "Glaucostegus obtusus",
+      "common_name": "Widenose Guitarfish",
+      "image_count": 6
+    },
+    "29": {
+      "scientific_name": "Glaucostegus thouin",
+      "common_name": "Clubnose Guitarfish",
+      "image_count": 3
+    },
+    "30": {
+      "scientific_name": "Glucostegus typus",
+      "common_name": "Glucostegus typus",
+      "image_count": 16
+    },
+    "31": {
+      "scientific_name": "Glyphis gangeticus",
+      "common_name": "Ganges Shark",
+      "image_count": 3
+    },
+    "32": {
+      "scientific_name": "Hippocampus borboniensis",
+      "common_name": "Reunion Seahorse",
+      "image_count": 2
+    },
+    "33": {
+      "scientific_name": "Isurus oxyrhynchus",
+      "common_name": "Isurus oxyrhynchus",
+      "image_count": 17
+    },
+    "34": {
+      "scientific_name": "Isurus paucus",
+      "common_name": "Isurus paucus",
+      "image_count": 9
+    },
+    "35": {
+      "scientific_name": "Lamiopsis temminckii",
+      "common_name": "Lamiopsis temminckii",
+      "image_count": 7
+    },
+    "36": {
+      "scientific_name": "Loxodon macrorhinus",
+      "common_name": "Loxodon macrorhinus",
+      "image_count": 11
+    },
+    "37": {
+      "scientific_name": "Mobula alfredi",
+      "common_name": "Reef Manta Ray",
+      "image_count": 4
+    },
+    "38": {
+      "scientific_name": "Mobula birostris",
+      "common_name": "Giant Oceanic Manta Ray",
+      "image_count": 3
+    },
+    "39": {
+      "scientific_name": "Mobula kuhli",
+      "common_name": "Mobula kuhli",
+      "image_count": 13
+    },
+    "40": {
+      "scientific_name": "Mobula mobular",
+      "common_name": "Mobula mobular",
+      "image_count": 14
+    },
+    "41": {
+      "scientific_name": "Mobula tarapacana",
+      "common_name": "Chilean Devil Ray",
+      "image_count": 5
+    },
+    "42": {
+      "scientific_name": "Mobula thurstoni",
+      "common_name": "Mobula thurstoni",
+      "image_count": 8
+    },
+    "43": {
+      "scientific_name": "Negaprion acutidens",
+      "common_name": "Negaprion acutidens",
+      "image_count": 9
+    },
+    "44": {
+      "scientific_name": "Prionace glauca",
+      "common_name": "Prionace glauca",
+      "image_count": 15
+    },
+    "45": {
+      "scientific_name": "Pristis clavata",
+      "common_name": "Dwarf Sawfish",
+      "image_count": 3
+    },
+    "46": {
+      "scientific_name": "Pristis zijsron",
+      "common_name": "Longcomb Sawfish",
+      "image_count": 2
+    },
+    "47": {
+      "scientific_name": "Rhina anchylostomus",
+      "common_name": "Bowmouth Guitarfish",
+      "image_count": 8
+    },
+    "48": {
+      "scientific_name": "Rhincodon typus",
+      "common_name": "Whale Shark",
+      "image_count": 3
+    },
+    "49": {
+      "scientific_name": "Rhinobatos annandalei",
+      "common_name": "Rhinobatos annandalei",
+      "image_count": 18
+    },
+    "50": {
+      "scientific_name": "Rhinobatos lionotus",
+      "common_name": "Rhinobatos lionotus",
+      "image_count": 6
+    },
+    "51": {
+      "scientific_name": "Rhinobatos punctifer",
+      "common_name": "Rhinobatos punctifer",
+      "image_count": 7
+    },
+    "52": {
+      "scientific_name": "Rhizoprionodon acutus",
+      "common_name": "Rhizoprionodon acutus",
+      "image_count": 14
+    },
+    "53": {
+      "scientific_name": "Rhizoprionodon oligolinx",
+      "common_name": "Rhizoprionodon oligolinx",
+      "image_count": 9
+    },
+    "54": {
+      "scientific_name": "Rhynchobatus australiae",
+      "common_name": "White-spotted Guitarfish",
+      "image_count": 4
+    },
+    "55": {
+      "scientific_name": "Rhynchobatus laevis",
+      "common_name": "Smoothnose Wedgefish",
+      "image_count": 4
+    },
+    "56": {
+      "scientific_name": "Scoliodon laticaudus",
+      "common_name": "Scoliodon laticaudus",
+      "image_count": 13
+    },
+    "57": {
+      "scientific_name": "Sphyrna lewini",
+      "common_name": "Sphyrna lewini",
+      "image_count": 20
+    },
+    "58": {
+      "scientific_name": "Sphyrna mokarran",
+      "common_name": "Sphyrna mokarran",
+      "image_count": 14
+    },
+    "59": {
+      "scientific_name": "Sphyrna zygaena",
+      "common_name": "Smooth Hammerhead Shark",
+      "image_count": 5
+    },
+    "60": {
+      "scientific_name": "Triaenodon obesus",
+      "common_name": "Triaenodon obesus",
+      "image_count": 21
+    },
+    "61": {
+      "scientific_name": "Urogymnus asperrimus",
+      "common_name": "Porcupine Ray",
+      "image_count": 7
+    },
+    "62": {
+      "scientific_name": "Urogymnus polylepis",
+      "common_name": "Giant Freshwater Stingray",
+      "image_count": 10
+    },
+    "63": {
+      "scientific_name": "aenigmachanna gollum",
+      "common_name": "Gollum Snakehead",
+      "image_count": 5
+    },
+    "64": {
+      "scientific_name": "carcharhinus longimanus",
+      "common_name": "Oceanic Whitetip Shark",
+      "image_count": 7
+    },
+    "65": {
+      "scientific_name": "pristis pristis",
+      "common_name": "Largetooth Sawfish",
+      "image_count": 6
+    }
+  }
+}

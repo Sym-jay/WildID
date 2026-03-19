@@ -1,0 +1,110 @@
+# Flutter/Dart
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+.packages
+.env
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.classpath
+
+# Android
+android/.gradle/
+android/local.properties
+android/captures/
+android/**/*.APK
+android/**/*.apk
+android/**/*.aab
+android/**/*.abb
+android/**/GeneratedPluginRegistrant.java
+
+# iOS
+ios/Flutter/Flutter.podspec
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.xcframework
+ios/Flutter/.symlinks/
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Local.podfile_lock
+ios/Pods/
+ios/.symlinks/
+ios/.flutter-plugins
+ios/.flutter-plugins-dependencies
+
+# macOS
+macos/Flutter/GeneratedPluginRegistrant.swift
+macos/Flutter/Flutter.xcframework
+
+# Windows
+windows/flutter/generated_plugins.cmake
+windows/flutter/generated_plugin_registrant.cc
+windows/flutter/generated_plugin_registrant.h
+windows/flutter/generated_plugins.props
+windows/flutter/generated_plugins.xml
+windows/flutter/flutter_export_environment.sh
+
+# Linux
+linux/flutter/generated_plugin_registrant.cc
+linux/flutter/generated_plugin_registrant.h
+linux/flutter/generated_plugins.cmake
+
+# Web
+web/plugins.json
+
+# Python
+*.py[cod]
+__pycache__/
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+venv/
+venv_new/
+env/
+.env
+
+# Large ML model files (use git-lfs if needed)
+*.pth
+*.pt
+*.zip
+*.tar.gz
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+.~*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+.directory
+.Trash-*
+
+# Windows
+Thumbs.db
+ehthumbs.db

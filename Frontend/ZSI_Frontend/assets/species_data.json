@@ -1,0 +1,218 @@
+[
+  {
+    "name": "Ornate Eagle Ray",
+    "scientificName": "Aetomyleus vespertilio",
+    "description": "A very rare and large species of stingray, known for the distinct pattern of reticulate dark lines and rings on its back. It is often called the 'unicorn of the sea' due to how infrequently it is spotted.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/60121/124440895",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Aetomylaeus_vespertilio01.jpg/120px-Aetomylaeus_vespertilio01.jpg"
+  },
+  {
+    "name": "Gollum Snakehead",
+    "scientificName": "Aenigmachanna gollum",
+    "description": "A species of aquifer-dwelling dragon snakehead fish with an elongated, eel-like body. Unlike many subterranean fauna, it has well-developed pigmentation and normally-sized eyes.",
+    "conservationStatus": "Vulnerable",
+    "iucnUrl": "https://www.iucnredlist.org/species/164304141/164304165",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Aenigmachanna_gollum.jpg/1920px-Aenigmachanna_gollum.jpg"
+  },
+  {
+    "name": "Knifetooth Sawfish",
+    "scientificName": "Anoxypristis cuspidata",
+    "description": "Also known as the narrow sawfish, this species is characterized by its long, flattened rostrum (saw) which is lined with sharp teeth. It is a high-value target for fisheries.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/39389/58304073",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Anoxypristis_cuspidata_Day.jpg/799px-Anoxypristis_cuspidata_Day.jpg?20130323142515"
+  },
+  {
+    "name": "Pondicherry Shark",
+    "scientificName": "Carcharhinus hemiodon",
+    "description": "An extremely rare species of requiem shark, once thought to be extinct. It's a small and stocky gray shark with prominent black tips on several of its fins.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/39369/221513674",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Carcharhinus_hemiodon_2.jpg"
+  },
+  {
+    "name": "Oceanic Whitetip Shark",
+    "scientificName": "Carcharhinus longimanus",
+    "description": "A large requiem shark inhabiting tropical and warm temperate seas. It is recognizable by its long, wing-like pectoral and dorsal fins which have conspicuous white tips.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/39374/2911619",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Oceanic_Whitetip_Shark_%28Carcharhinus_longimanus%29_at_Elphinstone_Reef%2C_Egypt.jpg/960px-Oceanic_Whitetip_Shark_%28Carcharhinus_longimanus%29_at_Elphinstone_Reef%2C_Egypt.jpg?20250608152440"
+  },
+  {
+    "name": "Barca Snakehead",
+    "scientificName": "Channa barca",
+    "description": "A rare species of snakehead fish endemic to the upper Brahmaputra river basin in northeastern India and Bangladesh. It is highly prized in the aquarium trade for its vibrant colors.",
+    "conservationStatus": "Data Deficient",
+    "iucnUrl": "https://www.iucnredlist.org/species/166596/6244166",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/84/Channa_barca_Day.png"
+  },
+  {
+    "name": "Pipefish Syngnathidae",
+    "scientificName": "Corythoichthys spp",
+    "description": "A genus of pipefishes, also known as dragon-faced or network pipefishes. They have elongated bodies and small fins, often found in coral reefs and seagrass beds.",
+    "conservationStatus": "Data Deficient",
+    "iucnUrl": "https://www.iucnredlist.org/search?query=Corythoichthys&searchType=species",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/FMIB_46357_Ocean_Pipefish_Variety.jpeg/640px-FMIB_46357_Ocean_Pipefish_Variety.jpeg"
+  },
+  {
+    "name": "Giant Grouper",
+    "scientificName": "Epinephelus lanceolatus",
+    "description": "The largest bony fish found in coral reefs, capable of reaching enormous size. It has a large mouth and a body that is typically yellowish to brown with faint mottling.",
+    "conservationStatus": "Vulnerable",
+    "iucnUrl": "https://www.iucnredlist.org/species/7858/100465809",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Epinephelus_lanceolatus.jpeg/1920px-Epinephelus_lanceolatus.jpeg"
+  },
+  {
+    "name": "Winghead Shark",
+    "scientificName": "Eusphyra blochii",
+    "description": "A species of hammerhead shark known for its exceptionally wide, wing-shaped head (cephalofoil), which can span up to 50% of the shark's total body length.",
+    "conservationStatus": "Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/41810/124417935",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Eusphyra_blochii_Day.jpg/800px-Eusphyra_blochii_Day.jpg?20070410122302"
+  },
+  {
+    "name": "Widenose Guitarfish",
+    "scientificName": "Glaucostegus obtusus",
+    "description": "A species of ray in the guitarfish family, characterized by its wide, triangular snout and shark-like body. It is found on the continental shelves of the Indo-West Pacific.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/60170/207283191",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Glaucostegus_obtusus.jpg/960px-Glaucostegus_obtusus.jpg?20220201054850"
+  },
+  {
+    "name": "Clubnose Guitarfish",
+    "scientificName": "Glaucostegus thouin",
+    "description": "A large species of ray with a distinctive club-like tip on its snout. It is found in shallow coastal waters and estuaries of the Indo-Pacific.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/60175/207731709",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Rhinobates_thouini_Day_190.jpg/1920px-Rhinobates_thouini_Day_190.jpg"
+  },
+  {
+    "name": "Ganges Shark",
+    "scientificName": "Glyphis gangeticus",
+    "description": "A critically endangered species of requiem shark that inhabits freshwater river systems in India and Bangladesh. It is adapted to turbid water with small eyes and slender teeth.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/169473392/124398647",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/60/Glyphis_gangeticus.jpg?20121210181447"
+  },
+  {
+    "name": "Reunion Seahorse",
+    "scientificName": "Hippocampus borboniensis",
+    "description": "A species of seahorse found around the islands of Mauritius and Réunion in the Indian Ocean. Little is known about its population or specific habitat.",
+    "conservationStatus": "Data Deficient",
+    "iucnUrl": "https://www.iucnredlist.org/search?query=Hippocampus%20borboniensis&searchType=species",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Hippocampus_borboniensis.jpg/250px-Hippocampus_borboniensis.jpg"
+  },
+  {
+    "name": "Reef Manta Ray",
+    "scientificName": "Mobula alfredi",
+    "description": "The world's second-largest ray species, primarily found in coastal regions of the Indo-Pacific. It is known for its graceful swimming and acrobatic displays.",
+    "conservationStatus": "Vulnerable",
+    "iucnUrl": "https://www.iucnredlist.org/species/195459/214395983",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/02665-Manta_ray_In_Palau.jpg/1920px-02665-Manta_ray_In_Palau.jpg"
+  },
+  {
+    "name": "Giant Oceanic Manta Ray",
+    "scientificName": "Mobula birostris",
+    "description": "The largest species of ray in the world. It is a filter-feeder that spends much of its time in the open ocean, consuming large quantities of zooplankton.",
+    "conservationStatus": "Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/198921/214397182",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Giant_Manta_AdF.jpg/960px-Giant_Manta_AdF.jpg?20140928203405"
+  },
+  {
+    "name": "Chilean Devil Ray",
+    "scientificName": "Mobula tarapacana",
+    "description": "A species of ray known for being one of the deepest-diving animals in the ocean. It inhabits tropical and subtropical waters worldwide.",
+    "conservationStatus": "Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/60199/279077133",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Devil_ray_%28Mobula_tarapacana%29_%2847778156082%29.jpg/640px-Devil_ray_%28Mobula_tarapacana%29_%2847778156082%29.jpg"
+  },
+  {
+    "name": "Dwarf Sawfish",
+    "scientificName": "Pristis clavata",
+    "description": "The smallest species in the sawfish family, found in the tropical waters of northern Australia. It typically inhabits inshore waters, estuaries, and tidal mudflats.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/39390/68641215",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Pristis_clavata_2.jpg/640px-Pristis_clavata_2.jpg"
+  },
+  {
+    "name": "Largetooth Sawfish",
+    "scientificName": "Pristis pristis",
+    "description": "A large species of sawfish that can be found in both coastal marine waters and freshwater rivers. It has declined drastically and is now critically endangered.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/18584848/249880242",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Pristis_pristis_-_Daly_River.JPG/640px-Pristis_pristis_-_Daly_River.JPG"
+  },
+  {
+    "name": "Longcomb Sawfish",
+    "scientificName": "Pristis zijsron",
+    "description": "Also known as the green sawfish, it is a large sawfish species found in the Indo-West Pacific. Its rostrum is notably long and narrow with numerous teeth.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/39393/58304631",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Sawfish_genova.jpg/250px-Sawfish_genova.jpg"
+  },
+  {
+    "name": "Bowmouth Guitarfish",
+    "scientificName": "Rhina ancylostomus",
+    "description": "Also known as the shark ray, it is highly distinctive in appearance with a wide, thick body, a rounded snout, and multiple thorny ridges over its head and back.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/41848/124421912",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Rhina_ancylostoma.jpg/120px-Rhina_ancylostoma.jpg"
+  },
+  {
+    "name": "Whale Shark",
+    "scientificName": "Rhincodon typus",
+    "description": "The largest known living nonmammalian vertebrate. It is a slow-moving, filter-feeding carpet shark found in open waters of the tropical oceans.",
+    "conservationStatus": "Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/19488/126673248",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Whale_shark_Georgia_aquarium.jpg/250px-Whale_shark_Georgia_aquarium.jpg"
+  },
+  {
+    "name": "White-spotted Guitarfish",
+    "scientificName": "Rhynchobatus australiae",
+    "description": "A large species of guitarfish found in the Indo-West Pacific. It has a wedge-shaped body and is characterized by a pattern of white spots over its dorsal surface.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/41853/68643043",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Rhynchobatus_australiae_5463280.jpg/640px-Rhynchobatus_australiae_5463280.jpg"
+  },
+  {
+    "name": "Smoothnose Wedgefish",
+    "scientificName": "Rhynchobatus laevis",
+    "description": "A species of wedgefish native to the western Indian Ocean. It has a flattened, triangular snout and a body that is intermediate between a shark and a ray.",
+    "conservationStatus": "Critically Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/253117160/253117341",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/M.E._Blochii_Systema_ichthyologiae_iconibus_CX_illustratum_%281801%29_%2814766102852%29.jpg/250px-M.E._Blochii_Systema_ichthyologiae_iconibus_CX_illustratum_%281801%29_%2814766102852%29.jpg"
+  },
+  {
+    "name": "Smooth Hammerhead Shark",
+    "scientificName": "Sphyrna zygaena",
+    "description": "A large species of hammerhead shark, found in temperate and tropical waters worldwide. Its head is distinguished by its lack of a central indentation (it is 'smooth').",
+    "conservationStatus": "Vulnerable",
+    "iucnUrl": "https://www.iucnredlist.org/species/39388/2921825",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Sphyrna_zygaena_noaa.jpg/640px-Sphyrna_zygaena_noaa.jpg"
+  },
+  {
+    "name": "Pipefish Acanthuridae",
+    "scientificName": "Trachyrhamphus spp",
+    "description": "A genus of pipefishes known as 'stick pipefishes'. They have very long, slender bodies and are typically found in sandy or rubble habitats near reefs.",
+    "conservationStatus": "Data Deficient",
+    "iucnUrl": "https://www.iucnredlist.org/search?query=Trachyrhamphus&searchType=species",
+    "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSym9c-_yoRsOSjxkJvR95YEYI17_SG6kMaPw&s"
+  },
+  {
+    "name": "Porcupine Ray",
+    "scientificName": "Urogymnus asperrimus",
+    "description": "A rare species of stingray covered in large, sharp thorns and denticles. Uniquely, it lacks a stinging spine on its tail, relying on its thorny armor for defense.",
+    "conservationStatus": "Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/39413/124411670",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Porcupine_ray_from_Lakshadweep.jpg/640px-Porcupine_ray_from_Lakshadweep.jpg"
+  },
+  {
+    "name": "Giant Freshwater Stingray",
+    "scientificName": "Urogymnus polylepis",
+    "description": "One of the largest freshwater fish in the world, found in large rivers in Southeast Asia. It can reach up to 2.2 meters in disc width and possess a long, venomous tail spine.",
+    "conservationStatus": "Endangered",
+    "iucnUrl": "https://www.iucnredlist.org/species/195320/104294071",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Urogymnus_polylepis_at_Itabashi_Botanical_Garden.png/640px-Urogymnus_polylepis_at_Itabashi_Botanical_Garden.png"
+  }
+]

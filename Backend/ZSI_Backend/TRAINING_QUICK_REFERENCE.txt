@@ -1,0 +1,142 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                  ZSI GPU TRAINING - QUICK REFERENCE                        ║
+║                   EfficientNet-B0 Model Training on RTX 4060 Ti             ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+📊 CURRENT STATUS
+─────────────────────────────────────────────────────────────────────────────
+Status:        🟢 TRAINING ACTIVE
+GPU:           NVIDIA GeForce RTX 4060 Ti (8 GB VRAM)
+Epoch:         1/200 (0.5% complete)
+Loss:          1.2037
+Accuracy:      77.61%
+Temp:          55°C (Safe)
+Power:         15W / 60W
+
+🚀 START MONITORING (Pick any option)
+─────────────────────────────────────────────────────────────────────────────
+
+1. LIVE STREAM (Updates in real-time)
+   tail -f /home/sym/ZSI/Backend/ZSI_Backend/training_run.log
+
+2. LATEST METRICS (Last 20 lines)
+   tail -20 /home/sym/ZSI/Backend/ZSI_Backend/training_run.log
+
+3. GPU DASHBOARD
+   nvidia-smi
+
+4. MONITORING SCRIPT
+   bash /home/sym/ZSI/Backend/ZSI_Backend/monitor_training.sh
+
+📈 TRAINING DETAILS
+─────────────────────────────────────────────────────────────────────────────
+Model:         EfficientNet-B0 (transfer learning)
+Classes:       66 CITES-protected species
+Batch Size:    64 images
+Augmentation:  150x on-the-fly data augmentation
+Optimizer:     AdamW (lr=0.0001)
+Mixed Precision: Enabled (FP32 + FP16)
+Early Stopping: Patience=5 epochs
+
+Dataset:
+├── Total Images:  621 base images
+├── Training:      ~497 images (80%)
+├── Validation:    ~124 images (20%)
+└── Per Epoch:     99,150 samples (with augmentation)
+
+⏱️ TIME ESTIMATES
+─────────────────────────────────────────────────────────────────────────────
+Per Epoch:          ~3-5 minutes
+Total Training:     10-17 hours (200 epochs)
+With Early Stop:    ~5-6 hours
+Expected Complete:  ~5 hours from training start
+
+📁 OUTPUT FILES
+─────────────────────────────────────────────────────────────────────────────
+Location: /home/sym/ZSI/Backend/ZSI_Backend/
+
+📋 training_run.log          ← Real-time metrics (update every epoch)
+🤖 zsi_wildlife_model.pth    ← Model weights (16 MB, auto-saved)
+📊 training_progress.png     ← Loss/Accuracy plot (generated at end)
+📝 zsi_class_mapping.json    ← 66-class label mapping (4 KB)
+🔧 monitor_training.sh       ← Monitoring script
+
+🎯 PERFORMANCE TARGETS
+─────────────────────────────────────────────────────────────────────────────
+Epoch 1:     Loss: 1.2037 | Acc: 77.61%  ✅ (current)
+Epoch 50:    Loss: ~0.20  | Acc: ~95%    (expected)
+Epoch 100:   Loss: ~0.05  | Acc: ~98%    (expected)
+Epoch 200:   Loss: <0.01  | Acc: >99%    (goal)
+
+Previous Best (Epoch 10): Loss: 0.026 | Acc: 98.43%
+
+💡 IMPORTANT REMINDERS
+─────────────────────────────────────────────────────────────────────────────
+✓ DO NOT INTERRUPT TRAINING - Let it run to completion
+✓ GPU temperature is 55°C - Well within safe limits
+✓ Early stopping is active - Training stops if no improvement for 5 epochs
+✓ Model auto-saves best weights - No manual checkpoint needed
+✓ Training runs in background - You can close terminal, process continues
+
+🔧 SYSTEM HEALTH CHECKS
+─────────────────────────────────────────────────────────────────────────────
+
+Check GPU is being used:
+  ps aux | grep train.py
+
+Check GPU memory:
+  nvidia-smi
+
+Check disk space:
+  df -h /home/sym/ZSI/Backend/ZSI_Backend
+
+View log in real-time:
+  watch -n 1 'tail -10 /home/sym/ZSI/Backend/ZSI_Backend/training_run.log'
+
+📞 TROUBLESHOOTING
+─────────────────────────────────────────────────────────────────────────────
+
+Q: How do I know if training is still running?
+A: ps aux | grep train.py
+   Should show Python process with train.py
+
+Q: Is my GPU being used?
+A: nvidia-smi
+   Check "GPU-Util" column - should be 40-80% during training
+
+Q: Can I close the terminal?
+A: Yes! Training runs via nohup in background. Process continues.
+
+Q: How long will it take?
+A: ~5-6 hours to completion (with early stopping)
+   Per epoch: 3-5 minutes
+
+Q: When should I check back?
+A: Can monitor anytime. Training runs 24/7 until complete.
+
+🎓 TRAINING PHASES
+─────────────────────────────────────────────────────────────────────────────
+Phase 1: Initialization    ✅ COMPLETE
+         └─ Model loading, dataset prep, setup
+
+Phase 2: Training          🔄 IN PROGRESS
+         └─ Epochs 1-200, validation checks, auto-save
+
+Phase 3: Finalization      ⏳ PENDING
+         └─ Generate plots, save final model, summary
+
+🌟 AFTER TRAINING COMPLETES
+─────────────────────────────────────────────────────────────────────────────
+1. Check final metrics in training_run.log
+2. View training curves in training_progress.png
+3. Deploy API: python api.py
+4. Run inference tests
+5. Deploy to Flutter mobile app
+
+═════════════════════════════════════════════════════════════════════════════
+
+**Training is ACTIVE and HEALTHY. No action needed. Just let it train!** 🚀
+
+Last Updated: 2026-03-19 06:50 UTC
+Process PIDs: 77207, 80727
+GPU Device: NVIDIA RTX 4060 Ti
