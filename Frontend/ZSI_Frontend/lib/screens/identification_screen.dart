@@ -22,6 +22,7 @@ import '../core/services/ensemble_ai_service.dart';
 import '../core/services/image_cache_service.dart';
 import '../core/services/species_lookup_service.dart';
 import '../core/services/feedback_service.dart';
+import '../core/utils/responsive_helper.dart';
 import '../widgets/index.dart';
 import '../widgets/ai_feedback_panel.dart';
 import 'species_detail_screen.dart';
@@ -208,62 +209,107 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = ResponsiveHelper.isMobile(context);
+    final padding = ResponsiveHelper.getResponsivePadding(context);
+    final imageHeight = isMobile ? 300.0 : 400.0;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Identification Result'), elevation: 0),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: padding,
         child: SlideTransition(
           position: Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(_slideAnimation),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Card(
-                elevation: 6,
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: RepaintBoundary(
-                  child: Stack(
+          child: ResponsiveLayout(
+            mobileLayout: _buildMobileLayout(imageHeight),
+            tabletLayout: _buildTabletLayout(imageHeight),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout(double imageHeight) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildImageCard(imageHeight),
+        const SizedBox(height: 20),
+        _buildModelSelector(),
+        const SizedBox(height: 24),
+        if (_isProcessing)
+          const Center(child: CircularProgressIndicator())
+        else if (_results != null && _results!.isNotEmpty)
+          _buildResults()
+        else
+          _buildErrorState(),
+      ],
+    );
+  }
+
+  Widget _buildTabletLayout(double imageHeight) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 2,
+          child: _buildImageCard(imageHeight),
+        ),
+        const SizedBox(width: 24),
+        Expanded(
+          flex: 3,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildModelSelector(),
+                const SizedBox(height: 24),
+                if (_isProcessing)
+                  const Center(child: CircularProgressIndicator())
+                else if (_results != null && _results!.isNotEmpty)
+                  _buildResults()
+                else
+                  _buildErrorState(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImageCard(double height) {
+    return Card(
+      elevation: 6,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: RepaintBoundary(
+        child: Stack(
+          children: [
+            Image.file(
+              widget.imageFile,
+              width: double.infinity,
+              height: height,
+              fit: BoxFit.cover,
+              cacheHeight: 400,
+              cacheWidth: 1000,
+            ),
+            if (_isProcessing)
+              Container(
+                width: double.infinity,
+                height: height,
+                color: Colors.black38,
+                child: const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.file(
-                        widget.imageFile,
-                        width: double.infinity,
-                        height: 300,
-                        fit: BoxFit.cover,
-                        cacheHeight: 400,
-                        cacheWidth: 1000,
-                      ),
-                      if (_isProcessing)
-                        Container(
-                          width: double.infinity,
-                          height: 300,
-                          color: Colors.black38,
-                          child: const Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-                                SizedBox(height: 16),
-                                Text('Analyzing with AI...', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                              ],
-                            ),
-                          ),
-                        ),
+                      CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                      SizedBox(height: 16),
+                      Text('Analyzing with AI...', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              // Model Selector
-              _buildModelSelector(),
-              const SizedBox(height: 24),
-              if (_isProcessing)
-                const Center(child: CircularProgressIndicator())
-              else if (_results != null && _results!.isNotEmpty)
-                _buildResults()
-              else
-                _buildErrorState(),
-            ],
-          ),
+          ],
         ),
       ),
     );

@@ -20,6 +20,7 @@ import '../shared/widgets/filter_panel.dart';
 import '../core/services/index.dart';
 import '../core/providers/species_provider.dart';
 import '../widgets/index.dart';
+import '../core/utils/responsive_helper.dart';
 import 'species_detail_screen.dart';
 import '../utils/app_utils.dart';
 import '../core/services/image_cache_service.dart';
@@ -140,14 +141,34 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
           );
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: filtered.length,
-          itemBuilder: (context, index) {
-            final speciesData = filtered[index];
-            return _buildSpeciesCard(context, speciesData);
-          },
-        );
+        // Use responsive layout: List on mobile, Grid on tablet
+        if (ResponsiveHelper.isMobile(context)) {
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: filtered.length,
+            itemBuilder: (context, index) {
+              final speciesData = filtered[index];
+              return _buildSpeciesCard(context, speciesData);
+            },
+          );
+        } else {
+          // Tablet/Desktop: Show as grid
+          final crossAxisCount = ResponsiveHelper.getResponsiveCrossAxisCount(context);
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              childAspectRatio: 0.85,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            itemCount: filtered.length,
+            itemBuilder: (context, index) {
+              final speciesData = filtered[index];
+              return _buildSpeciesGridCard(context, speciesData);
+            },
+          );
+        }
       },
     );
   }
@@ -277,6 +298,112 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
         child: CircularProgressIndicator(strokeWidth: 2),
       ),
     );
+  }
+
+  Widget _buildSpeciesGridCard(BuildContext context, SpeciesData speciesData) {
+    // Create Animal object for navigation to detail screen
+    final animal = Animal(
+      name: speciesData.commonName,
+      scientificName: speciesData.scientificName,
+      description: speciesData.description,
+      conservationStatus: speciesData.conservationStatus,
+      iucnUrl: speciesData.iucnUrl,
+      imageUrl: speciesData.imageUrl,
+      additionalImageUrls: speciesData.additionalImageUrls,
+    );
+
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => SpeciesDetailScreen(animal: animal),
+          ),
+        ),
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Image
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+                child: SpeciesImageCacheManager.speciesImage(
+                  imageUrl: speciesData.imageUrl,
+                  width: double.infinity,
+                  height: 150,
+                ),
+              ),
+            ),
+            // Text Content
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    speciesData.commonName,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimaryColor,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    speciesData.scientificName,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontStyle: FontStyle.italic,
+                      color: AppTheme.textSecondaryColor,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(speciesData.conservationStatus).withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      speciesData.conservationStatus,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: _getStatusColor(speciesData.conservationStatus),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'CRITICALLY ENDANGERED':
+        return Colors.red;
+      case 'ENDANGERED':
+        return Colors.orange;
+      case 'VULNERABLE':
+        return Colors.yellow[700]!;
+      case 'NEAR THREATENED':
+        return Colors.yellow[600]!;
+      default:
+        return Colors.green;
+    }
   }
 }
 
