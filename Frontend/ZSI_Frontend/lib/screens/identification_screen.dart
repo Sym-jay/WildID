@@ -18,6 +18,7 @@ import '../core/services/database_service.dart';
 import '../shared/widgets/user_profile_card.dart' as profile_widgets;
 import '../shared/widgets/filter_panel.dart';
 import '../core/services/index.dart';
+import '../core/services/ensemble_ai_service.dart';
 import '../core/services/image_cache_service.dart';
 import '../core/services/species_lookup_service.dart';
 import '../core/services/feedback_service.dart';
@@ -44,8 +45,10 @@ class IdentificationScreen extends StatefulWidget {
 
 class _IdentificationScreenState extends State<IdentificationScreen> with TickerProviderStateMixin {
   List<IdentificationResult>? _results;
+  EnsembleIdentificationResult? _ensembleResults;
   bool _isProcessing = true;
   bool _smsSent = false;
+  bool _useEnsemble = true; // Toggle between single & ensemble models
   Map<String, Animal> _speciesCache = {}; // Cache species data
 
   late AnimationController _slideController;
@@ -105,17 +108,40 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
   Future<void> _processImage() async {
     setState(() => _isProcessing = true);
     try {
-      final results = await AIService.identifySpecies(widget.imageFile);
-      
-      if (mounted) {
-        setState(() {
-          _results = results;
-          _isProcessing = false;
-        });
-        _resultController.forward();
+      if (_useEnsemble) {
+        // Use ensemble prediction (3 models with weighted voting)
+        final ensembleResult = await EnsembleAIService.identifyWithEnsemble(widget.imageFile);
         
-        await _archiveUpload();
-        await _handleSMSAlert();
+        if (mounted) {
+          setState(() {
+            _ensembleResults = ensembleResult;
+            // Convert ensemble result to results list for compatibility
+            _results = [
+              if (ensembleResult.ensembleResult != null)
+                ensembleResult.ensembleResult!
+            ];
+            _isProcessing = false;
+          });
+          _resultController.forward();
+          
+          await _archiveUpload();
+          await _handleSMSAlert();
+        }
+      } else {
+        // Use single model prediction (original behavior)
+        final results = await AIService.identifySpecies(widget.imageFile);
+        
+        if (mounted) {
+          setState(() {
+            _results = results;
+            _ensembleResults = null;
+            _isProcessing = false;
+          });
+          _resultController.forward();
+          
+          await _archiveUpload();
+          await _handleSMSAlert();
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -226,6 +252,9 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
+              // Model Selector
+              _buildModelSelector(),
               const SizedBox(height: 24),
               if (_isProcessing)
                 const Center(child: CircularProgressIndicator())
@@ -237,6 +266,166 @@ class _IdentificationScreenState extends State<IdentificationScreen> with Ticker
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildModelSelector() {
+    return Card(
+      color: AppTheme.primaryColor.withOpacity(0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: AppTheme.primaryColor, width: 1),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.memory, color: AppTheme.primaryColor, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'AI Model Selection',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: _useEnsemble ? AppTheme.primaryColor : Colors.grey[300],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: InkWell(
+                      onTap: !_isProcessing
+                          ? () {
+                              if (_useEnsemble != true) {
+                                setState(() {
+                                  _useEnsemble = true;
+                                  _results = null;
+                                  _ensembleResults = null;
+                                  _processImage();
+                                });
+                              }
+                            }
+                          : null,
+                      child: Text(
+                        '⭐ Ensemble (3 Models)\nAccuracy: 75%',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: _useEnsemble ? Colors.white : Colors.black87,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: !_useEnsemble ? AppTheme.primaryColor : Colors.grey[300],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: InkWell(
+                      onTap: !_isProcessing
+                          ? () {
+                              if (_useEnsemble != false) {
+                                setState(() {
+                                  _useEnsemble = false;
+                                  _results = null;
+                                  _ensembleResults = null;
+                                  _processImage();
+                                });
+                              }
+                            }
+                          : null,
+                      child: Text(
+                        '🔷 Single Model\nFast Processing',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: !_useEnsemble ? Colors.white : Colors.black87,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (_useEnsemble && _ensembleResults != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                'Model Confidence Breakdown:',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.primaryColor),
+              ),
+              const SizedBox(height: 8),
+              ..._buildEnsembleBreakdown(),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildEnsembleBreakdown() {
+    if (_ensembleResults == null) return [];
+    
+    final individual = _ensembleResults!.getIndividualTopPredictions();
+    return [
+      _buildModelConfidenceRow('EfficientNet', individual['efficientnet'], '40%'),
+      const SizedBox(height: 6),
+      _buildModelConfidenceRow('ResNet-50', individual['resnet'], '35%'),
+      const SizedBox(height: 6),
+      _buildModelConfidenceRow('MobileNet', individual['mobilenet'], '25%'),
+    ];
+  }
+
+  Widget _buildModelConfidenceRow(String modelName, IdentificationResult? result, String weight) {
+    final confidence = result?.confidence ?? 0.0;
+    return Row(
+      children: [
+        SizedBox(
+          width: 90,
+          child: Text(
+            modelName,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          ),
+        ),
+        Expanded(
+          child: LinearProgressIndicator(
+            value: confidence,
+            backgroundColor: Colors.grey[300],
+            valueColor: AlwaysStoppedAnimation<Color>(
+              confidence >= 0.7 ? Colors.green : confidence >= 0.5 ? Colors.orange : Colors.red,
+            ),
+            minHeight: 4,
+          ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 45,
+          child: Text(
+            '${(confidence * 100).toStringAsFixed(0)}% (${weight})',
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+            textAlign: TextAlign.right,
+          ),
+        ),
+      ],
     );
   }
 

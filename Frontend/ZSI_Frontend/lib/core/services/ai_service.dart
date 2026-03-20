@@ -6,11 +6,13 @@ import '../../shared/models/index.dart';
 import '../config/image_compression.dart';
 import '../config/error_handler.dart';
 import 'offline_ai_service.dart';
+import 'ensemble_ai_service.dart';
 
 class AIService {
   AIService._();
 
   static const String apiUrl = 'https://zsi-wildlife-api-173142698667.us-central1.run.app/predict';
+  static const String ensembleApiUrl = 'https://zsi-wildlife-api-173142698667.us-central1.run.app/predict-ensemble';
   static const String apiKey = String.fromEnvironment('ZSI_API_KEY', defaultValue: 'dev-key');
   
   // Hybrid mode: try cloud first, fall back to local offline if needed
