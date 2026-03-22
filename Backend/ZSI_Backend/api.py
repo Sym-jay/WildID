@@ -108,13 +108,27 @@ def predict():
             top3_probs, top3_indices = torch.topk(probabilities, 3)
 
         results = []
+        confidence_threshold = 0.55
+        
         for i in range(top3_indices.size(1)):
             idx = str(top3_indices[0][i].item())
-            info = idx_to_info.get(idx, {"common_name": "Unknown"})
-            results.append({
-                'label': info['common_name'],
-                'confidence': float(top3_probs[0][i].item())
-            })
+            confidence = float(top3_probs[0][i].item())
+            
+            # Only include results above threshold
+            if confidence >= confidence_threshold:
+                info = idx_to_info.get(idx, {"common_name": "Unknown"})
+                results.append({
+                    'label': info['common_name'],
+                    'confidence': confidence
+                })
+
+        # If no results above threshold, return unidentified message
+        if not results:
+            return jsonify([{
+                'label': 'Image Not Recognized',
+                'confidence': 0.0,
+                'message': 'The image does not clearly match any wildlife species in our database. Please try a clearer or different image.'
+            }]), 200
 
         return jsonify(results), 200
 

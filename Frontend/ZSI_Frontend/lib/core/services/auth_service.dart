@@ -1,5 +1,8 @@
 import 'dart:math';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../config/error_handler.dart';
 
 class AuthService {
@@ -15,6 +18,42 @@ class AuthService {
   static const int _maxLoginAttempts = 5;
   static const Duration _lockoutDuration = Duration(minutes: 15);
   static final Map<String, DateTime> _loginLockout = {};
+  
+  static const _secureStorage = FlutterSecureStorage();
+  static bool _initialized = false;
+
+  /// Initialize auth service and load stored credentials
+  static Future<void> initialize() async {
+    if (_initialized) return;
+    try {
+      final stored = await _secureStorage.read(key: 'zsi_users_data');
+      if (stored != null) {
+        final Map<String, dynamic> data = json.decode(stored);
+        _users.addAll(Map<String, String>.from(data['users'] ?? {}));
+        _userPhones.addAll(Map<String, String>.from(data['phones'] ?? {}));
+        AppLogger.logInfo('Loaded ${_users.length} stored users');
+      }
+      _initialized = true;
+    } catch (e, st) {
+      AppLogger.logError('Failed to initialize auth', e, st);
+    }
+  }
+
+  /// Save credentials to secure storage
+  static Future<void> _saveCredentials() async {
+    try {
+      final data = {
+        'users': _users,
+        'phones': _userPhones,
+      };
+      await _secureStorage.write(
+        key: 'zsi_users_data',
+        value: json.encode(data),
+      );
+    } catch (e, st) {
+      AppLogger.logError('Failed to save credentials', e, st);
+    }
+  }
 
   static Future<bool> registerUser(String email, String password, String phone) async {
     try {
@@ -27,6 +66,7 @@ class AuthService {
       await Future.delayed(const Duration(milliseconds: 500));
       _users[email] = password;
       _userPhones[email] = phone;
+      await _saveCredentials();
       AppLogger.logInfo('User registered: $email');
       return true;
     } catch (e, stackTrace) {
