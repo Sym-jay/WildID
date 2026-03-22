@@ -36,13 +36,16 @@ class VerificationQueueScreen extends StatefulWidget {
 class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
   final String _filterStatus = 'pending'; // 'pending', 'all'
   bool _isVerifying = false;
+  final Set<String> _rejectedRecordIds = {};
 
   List<UploadRecord> get _pendingRecords {
     final all = ArchiveService.getUploadHistory();
+    // Filter out rejected records
+    final filtered = all.where((r) => !_rejectedRecordIds.contains(r.id)).toList();
     if (_filterStatus == 'pending') {
-      return all.where((r) => r.status == 'pending').toList();
+      return filtered.where((r) => r.status == 'pending').toList();
     }
-    return all;
+    return filtered;
   }
 
   Future<void> _verifyRecord(UploadRecord record, String verifiedSpecies, String notes, int confidence) async {
@@ -257,7 +260,11 @@ class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
   }
 
   void _rejectRecord(UploadRecord record, String reason) {
-    // Mark record as rejected (will be filtered out on next setState)
+    // Mark record as rejected - it will be filtered out
+    setState(() {
+      _rejectedRecordIds.add(record.id);
+    });
+    
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -265,14 +272,13 @@ class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
             children: [
               const Icon(Icons.block, color: Colors.white),
               const SizedBox(width: 8),
-              const Expanded(child: Text('Record rejected')),
+              const Expanded(child: Text('Record rejected and removed from queue')),
             ],
           ),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 2),
         ),
       );
-      setState(() {});
     }
   }
 
