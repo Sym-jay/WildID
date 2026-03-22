@@ -257,11 +257,8 @@ class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
   }
 
   void _rejectRecord(UploadRecord record, String reason) {
-    // In a real app, this would be saved to database
-    // final updatedRecord = record.copyWith(
-    //   status: 'rejected',
-    //   adminNotes: reason,
-    // );
+    // Remove record from pending queue
+    ArchiveService.deleteRecord(record.id);
     
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -269,7 +266,7 @@ class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
           children: [
             const Icon(Icons.block, color: Colors.white),
             const SizedBox(width: 8),
-            const Expanded(child: Text('Record rejected')),
+            const Expanded(child: Text('Record rejected and removed')),
           ],
         ),
         backgroundColor: Colors.red,

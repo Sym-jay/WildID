@@ -41,6 +41,7 @@ class BrowseSpeciesScreen extends StatefulWidget {
 class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  static List<SpeciesData>? _staticCache;
 
   @override
   void dispose() {
@@ -174,6 +175,11 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
   }
 
   Future<List<SpeciesData>> _loadSpecies() async {
+    // Return cached data if available
+    if (_staticCache != null) {
+      return _staticCache!;
+    }
+    
     final jsonString = await rootBundle.loadString('assets/species_data.json');
     final jsonList = jsonDecode(jsonString) as List;
     
@@ -184,6 +190,8 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
     // Sort by common name for easier browsing
     species.sort((a, b) => a.commonName.compareTo(b.commonName));
     
+    // Cache the result
+    _staticCache = species;
     return species;
   }
 
