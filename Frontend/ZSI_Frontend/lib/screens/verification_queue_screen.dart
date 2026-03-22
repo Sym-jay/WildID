@@ -256,23 +256,25 @@ class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
     );
   }
 
-  void _rejectRecord(UploadRecord record, String reason) {
+  Future<void> _rejectRecord(UploadRecord record, String reason) async {
     // Remove record from pending queue
-    ArchiveService.deleteSighting(record.id);
+    await ArchiveService.deleteSighting(record.id);
     
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.block, color: Colors.white),
-            const SizedBox(width: 8),
-            const Expanded(child: Text('Record rejected and removed')),
-          ],
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.block, color: Colors.white),
+              const SizedBox(width: 8),
+              const Expanded(child: Text('Record rejected and removed')),
+            ],
+          ),
+          backgroundColor: Colors.red,
         ),
-        backgroundColor: Colors.red,
-      ),
-    );
-    setState(() {});
+      );
+      setState(() {});
+    }
   }
 
   @override
