@@ -258,7 +258,7 @@ class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
 
   void _rejectRecord(UploadRecord record, String reason) {
     // Remove record from pending queue
-    ArchiveService.deleteRecord(record.id);
+    ArchiveService.deleteSighting(record.id);
     
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
