@@ -1,21 +1,9 @@
 
 import 'dart:io';
-import 'dart:math';
-import 'dart:convert';
 import 'package:flutter/material.dart' hide Badge;
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../core/theme/app_theme.dart';
 import '../shared/models/index.dart';
-import '../core/services/database_service.dart';
 // New feature imports
-import '../shared/widgets/user_profile_card.dart' as profile_widgets;
 import '../shared/widgets/filter_panel.dart';
 import '../core/services/index.dart';
 import '../widgets/index.dart';
@@ -486,27 +474,29 @@ class _UploadHistoryScreenState extends State<UploadHistoryScreen> {
   void _showDeleteConfirmation(UploadRecord record) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Delete Record'),
         content: const Text('Are you sure you want to delete this upload record?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () async {
               await DatabaseService.deleteSighting(record.id);
               if (mounted) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Record deleted successfully'),
-                    duration: Duration(seconds: 2),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-                setState(() {});
+                if (context.mounted) {
+                  Navigator.pop(dialogContext);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Record deleted successfully'),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                  setState(() {});
+                }
               }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),

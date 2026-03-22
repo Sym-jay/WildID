@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/services/feedback_service.dart';
 import '../utils/app_utils.dart';
-import 'package:uuid/uuid.dart';
 import 'dart:io';
 
 /// Collapsible feedback panel for incorrect AI predictions
@@ -71,7 +70,7 @@ class _AIFeedbackPanelState extends State<AIFeedbackPanel>
 
     try {
       final feedback = AIFeedback(
-        id: const Uuid().v4(),
+        id: '${DateTime.now().millisecondsSinceEpoch}',
         predictedSpecies: widget.predictedSpecies,
         actualSpecies: _actualSpeciesController.text.trim(),
         aiConfidence: widget.confidence,
@@ -214,7 +213,7 @@ class _AIFeedbackPanelState extends State<AIFeedbackPanel>
 
                   // Difficulty rating
                   DropdownButtonFormField<String>(
-                    value: _selectedDifficulty,
+                    initialValue: _selectedDifficulty,
                     decoration: InputDecoration(
                       labelText: 'How difficult was this? (optional)',
                       border: OutlineInputBorder(

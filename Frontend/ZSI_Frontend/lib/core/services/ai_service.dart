@@ -6,7 +6,6 @@ import '../../shared/models/index.dart';
 import '../config/image_compression.dart';
 import '../config/error_handler.dart';
 import 'offline_ai_service.dart';
-import 'ensemble_ai_service.dart';
 
 class AIService {
   AIService._();

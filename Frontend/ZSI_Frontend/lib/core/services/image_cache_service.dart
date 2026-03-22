@@ -119,7 +119,7 @@ class SpeciesImageCacheManager {
         ),
       ),
       child: Icon(
-        Icons.aquarium,
+        Icons.pets,
         size: width * 0.4,
         color: Colors.white,
       ),

@@ -45,7 +45,7 @@ class SpeciesLookupService {
     try {
       return species.firstWhere(
         (s) => s.name.toLowerCase() == name.toLowerCase(),
-        orElse: () => null as Animal,
+        orElse: () => throw StateError('Not found'),
       );
     } catch (e) {
       return null;
@@ -58,7 +58,7 @@ class SpeciesLookupService {
     try {
       return species.firstWhere(
         (s) => s.scientificName.toLowerCase() == name.toLowerCase(),
-        orElse: () => null as Animal,
+        orElse: () => throw StateError('Not found'),
       );
     } catch (e) {
       return null;
@@ -73,7 +73,7 @@ class SpeciesLookupService {
         (s) =>
             s.name.toLowerCase().contains(query.toLowerCase()) ||
             s.scientificName.toLowerCase().contains(query.toLowerCase()),
-        orElse: () => null as Animal,
+        orElse: () => throw StateError('Not found'),
       );
     } catch (e) {
       return null;

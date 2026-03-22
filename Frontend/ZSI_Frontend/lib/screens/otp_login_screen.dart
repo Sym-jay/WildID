@@ -1,26 +1,11 @@
 
-import 'dart:io';
-import 'dart:math';
-import 'dart:convert';
 import 'package:flutter/material.dart' hide Badge;
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../core/theme/app_theme.dart';
-import '../shared/models/index.dart';
-import '../core/services/database_service.dart';
 // New feature imports
-import '../shared/widgets/user_profile_card.dart' as profile_widgets;
-import '../shared/widgets/filter_panel.dart';
 import '../utils/app_utils.dart';
 import 'home_screen.dart';
 import '../core/services/auth_service.dart';
-import '../core/services/animal_dataset.dart';
 
 
 // ============================================================================
