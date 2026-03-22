@@ -1,22 +1,26 @@
 # ZSI Wildlife Identifier 🐾
 
-A Flutter-based mobile application designed to identify endangered wildlife species with AI-powered image classification. The app uses an ensemble of PyTorch-trained deep learning models (EfficientNet-B0, ResNet-50, MobileNet-V3) trained on 66 CITES-protected wildlife species, enabling users to capture or upload photos and receive instant, highly accurate classifications to support conservation awareness and education.
+A Flutter-based mobile application designed to identify endangered marine species with AI-powered image classification. The app uses an ensemble of PyTorch-trained deep learning models (EfficientNet-B0, ResNet-50, MobileNet-V3) trained on 66 CITES-protected marine species, enabling users to capture or upload photos and receive instant, highly accurate classifications to support conservation awareness and education.
 
-**Status**: ✅ **Frontend Production-Ready** | ✅ **Backend Model v1 Deployed (98.47% accuracy)** | 🚀 **Ensemble v3 Training Complete**
+**Focus**: 🌊 **Marine Biodiversity** | 🐋 **CITES-Protected Species** | 🇮🇳 **Indo-Pacific Region**
+
+**Status**: ✅ **Frontend Production-Ready** | ✅ **Backend Model v1 Deployed (98.47% accuracy)** | ✅ **Complete Species Database (66 marine species)**
 
 ## ✨ Features
 
 ### Core Identification Features
 - **📸 AI-Powered Wildlife Identification**: Capture photos with camera or upload from gallery for instant species classification
 - **🎯 High Accuracy Models**: 
-  - **Primary Model**: EfficientNet-B0 trained on 66 CITES-protected species with **98.47% accuracy**
+  - **Primary Model**: EfficientNet-B0 trained on 66 CITES-protected marine species with **98.47% accuracy**
   - **Ensemble Options**: ResNet-50 + MobileNet-V3 ensemble with weighted voting for enhanced robustness
   - **Auto-Fallback**: Seamlessly switches between single model and ensemble based on availability
 - **📊 Confidence Scoring**: Real-time confidence levels for each prediction with visual indicators
-- **🌍 Comprehensive Species Coverage**: 
-  - Set-1 Base: 27 core species
-  - Set-2 Expansion: 42 additional endangered species
-  - Total: 66 CITES-protected animals
+- **🌍 Comprehensive Marine Species Coverage**: 
+  - **66 endangered marine species** including:
+  - Sharks: Hammerheads, Thresher sharks, Requiem sharks
+  - Rays & Guitarfish: Manta rays, Devil rays, Sawfish, Guitarfish
+  - Other fish: Seahorses, Groupers, Snakeheads
+  - Geographic focus: Indo-Pacific region
 - **ℹ️ Detailed Species Info**: Conservation status, IUCN Red List links, scientific names, geographic distribution
 
 ### User Features
