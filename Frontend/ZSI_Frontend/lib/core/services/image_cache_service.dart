@@ -76,29 +76,53 @@ class SpeciesImageCacheManager {
     }
   }
 
-  /// Loading placeholder
+  /// Loading placeholder with smooth animation
   static Widget _buildLoadingImage(double width, double height) {
     return Container(
       width: width,
       height: height,
-      color: Colors.grey[200],
-      child: const Center(
-        child: SizedBox(
-          width: 24,
-          height: 24,
-          child: CircularProgressIndicator(strokeWidth: 1),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.grey[200]!,
+            Colors.grey[100]!,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.image,
+          size: width * 0.35,
+          color: Colors.grey[400],
         ),
       ),
     );
   }
 
-  /// Error fallback with icon
+  /// Error fallback with gradient
   static Widget _buildErrorImage(double width, double height) {
+    // Create a colorful gradient fallback instead of gray
     return Container(
       width: width,
       height: height,
-      color: Colors.grey[300],
-      child: Icon(Icons.broken_image, size: width * 0.3, color: Colors.grey),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.blue[300]!,
+            Colors.cyan[300]!,
+          ],
+        ),
+      ),
+      child: Icon(
+        Icons.aquarium,
+        size: width * 0.4,
+        color: Colors.white,
+      ),
     );
   }
 }

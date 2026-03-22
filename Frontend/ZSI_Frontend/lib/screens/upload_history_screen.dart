@@ -258,7 +258,26 @@ class _UploadHistoryScreenState extends State<UploadHistoryScreen> {
                       ],
                     ),
                   ),
-                  _buildStatusBadge(record.status),
+                  PopupMenuButton<String>(
+                    onSelected: (value) {
+                      if (value == 'delete') {
+                        _showDeleteConfirmation(record);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red, size: 20),
+                            SizedBox(width: 8),
+                            Text('Delete'),
+                          ],
+                        ),
+                      ),
+                    ],
+                    child: _buildStatusBadge(record.status),
+                  ),
                 ],
               ),
               if (record.location != null) ...[
@@ -462,6 +481,39 @@ class _UploadHistoryScreenState extends State<UploadHistoryScreen> {
         AppUtils.showError(context, 'Export failed: $e');
       }
     }
+  }
+
+  void _showDeleteConfirmation(UploadRecord record) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Record'),
+        content: const Text('Are you sure you want to delete this upload record?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await DatabaseService.deleteSighting(record.id);
+              if (mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Record deleted successfully'),
+                    duration: Duration(seconds: 2),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                setState(() {});
+              }
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 }
 

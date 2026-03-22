@@ -211,28 +211,33 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => SpeciesDetailScreen(animal: animal),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => SpeciesDetailScreen(animal: animal),
+            ),
           ),
-        ),
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              // Species Thumbnail
-              SpeciesImageCacheManager.speciesImage(
-                imageUrl: speciesData.imageUrl,
-                width: 80,
-                height: 80,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // Species Thumbnail with fade-in animation
+                Hero(
+                  tag: 'species_${speciesData.commonName}',
+                  child: SpeciesImageCacheManager.speciesImage(
+                    imageUrl: speciesData.imageUrl,
+                    width: 80,
+                    height: 80,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       speciesData.commonName,
