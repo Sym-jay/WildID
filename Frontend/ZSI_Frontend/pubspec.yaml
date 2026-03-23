@@ -1,5 +1,5 @@
 name: fish_id_india
-description: "Wildlife identification app for ZSI."
+description: "Marine fish identification app powered by AI."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -75,6 +75,7 @@ flutter:
   assets:
     - assets/species_data.json
     - assets/ml/zsi_class_mapping.json
+    - assets/species_images/
 
 
 flutter_launcher_icons:

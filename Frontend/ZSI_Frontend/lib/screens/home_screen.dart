@@ -251,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ZSI Wildlife Identifier'),
+        title: const Text('FISH ID India'),
         actions: [
          /* IconButton(
             onPressed: () => Navigator.of(context).push(

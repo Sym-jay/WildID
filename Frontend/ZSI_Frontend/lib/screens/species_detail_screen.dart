@@ -35,6 +35,7 @@ class SpeciesDetailScreen extends StatelessWidget {
                 height: 300,
                 child: SpeciesImageCacheManager.speciesImage(
                   imageUrl: animal.imageUrl,
+                  localAssetPath: animal.imageUrl.startsWith('assets/') ? animal.imageUrl : null,
                   width: double.infinity,
                   height: 300,
                   fit: BoxFit.cover,
@@ -58,11 +59,20 @@ class SpeciesDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
+                    animal.name,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
                     animal.scientificName,
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 16,
                       fontStyle: FontStyle.italic,
-                      color: Colors.grey[700],
+                      color: Colors.grey[600],
                     ),
                   ),
                   const SizedBox(height: 16),

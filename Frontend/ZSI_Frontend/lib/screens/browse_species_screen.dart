@@ -42,6 +42,13 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
   static List<SpeciesData>? _staticCache;
+  late Future<List<SpeciesData>> _speciesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _speciesFuture = _loadSpecies();
+  }
 
   @override
   void dispose() {
@@ -100,7 +107,7 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
 
   Widget _buildSpeciesList() {
     return FutureBuilder<List<SpeciesData>>(
-      future: _loadSpecies(),
+      future: _speciesFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -147,9 +154,11 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
           return ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: filtered.length,
+            addAutomaticKeepAlives: false,
+            addRepaintBoundaries: true,
             itemBuilder: (context, index) {
               final speciesData = filtered[index];
-              return _buildSpeciesCard(context, speciesData);
+              return _buildSpeciesGridCard(context, speciesData);
             },
           );
         } else {
@@ -164,6 +173,8 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
               mainAxisSpacing: 16,
             ),
             itemCount: filtered.length,
+            addAutomaticKeepAlives: false,
+            addRepaintBoundaries: true,
             itemBuilder: (context, index) {
               final speciesData = filtered[index];
               return _buildSpeciesGridCard(context, speciesData);
@@ -252,70 +263,50 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
           ),
         ),
         borderRadius: BorderRadius.circular(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Image
-            Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                speciesData.commonName,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimaryColor,
                 ),
-                child: SpeciesImageCacheManager.speciesImage(
-                  imageUrl: speciesData.imageUrl,
-                  width: double.infinity,
-                  height: 150,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                speciesData.scientificName,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontStyle: FontStyle.italic,
+                  color: AppTheme.textSecondaryColor,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _getStatusColor(speciesData.conservationStatus).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  speciesData.conservationStatus,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: _getStatusColor(speciesData.conservationStatus),
+                  ),
                 ),
               ),
-            ),
-            // Text Content
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    speciesData.commonName,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textPrimaryColor,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    speciesData.scientificName,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontStyle: FontStyle.italic,
-                      color: AppTheme.textSecondaryColor,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(speciesData.conservationStatus).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      speciesData.conservationStatus,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: _getStatusColor(speciesData.conservationStatus),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

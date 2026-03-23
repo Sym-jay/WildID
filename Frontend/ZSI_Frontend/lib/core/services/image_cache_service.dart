@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import '../theme/app_theme.dart';
 
 /// Custom cache manager with intelligent caching and fallback
 class SpeciesImageCacheManager {
@@ -104,7 +105,7 @@ class SpeciesImageCacheManager {
 
   /// Error fallback with gradient
   static Widget _buildErrorImage(double width, double height) {
-    // Create a colorful gradient fallback instead of gray
+    // Create a green gradient fallback matching app theme
     return Container(
       width: width,
       height: height,
@@ -113,8 +114,8 @@ class SpeciesImageCacheManager {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.blue[300]!,
-            Colors.cyan[300]!,
+            AppTheme.primaryLight,
+            AppTheme.secondaryColor,
           ],
         ),
       ),

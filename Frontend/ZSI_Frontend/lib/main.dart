@@ -20,7 +20,7 @@ void main() async {
 
   runApp(
     const ProviderScope(
-      child: ZSIWildlifeApp(),
+      child: FishIDIndiaApp(),
     ),
   );
 }

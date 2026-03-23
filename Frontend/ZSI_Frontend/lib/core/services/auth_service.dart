@@ -59,11 +59,16 @@ class AuthService {
       if (email.isEmpty || password.isEmpty || phone.isEmpty) {
         throw ValidationException('All fields are required');
       }
+      if (!email.contains('@')) {
+        throw ValidationException('Invalid email format');
+      }
       if (_users.containsKey(email)) {
         throw ValidationException('Email already registered');
       }
+      // Hash password before storing (basic hash for demo; in production use bcrypt)
+      final hashedPassword = _hashPassword(password);
       await Future.delayed(const Duration(milliseconds: 500));
-      _users[email] = password;
+      _users[email] = hashedPassword;
       _userPhones[email] = phone;
       await _saveCredentials();
       AppLogger.logInfo('User registered: $email');
@@ -82,7 +87,9 @@ class AuthService {
       }
 
       await Future.delayed(const Duration(milliseconds: 500));
-      if (_users.containsKey(email) && _users[email] == password) {
+      // Hash incoming password and compare
+      final hashedPassword = _hashPassword(password);
+      if (_users.containsKey(email) && _users[email] == hashedPassword) {
         _currentUser = email;
         _currentUserPhone = _userPhones[email];
         _failedLoginAttempts[email] = 0;
@@ -162,6 +169,12 @@ class AuthService {
       return false;
     }
     return true;
+  }
+
+  // Simple password hashing (for production, use bcrypt package)
+  static String _hashPassword(String password) {
+    // Using a simple hash for demo; production should use crypto package
+    return password.hashCode.toString() + password.length.toString();
   }
 
   static void logout() {
