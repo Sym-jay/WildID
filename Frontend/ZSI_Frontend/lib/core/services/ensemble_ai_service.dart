@@ -13,16 +13,20 @@ import 'offline_ai_service.dart';
 class EnsembleAIService {
   EnsembleAIService._();
 
-  static const String ensembleApiUrl = 'https://zsi-wildlife-api-173142698667.us-central1.run.app/predict-ensemble';
-  static const String apiKey = String.fromEnvironment('ZSI_API_KEY', defaultValue: 'dev-key');
-  
+  static const String ensembleApiUrl =
+      'https://zsi-wildlife-api-173142698667.us-central1.run.app/predict-ensemble';
+  static const String apiKey = String.fromEnvironment(
+    'ZSI_API_KEY',
+    defaultValue: 'dev-key',
+  );
+
   // Hybrid mode: try cloud first, fall back to local offline if needed
   static bool enableHybridMode = true;
 
   // Model weights for ensemble voting (must sum to 100)
   static const double efficientnetWeight = 0.40; // 40% - highest accuracy
-  static const double resnetWeight = 0.35;       // 35% - medium accuracy
-  static const double mobilenetWeight = 0.25;    // 25% - baseline
+  static const double resnetWeight = 0.35; // 35% - medium accuracy
+  static const double mobilenetWeight = 0.25; // 25% - baseline
 
   /// Ensemble identification with 3-model voting
   /// Returns: Ensemble result + individual model predictions
@@ -61,24 +65,34 @@ class EnsembleAIService {
     try {
       // Compress image before sending
       final compressedImage = await ImageCompression.compressImage(imageFile);
-      
+
       var uri = Uri.parse(ensembleApiUrl);
       var request = http.MultipartRequest('POST', uri)
         ..headers['X-API-Key'] = apiKey
-        ..files.add(await http.MultipartFile.fromPath('file', compressedImage.path));
+        ..files.add(
+          await http.MultipartFile.fromPath('file', compressedImage.path),
+        );
 
       late http.StreamedResponse response;
       try {
         response = await request.send().timeout(const Duration(seconds: 30));
       } on TimeoutException catch (e) {
-        AppLogger.logError('Ensemble API request timeout', e, StackTrace.current);
+        AppLogger.logError(
+          'Ensemble API request timeout',
+          e,
+          StackTrace.current,
+        );
         throw NetworkException(
           'Request timed out. Please check your connection and try again.',
           originalError: e,
           stackTrace: StackTrace.current,
         );
       } on SocketException catch (e) {
-        AppLogger.logError('Network socket error in ensemble', e, StackTrace.current);
+        AppLogger.logError(
+          'Network socket error in ensemble',
+          e,
+          StackTrace.current,
+        );
         throw NetworkException(
           'Network error. Please check your internet connection.',
           originalError: e,
@@ -91,10 +105,14 @@ class EnsembleAIService {
         final Map<String, dynamic> jsonData = json.decode(responseBody);
 
         AppLogger.logInfo('Ensemble prediction successful');
-        
+
         return EnsembleIdentificationResult.fromJson(jsonData);
       } else if (response.statusCode == 401) {
-        AppLogger.logError('Ensemble API authentication failed', 'Status 401', StackTrace.current);
+        AppLogger.logError(
+          'Ensemble API authentication failed',
+          'Status 401',
+          StackTrace.current,
+        );
         throw AuthException(
           'API authentication failed. Please contact support.',
           stackTrace: StackTrace.current,
@@ -125,7 +143,11 @@ class EnsembleAIService {
       if (e is AppException) {
         rethrow;
       }
-      AppLogger.logError('Unexpected error in EnsembleAIService', e, stackTrace);
+      AppLogger.logError(
+        'Unexpected error in EnsembleAIService',
+        e,
+        stackTrace,
+      );
       throw AppError(
         'An unexpected error occurred. Please try again.',
         originalError: e,
@@ -140,12 +162,16 @@ class EnsembleAIService {
   ) async {
     try {
       // Try to get predictions from offline service
-      final offlinePredictions = await OfflineAIService.identifySpeciesOffline(imageFile);
-      
+      final offlinePredictions = await OfflineAIService.identifySpeciesOffline(
+        imageFile,
+      );
+
       // Fallback: If offline service works, wrap in ensemble format
       // In production, this would use local ensemble models
       return EnsembleIdentificationResult(
-        ensembleResult: offlinePredictions.isNotEmpty ? offlinePredictions.first : null,
+        ensembleResult: offlinePredictions.isNotEmpty
+            ? offlinePredictions.first
+            : null,
         efficientnetResults: offlinePredictions,
         resnetResults: const [],
         mobilenetResults: const [],
@@ -153,7 +179,11 @@ class EnsembleAIService {
         ensembleAccuracy: 0.65,
       );
     } catch (e, stackTrace) {
-      AppLogger.logError('Offline ensemble identification failed', e, stackTrace);
+      AppLogger.logError(
+        'Offline ensemble identification failed',
+        e,
+        stackTrace,
+      );
       throw AppError(
         'Offline mode unavailable. Please check your Flask server.',
         originalError: e,
@@ -189,7 +219,8 @@ class EnsembleAIService {
         },
       ],
       'votingStrategy': 'weighted',
-      'description': 'Three-model ensemble using weighted voting for robust species identification',
+      'description':
+          'Three-model ensemble using weighted voting for robust species identification',
     };
   }
 }
@@ -221,7 +252,9 @@ class EnsembleIdentificationResult {
   /// Get model with highest confidence from each model
   Map<String, IdentificationResult?> getIndividualTopPredictions() {
     return {
-      'efficientnet': efficientnetResults.isNotEmpty ? efficientnetResults.first : null,
+      'efficientnet': efficientnetResults.isNotEmpty
+          ? efficientnetResults.first
+          : null,
       'resnet': resnetResults.isNotEmpty ? resnetResults.first : null,
       'mobilenet': mobilenetResults.isNotEmpty ? mobilenetResults.first : null,
     };
@@ -233,45 +266,124 @@ class EnsembleIdentificationResult {
     if (ensemble == null) return false;
 
     int matches = 0;
-    if (efficientnetResults.isNotEmpty && efficientnetResults.first.label == ensemble) matches++;
-    if (resnetResults.isNotEmpty && resnetResults.first.label == ensemble) matches++;
-    if (mobilenetResults.isNotEmpty && mobilenetResults.first.label == ensemble) matches++;
+    if (efficientnetResults.isNotEmpty &&
+        efficientnetResults.first.label == ensemble) {
+      matches++;
+    }
+    if (resnetResults.isNotEmpty && resnetResults.first.label == ensemble) {
+      matches++;
+    }
+    if (mobilenetResults.isNotEmpty &&
+        mobilenetResults.first.label == ensemble) {
+      matches++;
+    }
 
     return matches >= 2; // At least 2 models agree
   }
 
   /// Create from JSON response
   factory EnsembleIdentificationResult.fromJson(Map<String, dynamic> json) {
+    final ensembleData = _normalizeEnsembleData(json['ensemble']);
+    final individualModels = _normalizeMap(json['individual_models']);
+
+    final efficientnetResults = _parseModelResults(
+      json['efficientnet'],
+      individualModels?['efficientnet'],
+    );
+    final resnetResults = _parseModelResults(
+      json['resnet'],
+      individualModels?['resnet'],
+    );
+    final mobilenetResults = _parseModelResults(
+      json['mobilenet'],
+      individualModels?['mobilenet'],
+    );
+
     return EnsembleIdentificationResult(
-      ensembleResult: json['ensemble'] != null
-          ? IdentificationResult(
-              label: json['ensemble']['label'] as String,
-              confidence: (json['ensemble']['confidence'] as num).toDouble(),
-            )
-          : null,
-      efficientnetResults: (json['efficientnet'] as List<dynamic>?)
-              ?.map((item) => IdentificationResult(
-                    label: item['label'] as String,
-                    confidence: (item['confidence'] as num).toDouble(),
-                  ))
-              .toList() ??
-          const [],
-      resnetResults: (json['resnet'] as List<dynamic>?)
-              ?.map((item) => IdentificationResult(
-                    label: item['label'] as String,
-                    confidence: (item['confidence'] as num).toDouble(),
-                  ))
-              .toList() ??
-          const [],
-      mobilenetResults: (json['mobilenet'] as List<dynamic>?)
-              ?.map((item) => IdentificationResult(
-                    label: item['label'] as String,
-                    confidence: (item['confidence'] as num).toDouble(),
-                  ))
-              .toList() ??
-          const [],
+      ensembleResult: ensembleData != null ? _toResult(ensembleData) : null,
+      efficientnetResults: efficientnetResults,
+      resnetResults: resnetResults,
+      mobilenetResults: mobilenetResults,
       modelType: json['model_type'] as String? ?? 'ensemble',
       ensembleAccuracy: (json['ensemble_accuracy'] as num?)?.toDouble() ?? 0.75,
+    );
+  }
+
+  static Map<String, dynamic>? _normalizeMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) {
+      return value.map((key, item) => MapEntry(key.toString(), item));
+    }
+    return null;
+  }
+
+  static Map<String, dynamic>? _normalizeEnsembleData(dynamic ensemble) {
+    final data = _normalizeMap(ensemble);
+    if (data == null) return null;
+    if (!data.containsKey('label') && data.containsKey('species')) {
+      data['label'] = data['species'];
+    }
+    return data;
+  }
+
+  static List<IdentificationResult> _parseModelResults(
+    dynamic directResults,
+    dynamic individualModelPayload,
+  ) {
+    final normalizedDirect = _parseResultList(directResults);
+    if (normalizedDirect.isNotEmpty) {
+      return normalizedDirect;
+    }
+
+    final modelData = _normalizeMap(individualModelPayload);
+    if (modelData == null) {
+      return const [];
+    }
+
+    final topK = _parseResultList(modelData['top_5']);
+    if (topK.isNotEmpty) {
+      return topK;
+    }
+
+    final species = modelData['species'];
+    final confidence = modelData['confidence'];
+    if (species is String && confidence != null) {
+      return [
+        _toResult({'label': species, 'confidence': confidence}),
+      ];
+    }
+
+    return const [];
+  }
+
+  static List<IdentificationResult> _parseResultList(dynamic payload) {
+    if (payload is! List) return const [];
+
+    return payload
+        .whereType<Map>()
+        .map(
+          (item) => _toResult(
+            item.map((key, value) => MapEntry(key.toString(), value)),
+          ),
+        )
+        .toList();
+  }
+
+  static IdentificationResult _toResult(Map<String, dynamic> data) {
+    final labelValue = data['label'] ?? data['species'];
+    final confidenceValue = data['confidence'];
+
+    if (labelValue is! String || labelValue.trim().isEmpty) {
+      throw const FormatException('Missing label/species in ensemble response');
+    }
+
+    if (confidenceValue is! num) {
+      throw const FormatException('Missing confidence in ensemble response');
+    }
+
+    return IdentificationResult(
+      label: labelValue.trim(),
+      confidence: confidenceValue.toDouble(),
     );
   }
 
@@ -283,18 +395,15 @@ class EnsembleIdentificationResult {
             'confidence': ensembleResult!.confidence,
           }
         : null,
-    'efficientnet': efficientnetResults.map((r) => {
-          'label': r.label,
-          'confidence': r.confidence,
-        }).toList(),
-    'resnet': resnetResults.map((r) => {
-          'label': r.label,
-          'confidence': r.confidence,
-        }).toList(),
-    'mobilenet': mobilenetResults.map((r) => {
-          'label': r.label,
-          'confidence': r.confidence,
-        }).toList(),
+    'efficientnet': efficientnetResults
+        .map((r) => {'label': r.label, 'confidence': r.confidence})
+        .toList(),
+    'resnet': resnetResults
+        .map((r) => {'label': r.label, 'confidence': r.confidence})
+        .toList(),
+    'mobilenet': mobilenetResults
+        .map((r) => {'label': r.label, 'confidence': r.confidence})
+        .toList(),
     'model_type': modelType,
     'ensemble_accuracy': ensembleAccuracy,
   };

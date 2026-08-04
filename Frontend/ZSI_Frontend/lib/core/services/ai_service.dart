@@ -6,14 +6,20 @@ import '../../shared/models/index.dart';
 import '../config/image_compression.dart';
 import '../config/error_handler.dart';
 import 'offline_ai_service.dart';
+import 'prediction_parser.dart';
 
 class AIService {
   AIService._();
 
-  static const String apiUrl = 'https://zsi-wildlife-api-173142698667.us-central1.run.app/predict';
-  static const String ensembleApiUrl = 'https://zsi-wildlife-api-173142698667.us-central1.run.app/predict-ensemble';
-  static const String apiKey = String.fromEnvironment('ZSI_API_KEY', defaultValue: 'dev-key');
-  
+  static const String apiUrl =
+      'https://zsi-wildlife-api-173142698667.us-central1.run.app/predict';
+  static const String ensembleApiUrl =
+      'https://zsi-wildlife-api-173142698667.us-central1.run.app/predict-ensemble';
+  static const String apiKey = String.fromEnvironment(
+    'ZSI_API_KEY',
+    defaultValue: 'dev-key',
+  );
+
   // Hybrid mode: try cloud first, fall back to local offline if needed
   static bool enableHybridMode = true;
 
@@ -54,11 +60,13 @@ class AIService {
     try {
       // Compress image before sending
       final compressedImage = await ImageCompression.compressImage(imageFile);
-      
+
       var uri = Uri.parse(apiUrl);
       var request = http.MultipartRequest('POST', uri)
         ..headers['X-API-Key'] = apiKey
-        ..files.add(await http.MultipartFile.fromPath('file', compressedImage.path));
+        ..files.add(
+          await http.MultipartFile.fromPath('file', compressedImage.path),
+        );
 
       late http.StreamedResponse response;
       try {
@@ -81,16 +89,20 @@ class AIService {
 
       if (response.statusCode == 200) {
         final responseBody = await response.stream.bytesToString();
-        final List<dynamic> jsonList = json.decode(responseBody);
+        final dynamic decoded = json.decode(responseBody);
+        final results = PredictionParser.parsePredictionResults(decoded);
 
-        AppLogger.logInfo('Species identified successfully: ${jsonList.length} results');
-        
-        return jsonList.map((jsonItem) => IdentificationResult(
-          label: jsonItem['label'],
-          confidence: (jsonItem['confidence'] as num).toDouble(),
-        )).toList();
+        AppLogger.logInfo(
+          'Species identified successfully: ${results.length} results',
+        );
+
+        return results;
       } else if (response.statusCode == 401) {
-        AppLogger.logError('API authentication failed', 'Status 401', StackTrace.current);
+        AppLogger.logError(
+          'API authentication failed',
+          'Status 401',
+          StackTrace.current,
+        );
         throw AuthException(
           'API authentication failed. Please contact support.',
           stackTrace: StackTrace.current,

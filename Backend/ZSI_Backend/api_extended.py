@@ -63,6 +63,73 @@ if SMS_AVAILABLE:
         SMS_AVAILABLE = False
 
 
+def _normalize_prediction_entry(entry):
+    """Normalize prediction entry into {label, confidence} format."""
+    if not isinstance(entry, dict):
+        return None
+
+    label = entry.get('label') or entry.get('species') or entry.get('common_name')
+    confidence = entry.get('confidence')
+
+    if not isinstance(label, str) or confidence is None:
+        return None
+
+    try:
+        confidence_value = float(confidence)
+    except (TypeError, ValueError):
+        return None
+
+    return {
+        'label': label,
+        'confidence': confidence_value
+    }
+
+
+def _normalize_ensemble_response(result):
+    """
+    Normalize ensemble predictor output into a stable contract used by Flutter.
+    Preserves legacy keys while adding normalized keys.
+    """
+    ensemble_raw = result.get('ensemble', {}) if isinstance(result, dict) else {}
+    ensemble_entry = _normalize_prediction_entry(ensemble_raw) if isinstance(ensemble_raw, dict) else None
+
+    individual = result.get('individual_models', {}) if isinstance(result, dict) else {}
+
+    normalized = {
+        'success': True,
+        'contract_version': '2.0',
+        'model_type': 'ensemble',
+        'ensemble_accuracy': result.get('ensemble_accuracy', 0.0),
+        'ensemble': ensemble_entry,
+        'efficientnet': [],
+        'resnet': [],
+        'mobilenet': [],
+        # Keep legacy/debug fields for backwards compatibility
+        'individual_models': individual,
+        'model_count': result.get('model_count'),
+        'weights': result.get('weights', {}),
+    }
+
+    for model_name in ['efficientnet', 'resnet', 'mobilenet']:
+        model_data = individual.get(model_name)
+        if not isinstance(model_data, dict):
+            continue
+
+        top_k = model_data.get('top_5', [])
+        if isinstance(top_k, list):
+            normalized[model_name] = [
+                entry for entry in (_normalize_prediction_entry(item) for item in top_k) if entry is not None
+            ]
+
+        # Fallback to single top prediction when top_5 is absent/invalid
+        if not normalized[model_name]:
+            single_entry = _normalize_prediction_entry(model_data)
+            if single_entry:
+                normalized[model_name] = [single_entry]
+
+    return normalized
+
+
 # --- Original Health Check ---
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -185,7 +252,7 @@ def predict_ensemble():
         os.remove(tmp_path)
 
         if result.get('success'):
-            return jsonify(result), 200
+            return jsonify(_normalize_ensemble_response(result)), 200
         else:
             return jsonify({'error': result.get('error', 'Prediction failed')}), 500
 

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../../shared/models/index.dart';
 import '../config/image_compression.dart';
 import '../config/error_handler.dart';
+import 'prediction_parser.dart';
 
 class OfflineAIService {
   OfflineAIService._();
@@ -16,10 +17,12 @@ class OfflineAIService {
   /// Check if local API is available (device has running Flask server)
   static Future<bool> isLocalAPIAvailable() async {
     try {
-      final response = await http.get(
-        Uri.parse('http://localhost:5000/health'),
-        headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 2));
+      final response = await http
+          .get(
+            Uri.parse('http://localhost:5000/health'),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(const Duration(seconds: 2));
 
       return response.statusCode == 200;
     } catch (e) {
@@ -48,7 +51,7 @@ class OfflineAIService {
       var uri = Uri.parse(localApiUrl);
       var request = http.MultipartRequest('POST', uri)
         ..files.add(
-          await http.MultipartFile.fromPath('image', compressedImage.path),
+          await http.MultipartFile.fromPath('file', compressedImage.path),
         );
 
       late http.StreamedResponse response;
@@ -72,23 +75,14 @@ class OfflineAIService {
 
       if (response.statusCode == 200) {
         final responseBody = await response.stream.bytesToString();
-        final jsonResponse = json.decode(responseBody);
-
-        // Handle both array and object responses
-        List<dynamic> jsonList = jsonResponse is List ? jsonResponse : [];
+        final dynamic jsonResponse = json.decode(responseBody);
+        final results = PredictionParser.parsePredictionResults(jsonResponse);
 
         AppLogger.logInfo(
-          'Species identified offline: ${jsonList.length} results',
+          'Species identified offline: ${results.length} results',
         );
 
-        return jsonList
-            .map(
-              (jsonItem) => IdentificationResult(
-                label: jsonItem['label'] ?? 'Unknown',
-                confidence: (jsonItem['confidence'] as num).toDouble(),
-              ),
-            )
-            .toList();
+        return results;
       } else if (response.statusCode == 400) {
         final errorBody = await response.stream.bytesToString();
         AppLogger.logError(
@@ -102,11 +96,7 @@ class OfflineAIService {
         );
       } else {
         final errorBody = await response.stream.bytesToString();
-        AppLogger.logError(
-          'Local API error',
-          errorBody,
-          StackTrace.current,
-        );
+        AppLogger.logError('Local API error', errorBody, StackTrace.current);
         throw OfflineException(
           'Local inference failed (Error ${response.statusCode}). Try again.',
           originalError: errorBody,
@@ -129,9 +119,9 @@ class OfflineAIService {
   /// Get list of available species from local API
   static Future<List<String>> getAvailableSpecies() async {
     try {
-      final response = await http.get(
-        Uri.parse('http://localhost:5000/classes'),
-      ).timeout(const Duration(seconds: 5));
+      final response = await http
+          .get(Uri.parse('http://localhost:5000/classes'))
+          .timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         final jsonList = json.decode(response.body) as List<dynamic>;
@@ -147,13 +137,5 @@ class OfflineAIService {
 
 /// Exception for offline AI service errors
 class OfflineException extends AppException {
-  OfflineException(
-    String message, {
-    Object? originalError,
-    StackTrace? stackTrace,
-  }) : super(
-    message,
-    originalError: originalError,
-    stackTrace: stackTrace,
-  );
+  OfflineException(super.message, {super.originalError, super.stackTrace});
 }
