@@ -48,6 +48,7 @@ dependencies:
   shared_preferences: ^2.0.15
   google_fonts: ^6.1.0         # NEW: Modern typography
   path: ^1.9.1
+  crypto: ^3.0.3               # PBKDF2 password hashing
   flutter_riverpod: ^3.3.1
 
 dev_dependencies:

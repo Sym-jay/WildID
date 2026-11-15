@@ -40,14 +40,21 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // In a real app, call backend API which uses Twilio/SMS service
-      final otpForDemo = await AuthService.sendOTP(_phoneController.text.trim());
+      // The backend generates, texts and later checks the code.
+      final result = await AuthService.sendOTP(_phoneController.text.trim());
       if (mounted) {
-        if (otpForDemo != null) {
+        if (result.sent) {
           setState(() => _otpSent = true);
-          AppUtils.showSuccess(context, 'OTP sent (Demo: $otpForDemo)'); // Show OTP only for demo
+          // devCode is only returned by a backend running with
+          // ZSI_OTP_DEV_ECHO=1 (local testing without an SMS gateway).
+          AppUtils.showSuccess(
+            context,
+            result.devCode == null
+                ? 'OTP sent to your phone'
+                : 'OTP sent (dev mode code: ${result.devCode})',
+          );
         } else {
-          AppUtils.showError(context, 'Phone number not registered');
+          AppUtils.showError(context, 'Could not send OTP. Please try again.');
         }
       }
     } catch (e) {
@@ -67,7 +74,6 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // In a real app, send phone + OTP to backend for verification
       final success = await AuthService.verifyOTP(
         _phoneController.text.trim(),
         _otpController.text.trim(),
