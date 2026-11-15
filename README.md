@@ -94,8 +94,21 @@ source venv/bin/activate      # On Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
+# Required secrets (see .env.example)
+export ZSI_API_KEY=$(python3 -c "import secrets; print(secrets.token_urlsafe(32))")
+export ZSI_OTP_SECRET=$(python3 -c "import secrets; print(secrets.token_urlsafe(32))")
+# export ZSI_OTP_DEV_ECHO=1   # local testing only: return OTP codes in responses
+
 # Run API server
-python3 api.py                # Starts Flask server on http://localhost:5000
+python3 api_extended.py       # Starts Flask server on http://localhost:5000
+
+# Run backend tests
+python3 -m unittest discover -s tests
+```
+
+The app no longer ships a default API key. Pass the same key at build/run time:
+```bash
+flutter run --dart-define=ZSI_API_KEY=<key> [--dart-define=ZSI_API_BASE_URL=http://10.0.2.2:5000]
 ```
 
 ## 🏗️ Building for Production

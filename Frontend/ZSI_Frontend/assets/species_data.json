@@ -2,595 +2,595 @@
   {
     "name": "Variegated Eagle Ray",
     "scientificName": "Acroteriobatus variegatus",
-    "description": "Variegated Eagle Ray is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Variegated Eagle Ray (Acroteriobatus variegatus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Acroteriobatus%20variegatus",
     "imageUrl": "assets/species_images/variegated_eagle_ray.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Bull Ray",
     "scientificName": "Aetomyleus milvus",
-    "description": "Bull Ray is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Bull Ray (Aetomyleus milvus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Aetomyleus%20milvus",
     "imageUrl": "assets/species_images/bull_ray.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Ornate Eagle Ray",
     "scientificName": "Aetomyleus verspartlio",
-    "description": "Ornate Eagle Ray is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Ornate Eagle Ray (Aetomyleus verspartlio) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Aetomyleus%20verspartlio",
     "imageUrl": "assets/species_images/ornate_eagle_ray.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Pelagic Thresher Shark",
     "scientificName": "Alopias pelagicus",
-    "description": "Pelagic Thresher Shark is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Pelagic Thresher Shark (Alopias pelagicus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Alopias%20pelagicus",
     "imageUrl": "assets/species_images/pelagic_thresher_shark.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Bigeye Thresher Shark",
     "scientificName": "Alopias superciliosus",
-    "description": "Bigeye Thresher Shark is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Bigeye Thresher Shark (Alopias superciliosus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Alopias%20superciliosus",
     "imageUrl": "assets/species_images/bigeye_thresher_shark.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Common Thresher Shark",
     "scientificName": "Alopias vulpinus",
-    "description": "Common Thresher Shark is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Common Thresher Shark (Alopias vulpinus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Alopias%20vulpinus",
     "imageUrl": "assets/species_images/common_thresher_shark.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Knifetooth Sawfish",
     "scientificName": "Anoxypristis cuspidata",
-    "description": "Knifetooth Sawfish is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Knifetooth Sawfish (Anoxypristis cuspidata) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Anoxypristis%20cuspidata",
     "imageUrl": "assets/species_images/knifetooth_sawfish.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Silvertip Shark",
     "scientificName": "Carcharhinus albimarginatus",
-    "description": "Carcharhinus albimarginatus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Silvertip Shark (Carcharhinus albimarginatus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20albimarginatus",
     "imageUrl": "assets/species_images/carcharhinus_albimarginatus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Bignose Shark",
     "scientificName": "Carcharhinus altimus",
-    "description": "Carcharhinus altimus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Bignose Shark (Carcharhinus altimus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20altimus",
     "imageUrl": "assets/species_images/carcharhinus_altimus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Flat-nose Shark",
     "scientificName": "Carcharhinus amblyrhynchoides",
-    "description": "Carcharhinus amblyrhynchoides is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Flat-nose Shark (Carcharhinus amblyrhynchoides) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20amblyrhynchoides",
     "imageUrl": "assets/species_images/carcharhinus_amblyrhynchoides.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Grey Reef Shark",
     "scientificName": "Carcharhinus amblyrhynchos",
-    "description": "Carcharhinus amblyrhynchos is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Grey Reef Shark (Carcharhinus amblyrhynchos) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20amblyrhynchos",
     "imageUrl": "assets/species_images/carcharhinus_amblyrhynchos.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Pigeye Shark",
     "scientificName": "Carcharhinus amboinensis",
-    "description": "Carcharhinus amboinensis is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Pigeye Shark (Carcharhinus amboinensis) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20amboinensis",
     "imageUrl": "assets/species_images/carcharhinus_amboinensis.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Spinner Shark",
     "scientificName": "Carcharhinus brevipinna",
-    "description": "Carcharhinus brevipinna is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Spinner Shark (Carcharhinus brevipinna) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20brevipinna",
     "imageUrl": "assets/species_images/carcharhinus_brevipinna.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Whitecheek Shark",
     "scientificName": "Carcharhinus dussumieri",
-    "description": "Carcharhinus dussumieri is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Whitecheek Shark (Carcharhinus dussumieri) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20dussumieri",
     "imageUrl": "assets/species_images/carcharhinus_dussumieri.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Silky Shark",
     "scientificName": "Carcharhinus falciformis",
-    "description": "Carcharhinus falciformis is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Silky Shark (Carcharhinus falciformis) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20falciformis",
     "imageUrl": "assets/species_images/carcharhinus_falciformis.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Pondicherry Shark",
     "scientificName": "Carcharhinus hemiodon",
-    "description": "Pondicherry Shark is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Pondicherry Shark (Carcharhinus hemiodon) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20hemiodon",
     "imageUrl": "assets/species_images/pondicherry_shark.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Blacktip Shark",
     "scientificName": "Carcharhinus limbatus",
-    "description": "Carcharhinus limbatus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Blacktip Shark (Carcharhinus limbatus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20limbatus",
     "imageUrl": "assets/species_images/carcharhinus_limbatus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Carcharhinus longimanus",
     "scientificName": "Carcharhinus longimanus",
-    "description": "Carcharhinus longimanus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Carcharhinus longimanus (Carcharhinus longimanus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20longimanus",
     "imageUrl": "assets/species_images/carcharhinus_longimanus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Hardnose Shark",
     "scientificName": "Carcharhinus macloti",
-    "description": "Carcharhinus macloti is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Hardnose Shark (Carcharhinus macloti) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20macloti",
     "imageUrl": "assets/species_images/carcharhinus_macloti.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Blacktip Reef Shark",
     "scientificName": "Carcharhinus melanopterus",
-    "description": "Carcharhinus melanopterus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Blacktip Reef Shark (Carcharhinus melanopterus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20melanopterus",
     "imageUrl": "assets/species_images/carcharhinus_melanopterus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Dusky Shark",
     "scientificName": "Carcharhinus obscurus",
-    "description": "Carcharhinus obscurus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Dusky Shark (Carcharhinus obscurus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20obscurus",
     "imageUrl": "assets/species_images/carcharhinus_obscurus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Sandbar Shark",
     "scientificName": "Carcharhinus plumbeus",
-    "description": "Carcharhinus plumbeus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Sandbar Shark (Carcharhinus plumbeus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20plumbeus",
     "imageUrl": "assets/species_images/carcharhinus_plumbeus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Blackspot Shark",
     "scientificName": "Carcharhinus sealei",
-    "description": "Carcharhinus sealei is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Blackspot Shark (Carcharhinus sealei) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20sealei",
     "imageUrl": "assets/species_images/carcharhinus_sealei.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Spot-tail Shark",
     "scientificName": "Carcharhinus sorrah",
-    "description": "Carcharhinus sorrah is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Spot-tail Shark (Carcharhinus sorrah) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20sorrah",
     "imageUrl": "assets/species_images/carcharhinus_sorrah.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Barca Snakehead",
     "scientificName": "Channa barca",
-    "description": "Barca Snakehead is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Barca Snakehead (Channa barca) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Channa%20barca",
     "imageUrl": "assets/species_images/barca_snakehead.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Giant Grouper",
     "scientificName": "Epinephelus lanceolatus",
-    "description": "Giant Grouper is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Giant Grouper (Epinephelus lanceolatus) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Epinephelus%20lanceolatus",
     "imageUrl": "assets/species_images/giant_grouper.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Winghead Shark",
     "scientificName": "Eusphyra blochii",
-    "description": "Winghead Shark is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Winghead Shark (Eusphyra blochii) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Eusphyra%20blochii",
     "imageUrl": "assets/species_images/winghead_shark.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Granular Sawfish",
     "scientificName": "Glaucostegus granulatus",
-    "description": "Glaucostegus granulatus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Granular Sawfish (Glaucostegus granulatus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Glaucostegus%20granulatus",
     "imageUrl": "assets/species_images/glaucostegus_granulatus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Widenose Guitarfish",
     "scientificName": "Glaucostegus obtusus",
-    "description": "Widenose Guitarfish is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Widenose Guitarfish (Glaucostegus obtusus) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Glaucostegus%20obtusus",
     "imageUrl": "assets/species_images/widenose_guitarfish.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Clubnose Guitarfish",
     "scientificName": "Glaucostegus thouin",
-    "description": "Clubnose Guitarfish is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Clubnose Guitarfish (Glaucostegus thouin) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Glaucostegus%20thouin",
     "imageUrl": "assets/species_images/clubnose_guitarfish.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Sawfish",
     "scientificName": "Glucostegus typus",
-    "description": "Glucostegus typus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Sawfish (Glucostegus typus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Glucostegus%20typus",
     "imageUrl": "assets/species_images/glucostegus_typus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Ganges Shark",
     "scientificName": "Glyphis gangeticus",
-    "description": "Ganges Shark is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Ganges Shark (Glyphis gangeticus) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Glyphis%20gangeticus",
     "imageUrl": "assets/species_images/ganges_shark.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Reunion Seahorse",
     "scientificName": "Hippocampus borboniensis",
-    "description": "Reunion Seahorse is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Reunion Seahorse (Hippocampus borboniensis) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Hippocampus%20borboniensis",
     "imageUrl": "assets/species_images/reunion_seahorse.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Shortfin Mako Shark",
     "scientificName": "Isurus oxyrhynchus",
-    "description": "Isurus oxyrhynchus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Shortfin Mako Shark (Isurus oxyrhynchus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Isurus%20oxyrhynchus",
     "imageUrl": "assets/species_images/isurus_oxyrhynchus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Longfin Mako Shark",
     "scientificName": "Isurus paucus",
-    "description": "Isurus paucus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Longfin Mako Shark (Isurus paucus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Isurus%20paucus",
     "imageUrl": "assets/species_images/isurus_paucus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Broadfin Shark",
     "scientificName": "Lamiopsis temminckii",
-    "description": "Lamiopsis temminckii is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Broadfin Shark (Lamiopsis temminckii) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Lamiopsis%20temminckii",
     "imageUrl": "assets/species_images/lamiopsis_temminckii.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Sliteye Shark",
     "scientificName": "Loxodon macrorhinus",
-    "description": "Loxodon macrorhinus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Sliteye Shark (Loxodon macrorhinus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Loxodon%20macrorhinus",
     "imageUrl": "assets/species_images/loxodon_macrorhinus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Reef Manta Ray",
     "scientificName": "Mobula alfredi",
-    "description": "Reef Manta Ray is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Reef Manta Ray (Mobula alfredi) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Mobula%20alfredi",
     "imageUrl": "assets/species_images/reef_manta_ray.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Giant Oceanic Manta Ray",
     "scientificName": "Mobula birostris",
-    "description": "Giant Oceanic Manta Ray is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Giant Oceanic Manta Ray (Mobula birostris) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Mobula%20birostris",
     "imageUrl": "assets/species_images/giant_oceanic_manta_ray.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Longhead Eagle Ray",
     "scientificName": "Mobula kuhli",
-    "description": "Mobula kuhli is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Longhead Eagle Ray (Mobula kuhli) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Mobula%20kuhli",
     "imageUrl": "assets/species_images/mobula_kuhli.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Giant Devil Ray",
     "scientificName": "Mobula mobular",
-    "description": "Mobula mobular is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Giant Devil Ray (Mobula mobular) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Mobula%20mobular",
     "imageUrl": "assets/species_images/mobula_mobular.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Chilean Devil Ray",
     "scientificName": "Mobula tarapacana",
-    "description": "Chilean Devil Ray is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Chilean Devil Ray (Mobula tarapacana) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Mobula%20tarapacana",
     "imageUrl": "assets/species_images/chilean_devil_ray.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Bentfin Eagle Ray",
     "scientificName": "Mobula thurstoni",
-    "description": "Mobula thurstoni is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Bentfin Eagle Ray (Mobula thurstoni) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Mobula%20thurstoni",
     "imageUrl": "assets/species_images/mobula_thurstoni.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Sicklefin Lemon Shark",
     "scientificName": "Negaprion acutidens",
-    "description": "Negaprion acutidens is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Sicklefin Lemon Shark (Negaprion acutidens) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Negaprion%20acutidens",
     "imageUrl": "assets/species_images/negaprion_acutidens.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Blue Shark",
     "scientificName": "Prionace glauca",
-    "description": "Prionace glauca is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Blue Shark (Prionace glauca) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Prionace%20glauca",
     "imageUrl": "assets/species_images/prionace_glauca.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Dwarf Sawfish",
     "scientificName": "Pristis clavata",
-    "description": "Dwarf Sawfish is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Dwarf Sawfish (Pristis clavata) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Pristis%20clavata",
     "imageUrl": "assets/species_images/dwarf_sawfish.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Longcomb Sawfish",
     "scientificName": "Pristis zijsron",
-    "description": "Longcomb Sawfish is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Longcomb Sawfish (Pristis zijsron) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Pristis%20zijsron",
     "imageUrl": "assets/species_images/longcomb_sawfish.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Bowmouth Guitarfish",
     "scientificName": "Rhina anchylostomus",
-    "description": "Bowmouth Guitarfish is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Bowmouth Guitarfish (Rhina anchylostomus) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Rhina%20anchylostomus",
     "imageUrl": "assets/species_images/bowmouth_guitarfish.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Whale Shark",
     "scientificName": "Rhincodon typus",
-    "description": "Whale Shark is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Whale Shark (Rhincodon typus) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Rhincodon%20typus",
     "imageUrl": "assets/species_images/whale_shark.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
-    "name": "G\u00fcnther's Guitarfish",
+    "name": "Günther's Guitarfish",
     "scientificName": "Rhinobatos annandalei",
-    "description": "Rhinobatos annandalei is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Günther's Guitarfish (Rhinobatos annandalei) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Rhinobatos%20annandalei",
     "imageUrl": "assets/species_images/rhinobatos_annandalei.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Spotted Guitarfish",
     "scientificName": "Rhinobatos lionotus",
-    "description": "Rhinobatos lionotus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Spotted Guitarfish (Rhinobatos lionotus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Rhinobatos%20lionotus",
     "imageUrl": "assets/species_images/rhinobatos_lionotus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Spotted Guitarfish",
     "scientificName": "Rhinobatos punctifer",
-    "description": "Rhinobatos punctifer is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Spotted Guitarfish (Rhinobatos punctifer) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Rhinobatos%20punctifer",
     "imageUrl": "assets/species_images/rhinobatos_punctifer.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Milk Shark",
     "scientificName": "Rhizoprionodon acutus",
-    "description": "Rhizoprionodon acutus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Milk Shark (Rhizoprionodon acutus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Rhizoprionodon%20acutus",
     "imageUrl": "assets/species_images/rhizoprionodon_acutus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Grey Sharpnose Shark",
     "scientificName": "Rhizoprionodon oligolinx",
-    "description": "Rhizoprionodon oligolinx is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Grey Sharpnose Shark (Rhizoprionodon oligolinx) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Rhizoprionodon%20oligolinx",
     "imageUrl": "assets/species_images/rhizoprionodon_oligolinx.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "White-spotted Guitarfish",
     "scientificName": "Rhynchobatus australiae",
-    "description": "White-spotted Guitarfish is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "White-spotted Guitarfish (Rhynchobatus australiae) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Rhynchobatus%20australiae",
     "imageUrl": "assets/species_images/white-spotted_guitarfish.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Smoothnose Wedgefish",
     "scientificName": "Rhynchobatus laevis",
-    "description": "Smoothnose Wedgefish is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Smoothnose Wedgefish (Rhynchobatus laevis) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Rhynchobatus%20laevis",
     "imageUrl": "assets/species_images/smoothnose_wedgefish.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Spadenose Shark",
     "scientificName": "Scoliodon laticaudus",
-    "description": "Scoliodon laticaudus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Spadenose Shark (Scoliodon laticaudus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Scoliodon%20laticaudus",
     "imageUrl": "assets/species_images/scoliodon_laticaudus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Scalloped Hammerhead Shark",
     "scientificName": "Sphyrna lewini",
-    "description": "Sphyrna lewini is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Scalloped Hammerhead Shark (Sphyrna lewini) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Sphyrna%20lewini",
     "imageUrl": "assets/species_images/sphyrna_lewini.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Great Hammerhead Shark",
     "scientificName": "Sphyrna mokarran",
-    "description": "Sphyrna mokarran is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Great Hammerhead Shark (Sphyrna mokarran) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Sphyrna%20mokarran",
     "imageUrl": "assets/species_images/sphyrna_mokarran.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Smooth Hammerhead Shark",
     "scientificName": "Sphyrna zygaena",
-    "description": "Smooth Hammerhead Shark is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Smooth Hammerhead Shark (Sphyrna zygaena) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Sphyrna%20zygaena",
     "imageUrl": "assets/species_images/smooth_hammerhead_shark.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Whitetip Reef Shark",
     "scientificName": "Triaenodon obesus",
-    "description": "Triaenodon obesus is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Whitetip Reef Shark (Triaenodon obesus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Triaenodon%20obesus",
     "imageUrl": "assets/species_images/triaenodon_obesus.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Porcupine Ray",
     "scientificName": "Urogymnus asperrimus",
-    "description": "Porcupine Ray is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Porcupine Ray (Urogymnus asperrimus) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Urogymnus%20asperrimus",
     "imageUrl": "assets/species_images/porcupine_ray.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Giant Freshwater Stingray",
     "scientificName": "Urogymnus polylepis",
-    "description": "Giant Freshwater Stingray is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Giant Freshwater Stingray (Urogymnus polylepis) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Urogymnus%20polylepis",
     "imageUrl": "assets/species_images/giant_freshwater_stingray.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   },
   {
     "name": "Gollum Snakehead",
     "scientificName": "aenigmachanna gollum",
-    "description": "Gollum Snakehead is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Gollum Snakehead (aenigmachanna gollum) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=aenigmachanna%20gollum",
     "imageUrl": "assets/species_images/gollum_snakehead.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Oceanic Whitetip Shark",
     "scientificName": "carcharhinus longimanus",
-    "description": "Oceanic Whitetip Shark is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Oceanic Whitetip Shark (carcharhinus longimanus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=carcharhinus%20longimanus",
     "imageUrl": "assets/species_images/oceanic_whitetip_shark.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 2
   },
   {
     "name": "Largetooth Sawfish",
     "scientificName": "pristis pristis",
-    "description": "Largetooth Sawfish is a CITES-protected endangered marine species found in the Indo-Pacific region. This species is critically important for marine conservation efforts.",
-    "conservationStatus": "Endangered",
+    "description": "Largetooth Sawfish (pristis pristis) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=pristis%20pristis",
     "imageUrl": "assets/species_images/largetooth_sawfish.jpg",
-    "additionalImageUrls": []
+    "additionalImageUrls": [],
+    "schedule": 1
   }
 ]

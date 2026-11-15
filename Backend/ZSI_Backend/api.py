@@ -9,9 +9,15 @@ import torch.nn as nn
 from torchvision import models, transforms
 import json
 from functools import wraps
+import hmac
 
 # --- Configuration from Environment Variables ---
-API_KEY = os.getenv('ZSI_API_KEY', 'default-dev-key-change-in-production')
+API_KEY = os.getenv('ZSI_API_KEY', '')
+if not API_KEY:
+    raise RuntimeError(
+        'ZSI_API_KEY is not set. Generate one (e.g. python -c "import secrets; '
+        'print(secrets.token_urlsafe(32))") and export it before starting the API.'
+    )
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:*').split(',')
@@ -20,8 +26,8 @@ ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:*').split(',')
 def require_api_key(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        api_key = request.headers.get('X-API-Key')
-        if not api_key or api_key != API_KEY:
+        api_key = request.headers.get('X-API-Key', '')
+        if not hmac.compare_digest(api_key.encode(), API_KEY.encode()):
             return jsonify({'error': 'Unauthorized: Invalid or missing API key'}), 401
         return f(*args, **kwargs)
     return decorated_function

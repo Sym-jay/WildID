@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>WildID uses the camera to photograph an animal and check whether it is a protected species.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>WildID lets you choose a photo of an animal from your library to identify it.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>WildID adds your location to a sighting report so researchers know where the animal was found.</string>
 </dict>
 </plist>

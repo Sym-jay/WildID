@@ -2,7 +2,10 @@ class Animal {
   final String name;
   final String scientificName;
   final String description;
-  final String conservationStatus;
+
+  /// Schedule of India's Wildlife (Protection) Act, 1972 (1 or 2), taken from
+  /// the ZSI dataset. Null when the species is not listed.
+  final int? schedule;
   final String iucnUrl;
   final String imageUrl;
   final List<String> additionalImageUrls;
@@ -11,15 +14,23 @@ class Animal {
     required this.name,
     required this.scientificName,
     required this.description,
-    required this.conservationStatus,
+    this.schedule,
     required this.iucnUrl,
     required this.imageUrl,
     this.additionalImageUrls = const [],
   });
 
-  bool get isEndangered =>
-      conservationStatus == 'Endangered' ||
-      conservationStatus == 'Critically Endangered';
+  bool get isProtected => schedule != null;
+
+  /// Kept for older call sites: every listed species is protected.
+  bool get isEndangered => isProtected;
+
+  /// "Schedule I" / "Schedule II" / "Not listed".
+  String get scheduleLabel => switch (schedule) {
+        1 => 'Schedule I',
+        2 => 'Schedule II',
+        _ => 'Not listed',
+      };
   
   List<String> getAllImageUrls() => [imageUrl, ...additionalImageUrls];
 }
@@ -132,10 +143,10 @@ class LocationData {
   };
 
   factory LocationData.fromJson(Map<String, dynamic> json) => LocationData(
-    latitude: json['latitude'],
-    longitude: json['longitude'],
-    accuracy: json['accuracy'],
-    address: json['address'],
+    latitude: (json['latitude'] as num?)?.toDouble(),
+    longitude: (json['longitude'] as num?)?.toDouble(),
+    accuracy: (json['accuracy'] as num?)?.toDouble(),
+    address: json['address'] as String?,
   );
 }
 
@@ -370,6 +381,9 @@ class UploadRecord {
   };
 
   UploadRecord copyWith({
+    String? imagePath,
+    LocationData? location,
+    bool? needsVerification,
     String? status,
     String? adminNotes,
     String? verifiedSpecies,
@@ -386,15 +400,15 @@ class UploadRecord {
   }) {
     return UploadRecord(
       id: id,
-      imagePath: imagePath,
+      imagePath: imagePath ?? this.imagePath,
       timestamp: timestamp,
       identifiedSpecies: identifiedSpecies,
       confidence: confidence,
       userEmail: userEmail,
       userPhone: userPhone,
       userId: userId,
-      needsVerification: needsVerification,
-      location: location,
+      needsVerification: needsVerification ?? this.needsVerification,
+      location: location ?? this.location,
       status: status ?? this.status,
       adminNotes: adminNotes ?? this.adminNotes,
       verifiedSpecies: verifiedSpecies ?? this.verifiedSpecies,

@@ -15,10 +15,7 @@ class EnsembleAIService {
 
   static const String ensembleApiUrl =
       'https://zsi-wildlife-api-173142698667.us-central1.run.app/predict-ensemble';
-  static const String apiKey = String.fromEnvironment(
-    'ZSI_API_KEY',
-    defaultValue: 'dev-key',
-  );
+  static const String apiKey = String.fromEnvironment('ZSI_API_KEY');
 
   // Hybrid mode: try cloud first, fall back to local offline if needed
   static bool enableHybridMode = true;

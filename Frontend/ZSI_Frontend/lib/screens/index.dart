@@ -8,6 +8,6 @@ export 'identification_screen.dart';
 export 'metadata_form_screen.dart';
 export 'verification_queue_screen.dart';
 export 'upload_history_screen.dart';
-export 'admin_dashboard.dart';
 export 'browse_species_screen.dart';
 export 'species_detail_screen.dart';
+export 'profile_screen.dart';

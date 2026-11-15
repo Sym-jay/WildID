@@ -30,16 +30,30 @@ except ImportError:
 # Import original API components
 from api import (
     ZSIWildlifeClassifier, device, class_mapping, model, 
-    transform, MAX_FILE_SIZE, ALLOWED_EXTENSIONS, require_api_key, allowed_file
+    transform, MAX_FILE_SIZE, ALLOWED_EXTENSIONS, ALLOWED_ORIGINS,
+    require_api_key, allowed_file
 )
+from otp_tokens import OtpIssuer, OtpError, normalize_phone
 
 # --- Configuration ---
-API_KEY = os.getenv('ZSI_API_KEY', 'default-dev-key-change-in-production')
 SMS_PROVIDER = os.getenv('SMS_PROVIDER', 'goi')
+# Return the OTP in the API response instead of relying on SMS delivery.
+# Local testing only: never set this on a deployed server.
+OTP_DEV_ECHO = os.getenv('ZSI_OTP_DEV_ECHO') == '1'
 
 # --- Initialize Flask App ---
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=ALLOWED_ORIGINS)
+
+# Signing secret for OTP tokens. Must be the same on every instance and must
+# NOT be the API key (that ships inside the app).
+otp_issuer = None
+try:
+    otp_issuer = OtpIssuer(os.getenv('ZSI_OTP_SECRET', ''))
+except ValueError:
+    print("Warning: ZSI_OTP_SECRET not set (min 16 chars), OTP login disabled")
+if OTP_DEV_ECHO:
+    print("WARNING: ZSI_OTP_DEV_ECHO=1, OTP codes are returned in API responses")
 
 # --- Initialize Services ---
 ensemble_predictor = None
@@ -260,39 +274,65 @@ def predict_ensemble():
         return jsonify({'error': f'Ensemble prediction failed: {str(e)}'}), 500
 
 
-# --- NEW: SMS OTP Endpoint ---
-@app.route('/api/sms/send-otp', methods=['POST'])
+# --- OTP login: server generates, sends and verifies the code ---
+@app.route('/api/auth/otp/request', methods=['POST'])
 @require_api_key
-def send_otp():
+def request_otp():
     """
-    Send OTP via SMS for 2FA
-    Endpoint: POST /api/sms/send-otp
-    Body: {
-        "phone": "+919876543210",
-        "otp_code": "123456"
-    }
+    Body: {"phone": "9876543210"}
+    Returns: {"success": true, "otp_token": "...", "expires_in": 300}
+    The code itself is only sent by SMS (or echoed when ZSI_OTP_DEV_ECHO=1).
     """
-    
+    if otp_issuer is None:
+        return jsonify({'error': 'OTP login is not configured on the server'}), 503
+
+    data = request.get_json(silent=True) or {}
+    phone = normalize_phone(data.get('phone', ''))
+    if not phone:
+        return jsonify({'error': 'Enter a valid 10-digit mobile number'}), 400
+
+    try:
+        code, token = otp_issuer.issue(phone)
+    except OtpError as e:
+        return jsonify({'error': str(e)}), 429
+
+    response = {'success': True, 'otp_token': token, 'expires_in': 300}
+    if OTP_DEV_ECHO:
+        response['dev_otp'] = code
+        return jsonify(response), 200
+
     if not SMS_AVAILABLE:
         return jsonify({'error': 'SMS service not available'}), 503
+    result = sms_service.send_otp(phone, code)
+    # sms_service reports success in its demo modes without sending anything.
+    if not result.get('success') or str(result.get('provider', '')).endswith(('_demo', '_fallback')):
+        return jsonify({'error': 'Could not send SMS. Please try again later.'}), 503
+    return jsonify(response), 200
 
-    data = request.get_json()
-    if not data or 'phone' not in data or 'otp_code' not in data:
-        return jsonify({'error': 'Missing phone or otp_code'}), 400
 
-    result = sms_service.send_otp(data['phone'], data['otp_code'])
-    
-    if result.get('success'):
-        return jsonify({
-            'success': True,
-            'message': 'OTP sent successfully',
-            'cost_inr': sms_service.sms_cost_per_message
-        }), 200
-    else:
-        return jsonify({
-            'success': False,
-            'error': result.get('message', 'Failed to send OTP')
-        }), 500
+@app.route('/api/auth/otp/verify', methods=['POST'])
+@require_api_key
+def verify_otp():
+    """
+    Body: {"phone": "9876543210", "otp": "123456", "otp_token": "..."}
+    Returns: {"verified": true|false}
+    """
+    if otp_issuer is None:
+        return jsonify({'error': 'OTP login is not configured on the server'}), 503
+
+    data = request.get_json(silent=True) or {}
+    phone = normalize_phone(data.get('phone', ''))
+    code = str(data.get('otp', '')).strip()
+    token = str(data.get('otp_token', ''))
+    if not phone or not code or not token:
+        return jsonify({'verified': False, 'error': 'Missing phone, otp or otp_token'}), 400
+
+    try:
+        verified = otp_issuer.verify(phone, code, token)
+    except OtpError as e:
+        return jsonify({'verified': False, 'error': str(e)}), 429
+
+    return jsonify({'verified': verified}), 200 if verified else 401
 
 
 # --- NEW: Send Endangered Species Alert ---
@@ -429,7 +469,8 @@ def not_found(error):
             'GET /health',
             'POST /predict (single model)',
             'POST /predict-ensemble (ensemble voting)',
-            'POST /api/sms/send-otp',
+            'POST /api/auth/otp/request',
+            'POST /api/auth/otp/verify',
             'POST /api/sms/endangered-alert',
             'POST /api/sms/verification-alert',
             'GET /api/sms/status',

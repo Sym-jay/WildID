@@ -1,92 +1,86 @@
 import 'dart:convert';
+
 import 'package:flutter/services.dart';
+
 import '../../shared/models/index.dart';
 
-/// Service for looking up species data from species_data.json
+/// Looks up species from assets/species_data.json.
+///
+/// The model returns a common name for some classes and a scientific name for
+/// others (35 of the 66 labels are scientific names), so [findByLabel] matches
+/// either.
 class SpeciesLookupService {
-  static final SpeciesLookupService _instance = SpeciesLookupService._internal();
-  static List<Animal>? _cachedSpecies;
+  SpeciesLookupService._();
 
-  factory SpeciesLookupService() {
-    return _instance;
+  static List<Animal>? _cachedSpecies;
+  static Map<String, Animal>? _index;
+
+  static Animal _fromJson(Map<String, dynamic> json) => Animal(
+        name: json['name'] as String? ?? '',
+        scientificName: json['scientificName'] as String? ?? '',
+        description: json['description'] as String? ?? '',
+        schedule: json['schedule'] as int?,
+        iucnUrl: json['iucnUrl'] as String? ?? '',
+        imageUrl: json['imageUrl'] as String? ?? '',
+        additionalImageUrls: json['additionalImageUrls'] != null
+            ? List<String>.from(json['additionalImageUrls'] as List)
+            : const [],
+      );
+
+  /// Parse a species_data.json payload. Public for tests.
+  static List<Animal> parse(String jsonString) {
+    final list = json.decode(jsonString) as List<dynamic>;
+    return list
+        .map((e) => _fromJson(e as Map<String, dynamic>))
+        .toList(growable: false);
   }
 
-  SpeciesLookupService._internal();
+  /// Normalise a name for matching: lower case, single spaces, letters only.
+  static String normalize(String value) => value
+      .toLowerCase()
+      .replaceAll(RegExp(r'[^a-z\s]'), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
 
-  /// Load all species data from JSON
   static Future<List<Animal>> loadSpecies() async {
-    if (_cachedSpecies != null) {
-      return _cachedSpecies!;
-    }
-
+    if (_cachedSpecies != null) return _cachedSpecies!;
     final jsonString = await rootBundle.loadString('assets/species_data.json');
-    final jsonData = json.decode(jsonString) as List<dynamic>;
-
-    _cachedSpecies = jsonData
-        .map((json) => Animal(
-              name: json['name'] ?? '',
-              scientificName: json['scientificName'] ?? '',
-              description: json['description'] ?? '',
-              conservationStatus: json['conservationStatus'] ?? 'Data Deficient',
-              iucnUrl: json['iucnUrl'] ?? '',
-              imageUrl: json['imageUrl'] ?? '',
-              additionalImageUrls: json['additionalImageUrls'] != null
-                  ? List<String>.from(json['additionalImageUrls'])
-                  : [],
-            ))
-        .toList();
-
+    useSpecies(parse(jsonString));
     return _cachedSpecies!;
   }
 
-  /// Find species by common name (case-insensitive)
-  static Future<Animal?> findByCommonName(String name) async {
-    final species = await loadSpecies();
-    try {
-      return species.firstWhere(
-        (s) => s.name.toLowerCase() == name.toLowerCase(),
-        orElse: () => throw StateError('Not found'),
-      );
-    } catch (e) {
-      return null;
-    }
+  /// Replace the cached list (used by tests and after loading).
+  static void useSpecies(List<Animal> species) {
+    _cachedSpecies = species;
+    _index = {
+      for (final s in species) ...{
+        normalize(s.name): s,
+        normalize(s.scientificName): s,
+      },
+    };
   }
 
-  /// Find species by scientific name (case-insensitive)
-  static Future<Animal?> findByScientificName(String name) async {
-    final species = await loadSpecies();
-    try {
-      return species.firstWhere(
-        (s) => s.scientificName.toLowerCase() == name.toLowerCase(),
-        orElse: () => throw StateError('Not found'),
-      );
-    } catch (e) {
-      return null;
-    }
+  /// Synchronous lookup once [loadSpecies] has run.
+  static Animal? lookupLoaded(String label) {
+    final index = _index;
+    if (index == null) return null;
+    return index[normalize(label)];
   }
 
-  /// Find species by partial name match
-  static Future<Animal?> findByPartialName(String query) async {
-    final species = await loadSpecies();
-    try {
-      return species.firstWhere(
-        (s) =>
-            s.name.toLowerCase().contains(query.toLowerCase()) ||
-            s.scientificName.toLowerCase().contains(query.toLowerCase()),
-        orElse: () => throw StateError('Not found'),
-      );
-    } catch (e) {
-      return null;
-    }
+  /// Find a species by a model label: common or scientific name.
+  static Future<Animal?> findByLabel(String label) async {
+    await loadSpecies();
+    return lookupLoaded(label);
   }
 
-  /// Get all species (cached after first load)
-  static Future<List<Animal>> getAllSpecies() async {
-    return loadSpecies();
-  }
+  static Future<Animal?> findByCommonName(String name) => findByLabel(name);
 
-  /// Clear cache (useful for testing)
+  static Future<Animal?> findByScientificName(String name) => findByLabel(name);
+
+  static Future<List<Animal>> getAllSpecies() => loadSpecies();
+
   static void clearCache() {
     _cachedSpecies = null;
+    _index = null;
   }
 }

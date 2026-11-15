@@ -8,7 +8,7 @@ void main() {
         name: 'Tiger',
         scientificName: 'Panthera tigris',
         description: 'Large striped cat',
-        conservationStatus: 'Endangered',
+        schedule: 1,
         iucnUrl: 'https://iucn.org/tiger',
         imageUrl: 'https://example.com/tiger.jpg',
       );
@@ -23,7 +23,6 @@ void main() {
         name: 'Deer',
         scientificName: 'Cervus elaphus',
         description: 'Forest deer',
-        conservationStatus: 'Vulnerable',
         iucnUrl: 'https://iucn.org/deer',
         imageUrl: 'https://example.com/deer1.jpg',
         additionalImageUrls: [

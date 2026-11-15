@@ -1,36 +1,71 @@
-import 'dart:math';
+import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../config/error_handler.dart';
+import 'package:http/http.dart' as http;
 
+import '../config/error_handler.dart';
+import 'password_hasher.dart';
+
+/// Result of asking the backend to send a one-time code.
+class OtpRequestResult {
+  const OtpRequestResult({required this.sent, this.devCode});
+
+  /// True if the backend accepted the request.
+  final bool sent;
+
+  /// Only set when the backend runs with ZSI_OTP_DEV_ECHO=1 (no SMS gateway
+  /// configured). Never populated in production.
+  final String? devCode;
+}
+
+/// Local account store + backend-issued OTP login.
+///
+/// Accounts still live on the device (there is no user backend yet).
+/// Passwords are stored as salted PBKDF2 hashes in secure storage.
+/// OTP codes are generated, sent and checked by the backend, never here.
 class AuthService {
   AuthService._();
 
-  static String? _currentUser;
-  static String? _currentUserPhone;
-  static final Map<String, String> _users = {};
-  static final Map<String, String> _userPhones = {};
-  static final Map<String, String> _otpCodes = {};
-  static final Map<String, int> _failedLoginAttempts = {};
-  static final Random _random = Random();
+  static const String _apiBaseUrl = String.fromEnvironment(
+    'ZSI_API_BASE_URL',
+    defaultValue: 'https://zsi-wildlife-api-173142698667.us-central1.run.app',
+  );
+  static const String _apiKey = String.fromEnvironment('ZSI_API_KEY');
+
+  static const _storageKey = 'zsi_users_data';
+  static const _sessionKey = 'zsi_session';
   static const int _maxLoginAttempts = 5;
   static const Duration _lockoutDuration = Duration(minutes: 15);
-  static final Map<String, DateTime> _loginLockout = {};
-  
+
   static const _secureStorage = FlutterSecureStorage();
+
+  static String? _currentUser;
+  static String? _currentUserPhone;
+  static final Map<String, String> _users = {}; // email -> password hash
+  static final Map<String, String> _userPhones = {}; // email -> phone
+  static final Map<String, int> _failedLoginAttempts = {};
+  static final Map<String, DateTime> _loginLockout = {};
+  // phone (normalized) -> signed token from the backend; holds no code.
+  static final Map<String, String> _otpTokens = {};
   static bool _initialized = false;
 
-  /// Initialize auth service and load stored credentials
+  /// Load stored accounts from secure storage.
   static Future<void> initialize() async {
     if (_initialized) return;
     try {
-      final stored = await _secureStorage.read(key: 'zsi_users_data');
+      final stored = await _secureStorage.read(key: _storageKey);
       if (stored != null) {
         final Map<String, dynamic> data = json.decode(stored);
         _users.addAll(Map<String, String>.from(data['users'] ?? {}));
         _userPhones.addAll(Map<String, String>.from(data['phones'] ?? {}));
         AppLogger.logInfo('Loaded ${_users.length} stored users');
+      }
+      final session = await _secureStorage.read(key: _sessionKey);
+      if (session != null && _users.containsKey(session)) {
+        _currentUser = session;
+        _currentUserPhone = _userPhones[session];
       }
       _initialized = true;
     } catch (e, st) {
@@ -38,40 +73,48 @@ class AuthService {
     }
   }
 
-  /// Save credentials to secure storage
   static Future<void> _saveCredentials() async {
     try {
-      final data = {
-        'users': _users,
-        'phones': _userPhones,
-      };
       await _secureStorage.write(
-        key: 'zsi_users_data',
-        value: json.encode(data),
+        key: _storageKey,
+        value: json.encode({'users': _users, 'phones': _userPhones}),
       );
     } catch (e, st) {
       AppLogger.logError('Failed to save credentials', e, st);
     }
   }
 
-  static Future<bool> registerUser(String email, String password, String phone) async {
+  static String _normalizeEmail(String email) => email.trim().toLowerCase();
+
+  /// Last 10 digits, so "+91 98765 43210" and "9876543210" match.
+  static String normalizePhone(String phone) {
+    final digits = phone.replaceAll(RegExp(r'\D'), '');
+    return digits.length > 10 ? digits.substring(digits.length - 10) : digits;
+  }
+
+  static Future<bool> registerUser(
+    String email,
+    String password,
+    String phone,
+  ) async {
     try {
-      if (email.isEmpty || password.isEmpty || phone.isEmpty) {
+      email = _normalizeEmail(email);
+      if (email.isEmpty || password.isEmpty || phone.trim().isEmpty) {
         throw ValidationException('All fields are required');
       }
       if (!email.contains('@')) {
         throw ValidationException('Invalid email format');
       }
+      if (password.length < 8) {
+        throw ValidationException('Password must be at least 8 characters');
+      }
       if (_users.containsKey(email)) {
         throw ValidationException('Email already registered');
       }
-      // Hash password before storing (basic hash for demo; in production use bcrypt)
-      final hashedPassword = _hashPassword(password);
-      await Future.delayed(const Duration(milliseconds: 500));
-      _users[email] = hashedPassword;
-      _userPhones[email] = phone;
+      _users[email] = await compute(_hashInBackground, password);
+      _userPhones[email] = phone.trim();
       await _saveCredentials();
-      AppLogger.logInfo('User registered: $email');
+      AppLogger.logInfo('User registered');
       return true;
     } catch (e, stackTrace) {
       AppLogger.logError('Registration failed', e, stackTrace);
@@ -79,107 +122,214 @@ class AuthService {
     }
   }
 
-  static Future<bool> loginWithEmailPassword(String email, String password) async {
+  static Future<bool> loginWithEmailPassword(
+    String email,
+    String password,
+  ) async {
     try {
-      // Check lockout
+      email = _normalizeEmail(email);
       if (_isLockedOut(email)) {
-        throw AuthException('Too many failed attempts. Please try again later.');
+        throw AuthException(
+          'Too many failed attempts. Please try again later.',
+        );
       }
 
-      await Future.delayed(const Duration(milliseconds: 500));
-      // Hash incoming password and compare
-      final hashedPassword = _hashPassword(password);
-      if (_users.containsKey(email) && _users[email] == hashedPassword) {
-        _currentUser = email;
-        _currentUserPhone = _userPhones[email];
-        _failedLoginAttempts[email] = 0;
+      final stored = _users[email];
+      if (stored != null && await _verifyPassword(password, stored)) {
+        // Upgrade legacy or weaker hashes transparently.
+        if (!PasswordHasher.isCurrent(stored)) {
+          _users[email] = await compute(_hashInBackground, password);
+          await _saveCredentials();
+          AppLogger.logInfo('Upgraded stored password hash');
+        }
+        _startSession(email);
+        _failedLoginAttempts.remove(email);
         _loginLockout.remove(email);
-        AppLogger.logInfo('User logged in: $email');
+        AppLogger.logInfo('User logged in');
         return true;
       }
 
-      // Track failed attempt
-      _failedLoginAttempts[email] = (_failedLoginAttempts[email] ?? 0) + 1;
-      if (_failedLoginAttempts[email]! >= _maxLoginAttempts) {
+      final attempts = (_failedLoginAttempts[email] ?? 0) + 1;
+      _failedLoginAttempts[email] = attempts;
+      if (attempts >= _maxLoginAttempts) {
         _loginLockout[email] = DateTime.now();
-        AppLogger.logWarning('Account locked after failed login attempts: $email');
-        throw AuthException('Account locked due to too many failed attempts. Try again in 15 minutes.');
+        AppLogger.logWarning('Account locked after failed login attempts');
+        throw AuthException(
+          'Account locked due to too many failed attempts. Try again in 15 minutes.',
+        );
       }
-
-      AppLogger.logWarning('Failed login attempt for: $email');
+      AppLogger.logWarning(
+        'Failed login attempt ($attempts/$_maxLoginAttempts)',
+      );
       return false;
     } catch (e, stackTrace) {
       if (e is AuthException) rethrow;
       AppLogger.logError('Login failed', e, stackTrace);
-      throw AuthException('Login failed. Please try again.', originalError: e, stackTrace: stackTrace);
+      throw AuthException(
+        'Login failed. Please try again.',
+        originalError: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 
-  static Future<String?> sendOTP(String phone) async {
-    try {
-      if (phone.isEmpty) {
-        throw ValidationException('Phone number is required');
-      }
-      await Future.delayed(const Duration(milliseconds: 800));
-      if (!_userPhones.containsValue(phone)) {
-        throw AuthException('Phone number not found');
-      }
-
-      String otp = (_random.nextInt(900000) + 100000).toString();
-      _otpCodes[phone] = otp;
-      AppLogger.logInfo('OTP sent to: $phone');
-      debugPrint('OTP for $phone: $otp');
-      return otp;
-    } catch (e, stackTrace) {
-      AppLogger.logError('OTP send failed', e, stackTrace);
-      rethrow;
+  static Future<bool> _verifyPassword(String password, String stored) async {
+    if (stored.startsWith('${PasswordHasher.scheme}\$')) {
+      return compute(_verifyInBackground, [password, stored]);
     }
+    // Pre-PBKDF2 format (hashCode + length). Accepted once, then upgraded.
+    final legacy = password.hashCode.toString() + password.length.toString();
+    return PasswordHasher.constantTimeEquals(
+      utf8.encode(legacy),
+      utf8.encode(stored),
+    );
   }
 
+  /// Ask the backend to text a one-time code to [phone].
+  /// The phone must belong to an account registered on this device.
+  static Future<OtpRequestResult> sendOTP(String phone) async {
+    if (phone.trim().isEmpty) {
+      throw ValidationException('Phone number is required');
+    }
+    if (_emailForPhone(phone) == null) {
+      throw AuthException('Phone number not registered');
+    }
+
+    final body = await _postJson('/api/auth/otp/request', {'phone': phone});
+    final token = body['otp_token'];
+    if (body['success'] != true || token is! String || token.isEmpty) {
+      return const OtpRequestResult(sent: false);
+    }
+    _otpTokens[normalizePhone(phone)] = token;
+    final devCode = body['dev_otp'];
+    AppLogger.logInfo('OTP requested');
+    return OtpRequestResult(
+      sent: true,
+      devCode: devCode is String ? devCode : null,
+    );
+  }
+
+  /// Ask the backend whether [otp] is the code it sent to [phone].
   static Future<bool> verifyOTP(String phone, String otp) async {
-    try {
-      if (phone.isEmpty || otp.isEmpty) {
-        throw ValidationException('Phone and OTP are required');
-      }
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (_otpCodes.containsKey(phone) && _otpCodes[phone] == otp) {
-        for (var entry in _userPhones.entries) {
-          if (entry.value == phone) {
-            _currentUser = entry.key;
-            _currentUserPhone = phone;
-            _otpCodes.remove(phone);
-            AppLogger.logInfo('User verified with OTP: $phone');
-            return true;
-          }
-        }
-      }
-      AppLogger.logWarning('Invalid OTP for: $phone');
-      return false;
-    } catch (e, stackTrace) {
-      AppLogger.logError('OTP verification failed', e, stackTrace);
-      rethrow;
+    if (phone.trim().isEmpty || otp.trim().isEmpty) {
+      throw ValidationException('Phone and OTP are required');
     }
+    final email = _emailForPhone(phone);
+    if (email == null) {
+      throw AuthException('Phone number not registered');
+    }
+
+    final token = _otpTokens[normalizePhone(phone)];
+    if (token == null) {
+      throw AuthException('Request a new code first');
+    }
+
+    final body = await _postJson(
+      '/api/auth/otp/verify',
+      {'phone': phone, 'otp': otp.trim(), 'otp_token': token},
+      allowStatuses: const {400, 401},
+    );
+    if (body['verified'] != true) {
+      AppLogger.logWarning('OTP rejected');
+      return false;
+    }
+
+    _otpTokens.remove(normalizePhone(phone));
+    _startSession(email);
+    AppLogger.logInfo('User verified with OTP');
+    return true;
+  }
+
+  static String? _emailForPhone(String phone) {
+    final target = normalizePhone(phone);
+    for (final entry in _userPhones.entries) {
+      if (normalizePhone(entry.value) == target) return entry.key;
+    }
+    return null;
+  }
+
+  static Future<Map<String, dynamic>> _postJson(
+    String path,
+    Map<String, dynamic> payload, {
+    Set<int> allowStatuses = const {},
+  }) async {
+    if (_apiKey.isEmpty) {
+      throw AuthException(
+        'OTP login is not configured in this build (missing ZSI_API_KEY).',
+      );
+    }
+    late http.Response response;
+    try {
+      response = await http
+          .post(
+            Uri.parse('$_apiBaseUrl$path'),
+            headers: {
+              'Content-Type': 'application/json',
+              'X-API-Key': _apiKey,
+            },
+            body: json.encode(payload),
+          )
+          .timeout(const Duration(seconds: 15));
+    } on TimeoutException catch (e, st) {
+      throw NetworkException(
+        'Request timed out. Please try again.',
+        originalError: e,
+        stackTrace: st,
+      );
+    } on http.ClientException catch (e, st) {
+      throw NetworkException(
+        'Network error. Please check your internet connection.',
+        originalError: e,
+        stackTrace: st,
+      );
+    }
+
+    Map<String, dynamic> body = {};
+    try {
+      final decoded = json.decode(response.body);
+      if (decoded is Map<String, dynamic>) body = decoded;
+    } on FormatException {
+      // Keep the empty body.
+    }
+
+    if (response.statusCode == 200 ||
+        allowStatuses.contains(response.statusCode)) {
+      return body;
+    }
+    final error = body['error'];
+    throw AuthException(
+      error is String && error.isNotEmpty
+          ? error
+          : 'Server error (${response.statusCode}). Please try again.',
+    );
   }
 
   static bool _isLockedOut(String email) {
-    if (!_loginLockout.containsKey(email)) return false;
-    final lockoutTime = _loginLockout[email]!;
+    final lockoutTime = _loginLockout[email];
+    if (lockoutTime == null) return false;
     if (DateTime.now().difference(lockoutTime) > _lockoutDuration) {
       _loginLockout.remove(email);
+      _failedLoginAttempts.remove(email);
       return false;
     }
     return true;
   }
 
-  // Simple password hashing (for production, use bcrypt package)
-  static String _hashPassword(String password) {
-    // Using a simple hash for demo; production should use crypto package
-    return password.hashCode.toString() + password.length.toString();
+  /// Remember the signed-in user across app restarts.
+  static void _startSession(String email) {
+    _currentUser = email;
+    _currentUserPhone = _userPhones[email];
+    _secureStorage.write(key: _sessionKey, value: email).catchError((Object e) {
+      AppLogger.logWarning('Could not save session: $e');
+    });
   }
 
   static void logout() {
     _currentUser = null;
     _currentUserPhone = null;
+    _secureStorage.delete(key: _sessionKey).catchError((Object e) {
+      AppLogger.logWarning('Could not clear session: $e');
+    });
     AppLogger.logInfo('User logged out');
   }
 
@@ -187,3 +337,9 @@ class AuthService {
   static String? get currentUser => _currentUser;
   static String? get currentUserPhone => _currentUserPhone;
 }
+
+// Top-level so `compute()` can run them on a background isolate.
+String _hashInBackground(String password) => PasswordHasher.hash(password);
+
+bool _verifyInBackground(List<String> args) =>
+    PasswordHasher.verify(args[0], args[1]);

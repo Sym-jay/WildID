@@ -1,17 +1,15 @@
-
-import 'package:flutter/material.dart' hide Badge;
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-// New feature imports
 
+import '../core/services/archive_service.dart';
+import '../core/services/auth_service.dart';
+import '../core/services/species_lookup_service.dart';
+import '../core/theme/app_theme.dart';
+import 'home_screen.dart';
+import 'login_screen.dart';
 
-// ============================================================================
-// MAIN APP & THEME (Legacy - to be refactored)
-// ============================================================================
-import '../widgets/index.dart';
-import '../widgets/location_permission_screen.dart';
-import '../core/services/animal_dataset.dart';
-
-
+/// Loads species data and saved reports, then opens Home (signed in) or
+/// Login. No artificial delay beyond a short brand moment.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -19,170 +17,65 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
-
+class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    );
-    
-    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
-    );
-    
-    _initializeApp();
+    _start();
   }
 
-  Future<void> _initializeApp() async {
-    _controller.forward();
-    await AnimalDataset.loadAnimals();
-    await Future.delayed(const Duration(seconds: 3));
-
-    if (mounted) {
-      // Navigate to Location Permission Screen instead of Login
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const LocationPermissionScreen(),
-          transitionDuration: const Duration(milliseconds: 800),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-        ),
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  Future<void> _start() async {
+    await Future.wait([
+      SpeciesLookupService.loadSpecies().then<void>((_) {}, onError: (Object _) {}),
+      ArchiveService.initialize(),
+      Future<void>.delayed(const Duration(milliseconds: 600)),
+    ]);
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder<void>(
+        transitionDuration: const Duration(milliseconds: 250),
+        pageBuilder: (_, __, ___) =>
+            AuthService.isLoggedIn ? const HomeScreen() : const LoginScreen(),
+        transitionsBuilder: (_, animation, __, child) =>
+            FadeTransition(opacity: animation, child: child),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final wild = WildColors.of(context);
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color.fromARGB(255, 45, 125, 50), Color.fromARGB(255, 32, 97, 39)],
-          ),
-        ),
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // ZSI Logo
-                Container(
-                  width: 120,
-                  height: 120,
-                  padding: const EdgeInsets.all(25),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 20,
-                        offset: Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.water,
-                    size: 70,
-                    color: Color.fromARGB(255, 2, 63, 17),
-                  ),
+      backgroundColor: wild.shell,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(28),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Spacer(),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: Image.asset('assets/images/logo.jpg', width: 72, height: 72, semanticLabel: 'ZSI logo'),
+              ),
+              const SizedBox(height: 24),
+              Text('WILDID', style: AppTheme.display(56, wild.onShell)),
+              const SizedBox(height: 6),
+              Text(
+                'Protected marine species of India',
+                style: GoogleFonts.anekLatin(fontSize: 18, color: wild.shellMuted),
+              ),
+              const Spacer(),
+              Text(
+                'ZOOLOGICAL SURVEY OF INDIA',
+                style: GoogleFonts.anekLatin(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.4,
+                  color: wild.shellMuted,
                 ),
-                const SizedBox(height: 40),
-                Text(
-                  'Marine Species Identifier',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 34,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.5,
-                    shadows: const [
-                      Shadow(
-                        offset: Offset(0, 3),
-                        blurRadius: 8,
-                        color: Colors.black26,
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Zoological Survey of India',
-                  style: GoogleFonts.poppins(
-                    color: Color(0xFFBFDBFE),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.2,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 50),
-                // MoEFCC Logo
-                Container(
-                  width: 100,
-                  height: 100,
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 15,
-                        offset: Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.eco,
-                    size: 60,
-                    color: Color(0xFF15803D),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Ministry of Environment, Forest\nand Climate Change',
-                  style: TextStyle(
-                    color: Color(0xFFBFDBFE),
-                    fontSize: 12,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 60),
-                const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  strokeWidth: 3,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Loading Species Data...',
-                  style: GoogleFonts.poppins(
-                    color: const Color(0xFFBFDBFE),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

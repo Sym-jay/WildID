@@ -1,21 +1,11 @@
+import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart' hide Badge;
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import '../core/theme/app_theme.dart';
-// New feature imports
-import '../shared/widgets/user_profile_card.dart' as profile_widgets;
-import '../utils/app_utils.dart';
-import 'home_screen.dart';
-import 'register_screen.dart';
-import 'otp_login_screen.dart';
+import '../core/config/error_handler.dart';
 import '../core/services/auth_service.dart';
-
-
-// ============================================================================
-// MAIN APP & THEME (Legacy - to be refactored)
-// ============================================================================
-
+import '../widgets/auth_scaffold.dart';
+import 'home_screen.dart';
+import 'otp_login_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
+  String? _error;
 
   @override
   void dispose() {
@@ -38,29 +29,32 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void _goHome() {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      (_) => false,
+    );
+  }
+
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isLoading = true);
-
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
       final success = await AuthService.loginWithEmailPassword(
         _emailController.text.trim(),
         _passwordController.text,
       );
-
-      if (mounted) {
-        if (success) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-          );
-        } else {
-          AppUtils.showError(context, 'Invalid email or password');
-        }
+      if (!mounted) return;
+      if (success) {
+        _goHome();
+      } else {
+        setState(() => _error = 'That email and password do not match.');
       }
-    } catch (e) {
-      if (mounted) {
-        AppUtils.showError(context, 'Login failed: ${e.toString()}');
-      }
+    } on AppException catch (e) {
+      if (mounted) setState(() => _error = e.message);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -68,133 +62,85 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppTheme.primaryColor, AppTheme.backgroundColor],
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Card(
-                elevation: 8,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.pets, size: 60, color: AppTheme.primaryColor),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Welcome Back',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.textPrimaryColor,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text('Login to identify wildlife', style: TextStyle(fontSize: 16, color: Colors.grey)),
-                        const SizedBox(height: 32),
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                            prefixIcon: const Icon(Icons.email),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) return 'Please enter your email';
-                            if (!value.contains('@')) return 'Please enter a valid email';
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            prefixIcon: const Icon(Icons.lock),
-                            suffixIcon: IconButton(
-                              icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                            ),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) return 'Please enter your password';
-                            if (value.length < 6) return 'Password must be at least 6 characters';
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _handleLogin,
-                            child: _isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : const Text('Login'),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text("Don't have an account? "),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                              ),
-                              child: const Text('Register'),
-                            ),
-                          ],
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const OTPLoginScreen()),
-                          ),
-                          child: const Text('Login with OTP'),
-                        ),
-                        const SizedBox(height: 8),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (context) => const HomeScreen()),
-                          ),
-                          child: const Text('Skip Login (Guest Mode)'),
-                        ),
-                      ],
-                    ),
+    final scheme = Theme.of(context).colorScheme;
+    return AuthScaffold(
+      title: 'Sign in',
+      subtitle: 'Sign in to keep your reports and get SMS alerts. You can also continue as a guest.',
+      child: Form(
+        key: _formKey,
+        child: AutofillGroup(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.email],
+                decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.mail_outline)),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) return 'Enter your email';
+                  if (!value.contains('@')) return 'Enter a valid email, like name@example.com';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: _obscurePassword,
+                textInputAction: TextInputAction.done,
+                autofillHints: const [AutofillHints.password],
+                onFieldSubmitted: (_) => _handleLogin(),
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  suffixIcon: IconButton(
+                    tooltip: _obscurePassword ? 'Show password' : 'Hide password',
+                    icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
+                validator: (value) => (value == null || value.isEmpty) ? 'Enter your password' : null,
               ),
-            ),
+              if (_error != null) ...[
+                const SizedBox(height: 12),
+                Text(_error!, style: TextStyle(color: scheme.error, fontSize: 15)),
+              ],
+              const SizedBox(height: 20),
+              FilledButton(
+                onPressed: _isLoading ? null : _handleLogin,
+                child: Text(_isLoading ? 'Signing in…' : 'Sign in'),
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const OTPLoginScreen()),
+                ),
+                icon: const Icon(Icons.sms_outlined),
+                label: const Text('Sign in with a code by SMS'),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Flexible(child: Text('New to WildID?')),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                    ),
+                    child: const Text('Create account'),
+                  ),
+                ],
+              ),
+              const Divider(height: 24),
+              TextButton(
+                onPressed: _goHome,
+                child: const Text('Continue as guest'),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
-
-// ============================================================================
-// REGISTER SCREEN
-// ============================================================================
-

@@ -1,17 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import 'package:flutter/material.dart' hide Badge;
-import 'package:http/http.dart' as http;
-import '../core/theme/app_theme.dart';
-// New feature imports
-import '../utils/app_utils.dart';
-import 'home_screen.dart';
+import '../core/config/error_handler.dart';
 import '../core/services/auth_service.dart';
-
-
-// ============================================================================
-// MAIN APP & THEME (Legacy - to be refactored)
-// ============================================================================
-
+import '../widgets/auth_scaffold.dart';
+import 'home_screen.dart';
 
 class OTPLoginScreen extends StatefulWidget {
   const OTPLoginScreen({super.key});
@@ -26,7 +19,8 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
   final _otpController = TextEditingController();
   bool _isLoading = false;
   bool _otpSent = false;
-  // String? _sentOTP; // Should not store OTP client-side in production
+  String? _message;
+  bool _messageIsError = false;
 
   @override
   void dispose() {
@@ -35,58 +29,59 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
     super.dispose();
   }
 
+  void _show(String text, {bool error = false}) => setState(() {
+        _message = text;
+        _messageIsError = error;
+      });
+
   Future<void> _handleSendOTP() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isLoading = true);
-
+    setState(() {
+      _isLoading = true;
+      _message = null;
+    });
     try {
-      // In a real app, call backend API which uses Twilio/SMS service
-      final otpForDemo = await AuthService.sendOTP(_phoneController.text.trim());
-      if (mounted) {
-        if (otpForDemo != null) {
-          setState(() => _otpSent = true);
-          AppUtils.showSuccess(context, 'OTP sent (Demo: $otpForDemo)'); // Show OTP only for demo
-        } else {
-          AppUtils.showError(context, 'Phone number not registered');
-        }
+      // The backend generates, texts and later checks the code.
+      final result = await AuthService.sendOTP(_phoneController.text.trim());
+      if (!mounted) return;
+      if (result.sent) {
+        setState(() => _otpSent = true);
+        // devCode only comes from a backend running with ZSI_OTP_DEV_ECHO=1.
+        _show(result.devCode == null
+            ? 'We sent a 6-digit code by SMS. It works for 5 minutes.'
+            : 'Test server code: ${result.devCode}');
+      } else {
+        _show('Could not send the code. Try again.', error: true);
       }
-    } catch (e) {
-      if (mounted) {
-        AppUtils.showError(context, 'Failed to send OTP: ${e.toString()}');
-      }
+    } on AppException catch (e) {
+      if (mounted) _show(e.message, error: true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
   Future<void> _handleVerifyOTP() async {
-    if (_otpController.text.isEmpty) {
-      AppUtils.showError(context, 'Please enter the OTP');
+    if (_otpController.text.trim().length != 6) {
+      _show('Enter the 6-digit code from the SMS.', error: true);
       return;
     }
     setState(() => _isLoading = true);
-
     try {
-      // In a real app, send phone + OTP to backend for verification
       final success = await AuthService.verifyOTP(
         _phoneController.text.trim(),
         _otpController.text.trim(),
       );
-
-      if (mounted) {
-        if (success) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-            (route) => false,
-          );
-        } else {
-          AppUtils.showError(context, 'Invalid OTP');
-        }
+      if (!mounted) return;
+      if (success) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          (_) => false,
+        );
+      } else {
+        _show('That code is not right. Check the SMS and try again.', error: true);
       }
-    } catch (e) {
-      if (mounted) {
-        AppUtils.showError(context, 'Verification failed: ${e.toString()}');
-      }
+    } on AppException catch (e) {
+      if (mounted) _show(e.message, error: true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -94,122 +89,80 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Login with OTP'), elevation: 0),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppTheme.primaryColor, AppTheme.backgroundColor],
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Card(
-                elevation: 8,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.sms, size: 60, color: AppTheme.primaryColor),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'OTP Login',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.textPrimaryColor,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Enter your registered phone number',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 32),
-                        TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.phone,
-                          enabled: !_otpSent,
-                          decoration: InputDecoration(
-                            labelText: 'Phone Number',
-                            prefixIcon: const Icon(Icons.phone),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) return 'Please enter your phone number';
-                            if (!RegExp(r'^\+?[0-9]{10,}$').hasMatch(value)) {
-                              return 'Please enter a valid phone number';
-                            }
-                            return null;
-                          },
-                        ),
-                        if (_otpSent) ...[
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _otpController,
-                            keyboardType: TextInputType.number,
-                            maxLength: 6,
-                            decoration: InputDecoration(
-                              labelText: 'Enter OTP',
-                              prefixIcon: const Icon(Icons.lock),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                              counterText: "", // Hide the counter
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : (_otpSent ? _handleVerifyOTP : _handleSendOTP),
-                            child: _isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : Text(_otpSent ? 'Verify OTP' : 'Send OTP'),
-                          ),
-                        ),
-                        if (_otpSent) ...[
-                          const SizedBox(height: 16),
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _otpSent = false;
-                                _otpController.clear();
-                              });
-                            },
-                            child: const Text('Change Phone Number'),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
+    final scheme = Theme.of(context).colorScheme;
+    return AuthScaffold(
+      title: 'Sign in by SMS',
+      subtitle: 'Use the mobile number on your WildID account. We text you a one-time code.',
+      showBack: true,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              enabled: !_otpSent,
+              autofillHints: const [AutofillHints.telephoneNumber],
+              decoration: const InputDecoration(
+                labelText: 'Mobile number',
+                prefixIcon: Icon(Icons.phone_outlined),
+                hintText: '98765 43210',
+              ),
+              validator: (v) {
+                final digits = AuthService.normalizePhone(v ?? '');
+                if (digits.isEmpty) return 'Enter your mobile number';
+                if (!RegExp(r'^[6-9]\d{9}$').hasMatch(digits)) return 'Enter a 10-digit Indian mobile number';
+                return null;
+              },
+            ),
+            if (_otpSent) ...[
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: _otpController,
+                keyboardType: TextInputType.number,
+                autofillHints: const [AutofillHints.oneTimeCode],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                maxLength: 6,
+                autofocus: true,
+                onFieldSubmitted: (_) => _handleVerifyOTP(),
+                decoration: const InputDecoration(
+                  labelText: '6-digit code',
+                  prefixIcon: Icon(Icons.pin_outlined),
+                  counterText: '',
                 ),
               ),
+            ],
+            if (_message != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                _message!,
+                style: TextStyle(fontSize: 15, color: _messageIsError ? scheme.error : scheme.onSurfaceVariant),
+              ),
+            ],
+            const SizedBox(height: 20),
+            FilledButton(
+              onPressed: _isLoading ? null : (_otpSent ? _handleVerifyOTP : _handleSendOTP),
+              child: Text(_isLoading
+                  ? 'Please wait…'
+                  : _otpSent
+                      ? 'Sign in'
+                      : 'Send code'),
             ),
-          ),
+            if (_otpSent) ...[
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () => setState(() {
+                  _otpSent = false;
+                  _otpController.clear();
+                  _message = null;
+                }),
+                child: const Text('Use a different number'),
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
 }
-
-// ============================================================================
-// HOME SCREEN
-// ============================================================================
-

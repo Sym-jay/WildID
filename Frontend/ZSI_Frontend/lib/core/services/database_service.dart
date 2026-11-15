@@ -325,7 +325,7 @@ class DatabaseService {
       imagePath: map['imagePath'] as String,
       timestamp: DateTime.parse(map['timestamp'] as String),
       identifiedSpecies: map['identifiedSpecies'] as String?,
-      confidence: map['confidence'] as double?,
+      confidence: (map['confidence'] as num?)?.toDouble(),
       userEmail: map['userEmail'] as String?,
       userPhone: map['userPhone'] as String?,
       needsVerification: (map['needsVerification'] as int?) == 1,
@@ -339,8 +339,8 @@ class DatabaseService {
           ? DateTime.parse(map['verifiedAt'] as String)
           : null,
       habitatType: map['habitatType'] as String?,
-      waterTemperature: map['waterTemperature'] as double?,
-      waterDepth: map['waterDepth'] as double?,
+      waterTemperature: (map['waterTemperature'] as num?)?.toDouble(),
+      waterDepth: (map['waterDepth'] as num?)?.toDouble(),
       waterTurbidity: map['waterTurbidity'] as String?,
       behaviors: map['behaviors'] as String?,
       observationDateTime: map['observationDateTime'] != null
