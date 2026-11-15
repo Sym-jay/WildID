@@ -1,4 +1,4 @@
-# ZSI Wildlife Identifier 🐾
+# WildID 🐾
 
 A Flutter-based mobile application designed to identify endangered marine species with AI-powered image classification. The app uses an ensemble of PyTorch-trained deep learning models (EfficientNet-B0, ResNet-50, MobileNet-V3) trained on 66 CITES-protected marine species, enabling users to capture or upload photos and receive instant, highly accurate classifications to support conservation awareness and education.
 
@@ -413,7 +413,7 @@ Since you're the sole developer, the workflow is straightforward:
 
 ## 📞 Support & Contact
 
-- **Repository**: https://github.com/Sym-jay/zsi_app
+- **Repository**: https://github.com/Sym-jay/WildID
 - **Issues**: Use GitHub Issues for bug reports
 - **Documentation**: See Documentation/ folder for detailed guides
 
