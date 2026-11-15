@@ -182,7 +182,10 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
               const SizedBox(height: 4),
               Text(
                 'This usually takes a few seconds.',
-                style: GoogleFonts.anekLatin(fontSize: 15, color: wild.shellMuted),
+                style: GoogleFonts.anekLatin(
+                  fontSize: 15,
+                  color: wild.shellMuted,
+                ),
               ),
             ],
           ),
@@ -201,8 +204,12 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
         color: wild.card,
         child: bytes == null
             ? const SizedBox.shrink()
-            : Image.memory(bytes, fit: fit, gaplessPlayback: true,
-                semanticLabel: 'Your photo'),
+            : Image.memory(
+                bytes,
+                fit: fit,
+                gaplessPlayback: true,
+                semanticLabel: 'Your photo',
+              ),
       ),
     );
   }
@@ -223,7 +230,11 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
             Text(
               _error!,
               textAlign: TextAlign.center,
-              style: GoogleFonts.anekLatin(fontSize: 18, height: 1.4, color: wild.ink),
+              style: GoogleFonts.anekLatin(
+                fontSize: 18,
+                height: 1.4,
+                color: wild.ink,
+              ),
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
@@ -259,8 +270,11 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
             sliver: SliverList.list(
               children: [
                 if (_outcome?.isDemo ?? false) ...[
-                  _note(wild, Icons.science_outlined,
-                      'Demo result: this build does not contact the server.'),
+                  _note(
+                    wild,
+                    Icons.science_outlined,
+                    'Demo result: this build does not contact the server.',
+                  ),
                   const SizedBox(height: 12),
                 ],
                 _matchCard(wild, top),
@@ -285,7 +299,11 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
               FilledButton.icon(
                 onPressed: _addDetails,
                 icon: const Icon(Icons.edit_note),
-                label: Text((_record?.habitatType != null) ? 'Edit report details' : 'Add details for ZSI'),
+                label: Text(
+                  (_record?.habitatType != null)
+                      ? 'Edit report details'
+                      : 'Add details for ZSI',
+                ),
               ),
               const SizedBox(height: 8),
               OutlinedButton.icon(
@@ -305,88 +323,90 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
     final fg = status.onColor;
     final (eyebrow, headline, body) = switch (status) {
       ProtectionStatus.scheduleI => (
-          'SCHEDULE I',
-          'PROTECTED.\nDO NOT KEEP.',
-          'Release it alive if you can. Catching, keeping or selling this species is an offence.',
-        ),
+        'SCHEDULE I',
+        'PROTECTED.\nDO NOT KEEP.',
+        'Release it alive if you can. Catching, keeping or selling this species is an offence.',
+      ),
       ProtectionStatus.scheduleII => (
-          'SCHEDULE II',
-          'PROTECTED.\nRELEASE IT.',
-          'Catching or trading this species is controlled by law. Release it alive if you can.',
-        ),
+        'SCHEDULE II',
+        'PROTECTED.\nRELEASE IT.',
+        'Catching or trading this species is controlled by law. Release it alive if you can.',
+      ),
       ProtectionStatus.unsure => (
-          'UNSURE',
-          "CAN'T TELL.\nRETAKE.",
-          'The match is not strong enough. Photograph the whole animal in daylight, from the side or top.',
-        ),
+        'UNSURE',
+        "CAN'T TELL.\nRETAKE.",
+        'The match is not strong enough. Photograph the whole animal in daylight, from the side or top.',
+      ),
       ProtectionStatus.notListed => (
-          'NOT LISTED',
-          'NOT ON THE\nPROTECTED LIST.',
-          "This species is not in WildID's protected list. Local fishing rules still apply.",
-        ),
+        'NOT LISTED',
+        'NOT ON THE\nPROTECTED LIST.',
+        "This species is not in WildID's protected list. Local fishing rules still apply.",
+      ),
     };
-    final isSchedule = status == ProtectionStatus.scheduleI || status == ProtectionStatus.scheduleII;
+    final isSchedule =
+        status == ProtectionStatus.scheduleI ||
+        status == ProtectionStatus.scheduleII;
 
-    return Semantics(
-      container: true,
-      liveRegion: true,
-      label: '$eyebrow. ${headline.replaceAll('\n', ' ')} $body',
-      child: ExcludeSemantics(
-        child: Container(
-          color: status.color,
-          padding: EdgeInsets.fromLTRB(8, topInset + 4, 20, 22),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+    return Container(
+      color: status.color,
+      padding: EdgeInsets.fromLTRB(8, topInset + 4, 20, 22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(Icons.arrow_back, color: fg),
+            tooltip: 'Back',
+          ),
+          // Read the verdict as one announcement, but keep Back reachable.
+          Semantics(
+            container: true,
+            liveRegion: true,
+            header: true,
+            label: '$eyebrow. ${headline.replaceAll('\n', ' ')} $body',
+            excludeSemantics: true,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(Icons.arrow_back, color: fg),
-                    tooltip: 'Back',
+                  const SizedBox(height: 6),
+                  Text(
+                    eyebrow,
+                    style: GoogleFonts.anekLatin(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.4,
+                      color: fg,
+                    ),
                   ),
+                  const SizedBox(height: 4),
+                  Text(headline, style: AppTheme.display(48, fg)),
+                  const SizedBox(height: 12),
+                  Text(
+                    body,
+                    style: GoogleFonts.anekLatin(
+                      fontSize: 17,
+                      height: 1.4,
+                      fontWeight: FontWeight.w500,
+                      color: fg,
+                    ),
+                  ),
+                  if (isSchedule) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      "Listed under India's Wildlife (Protection) Act, 1972.",
+                      style: GoogleFonts.anekLatin(
+                        fontSize: 14,
+                        color: fg.withValues(alpha: 0.9),
+                      ),
+                    ),
+                  ],
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 6),
-                    Text(
-                      eyebrow,
-                      style: GoogleFonts.anekLatin(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.4,
-                        color: fg,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(headline, style: AppTheme.display(48, fg)),
-                    const SizedBox(height: 12),
-                    Text(
-                      body,
-                      style: GoogleFonts.anekLatin(
-                        fontSize: 17,
-                        height: 1.4,
-                        fontWeight: FontWeight.w500,
-                        color: fg,
-                      ),
-                    ),
-                    if (isSchedule) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        "Listed under India's Wildlife (Protection) Act, 1972.",
-                        style: GoogleFonts.anekLatin(fontSize: 14, color: fg.withValues(alpha: 0.9)),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -403,7 +423,10 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
           Icon(icon, size: 20, color: wild.ink),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(text, style: GoogleFonts.anekLatin(fontSize: 15, color: wild.ink)),
+            child: Text(
+              text,
+              style: GoogleFonts.anekLatin(fontSize: 15, color: wild.ink),
+            ),
           ),
         ],
       ),
@@ -417,111 +440,145 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
     final label = top == null
         ? 'No species matched'
         : confidence >= 0.8
-            ? 'High confidence match'
-            : confidence >= kConfidentMatch
-                ? 'Likely match, check the details'
-                : 'Best guess only';
+        ? 'High confidence match'
+        : confidence >= kConfidentMatch
+        ? 'Likely match, check the details'
+        : 'Best guess only';
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: animal == null
-            ? null
-            : () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => SpeciesDetailScreen(animal: animal)),
-                ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _photo(wild, size: 112),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: GoogleFonts.anekLatin(
-                      fontSize: 26,
-                      height: 1.05,
-                      fontWeight: FontWeight.w800,
-                      color: wild.ink,
-                    ),
+    final percent = (confidence * 100).round();
+    return Semantics(
+      container: true,
+      button: animal != null,
+      label: [
+        name,
+        if (top != null) '$percent percent match',
+        label,
+        if (animal != null) 'Opens species details',
+      ].join('. '),
+      excludeSemantics: true,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: animal == null
+              ? null
+              : () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => SpeciesDetailScreen(animal: animal),
                   ),
-                  if (animal != null && animal.scientificName != animal.name) ...[
-                    const SizedBox(height: 2),
+                ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _photo(wild, size: 112),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      animal.scientificName,
+                      name,
                       style: GoogleFonts.anekLatin(
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
-                        color: wild.muted,
+                        fontSize: 26,
+                        height: 1.05,
+                        fontWeight: FontWeight.w800,
+                        color: wild.ink,
                       ),
                     ),
-                  ],
-                  if (top != null) ...[
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Semantics(
-                            label: '${(confidence * 100).round()} percent match',
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: LinearProgressIndicator(
-                                value: confidence,
-                                minHeight: 8,
-                                color: Theme.of(context).colorScheme.primary,
-                                backgroundColor: wild.line,
+                    if (animal != null &&
+                        animal.scientificName != animal.name) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        animal.scientificName,
+                        style: GoogleFonts.anekLatin(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                          color: wild.muted,
+                        ),
+                      ),
+                    ],
+                    if (top != null) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Semantics(
+                              label:
+                                  '${(confidence * 100).round()} percent match',
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: LinearProgressIndicator(
+                                  value: confidence,
+                                  minHeight: 8,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  backgroundColor: wild.line,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${(confidence * 100).round()}%',
-                          style: GoogleFonts.anekLatin(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: wild.ink,
-                            fontFeatures: const [FontFeature.tabularFigures()],
+                          const SizedBox(width: 8),
+                          Text(
+                            '${(confidence * 100).round()}%',
+                            style: GoogleFonts.anekLatin(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: wild.ink,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 4),
-                  Text(label, style: GoogleFonts.anekLatin(fontSize: 14, color: wild.muted)),
-                  if (animal != null)
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 4),
                     Text(
-                      'About this species ›',
+                      label,
                       style: GoogleFonts.anekLatin(
                         fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: wild.muted,
                       ),
                     ),
-                ],
+                    if (animal != null)
+                      Text(
+                        'About this species ›',
+                        style: GoogleFonts.anekLatin(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _alternatives(WildColors wild, List<IdentificationResult> alternatives, ProtectionStatus topStatus) {
+  Widget _alternatives(
+    WildColors wild,
+    List<IdentificationResult> alternatives,
+    ProtectionStatus topStatus,
+  ) {
     final statuses = alternatives.map((r) {
       final a = _animals[r.label];
-      return a == null ? ProtectionStatus.unsure : ProtectionStatusX.fromSchedule(a.schedule);
+      return a == null
+          ? ProtectionStatus.unsure
+          : ProtectionStatusX.fromSchedule(a.schedule);
     }).toList();
-    final sameAdvice = topStatus != ProtectionStatus.unsure &&
+    final sameAdvice =
+        topStatus != ProtectionStatus.unsure &&
         statuses.every((s) => s == topStatus);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-      decoration: BoxDecoration(color: wild.card, borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+        color: wild.card,
+        borderRadius: BorderRadius.circular(14),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -542,12 +599,19 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
                   Expanded(
                     child: Text(
                       _animals[r.label]?.name ?? r.label,
-                      style: GoogleFonts.anekLatin(fontSize: 16, fontWeight: FontWeight.w600, color: wild.ink),
+                      style: GoogleFonts.anekLatin(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: wild.ink,
+                      ),
                     ),
                   ),
                   Text(
                     '${(r.confidence * 100).round()}%',
-                    style: GoogleFonts.anekLatin(fontSize: 15, color: wild.muted),
+                    style: GoogleFonts.anekLatin(
+                      fontSize: 15,
+                      color: wild.muted,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   StatusTag(statuses[i], compact: true),
@@ -573,7 +637,11 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
       children: [
         Row(
           children: [
-            Icon(Icons.check_circle_outline, size: 20, color: Theme.of(context).colorScheme.primary),
+            Icon(
+              Icons.check_circle_outline,
+              size: 20,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -592,7 +660,9 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                location == null ? 'No location (turn on GPS to add it)' : LocationService.format(location),
+                location == null
+                    ? 'No location (turn on GPS to add it)'
+                    : LocationService.format(location),
                 style: GoogleFonts.anekLatin(fontSize: 15, color: wild.muted),
               ),
             ),

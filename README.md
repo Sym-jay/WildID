@@ -111,6 +111,29 @@ The app no longer ships a default API key. Pass the same key at build/run time:
 flutter run --dart-define=ZSI_API_KEY=<key> [--dart-define=ZSI_API_BASE_URL=http://10.0.2.2:5000]
 ```
 
+## 🧪 Testing
+
+```bash
+cd Frontend/ZSI_Frontend
+flutter test                                      # unit and widget tests
+```
+
+**Browser end-to-end tests (Playwright).** These run against the web build in demo mode
+(`ZSI_DEMO=true` returns a labelled sample result, so no API key is needed), on Pixel 7
+(light and dark) and iPhone 14 screen sizes, including screenshot comparisons:
+
+```bash
+cd Frontend/ZSI_Frontend
+flutter build web --dart-define=ZSI_DEMO=true
+cd e2e
+npm install
+npx playwright install chromium
+npm run test:e2e              # npm run test:e2e:update  to refresh screenshots
+```
+
+Playwright drives browsers only. Camera, GPS and on-device storage are covered by the
+native Android test in `integration_test/` (see below).
+
 ## 🏗️ Building for Production
 
 ### Android APK

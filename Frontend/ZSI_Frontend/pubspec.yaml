@@ -75,6 +75,7 @@ flutter:
 
   assets:
     - assets/images/logo.jpg
+    - assets/google_fonts/
     - assets/species_data.json
     - assets/ml/zsi_class_mapping.json
     - assets/species_images/

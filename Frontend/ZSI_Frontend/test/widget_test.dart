@@ -105,6 +105,9 @@ void main() {
       await tester.pumpWidget(const MaterialApp(
         home: Scaffold(body: StatusTag(ProtectionStatus.scheduleI)),
       ));
+      // The bundled Anek Latin loads asynchronously; let it finish.
+      await tester.runAsync(GoogleFonts.pendingFonts);
+      await tester.pumpAndSettle();
       expect(find.text('SCH. I'), findsOneWidget);
     });
   });

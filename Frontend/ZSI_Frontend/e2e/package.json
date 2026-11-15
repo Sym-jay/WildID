@@ -1,0 +1,13 @@
+{
+  "name": "wildid-e2e",
+  "private": true,
+  "description": "Playwright end-to-end tests for the WildID web demo build at phone sizes",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:update": "playwright test --update-snapshots",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
+  }
+}

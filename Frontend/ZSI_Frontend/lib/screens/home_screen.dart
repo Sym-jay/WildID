@@ -12,7 +12,7 @@ import '../widgets/wild_widgets.dart';
 import 'browse_species_screen.dart';
 import 'identification_screen.dart';
 import 'profile_screen.dart';
-import 'upload_history_screen.dart';
+import 'upload_history_screen.dart' show UploadHistoryScreen, showSightingSheet;
 
 /// Protection status of a saved sighting, from the species it was matched to.
 ProtectionStatus statusForRecord(UploadRecord record) {
@@ -281,7 +281,7 @@ class _IdentifyTabState extends State<IdentifyTab> {
               children: [
                 for (final (i, r) in records.take(3).indexed) ...[
                   if (i > 0) const Divider(indent: 78),
-                  SightingRow(record: r),
+                  SightingRow(record: r, onTap: () => showSightingSheet(context, r.id)),
                 ],
               ],
             ),
