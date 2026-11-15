@@ -35,6 +35,7 @@ class AuthService {
   static const String _apiKey = String.fromEnvironment('ZSI_API_KEY');
 
   static const _storageKey = 'zsi_users_data';
+  static const _sessionKey = 'zsi_session';
   static const int _maxLoginAttempts = 5;
   static const Duration _lockoutDuration = Duration(minutes: 15);
 
@@ -60,6 +61,11 @@ class AuthService {
         _users.addAll(Map<String, String>.from(data['users'] ?? {}));
         _userPhones.addAll(Map<String, String>.from(data['phones'] ?? {}));
         AppLogger.logInfo('Loaded ${_users.length} stored users');
+      }
+      final session = await _secureStorage.read(key: _sessionKey);
+      if (session != null && _users.containsKey(session)) {
+        _currentUser = session;
+        _currentUserPhone = _userPhones[session];
       }
       _initialized = true;
     } catch (e, st) {
@@ -136,8 +142,7 @@ class AuthService {
           await _saveCredentials();
           AppLogger.logInfo('Upgraded stored password hash');
         }
-        _currentUser = email;
-        _currentUserPhone = _userPhones[email];
+        _startSession(email);
         _failedLoginAttempts.remove(email);
         _loginLockout.remove(email);
         AppLogger.logInfo('User logged in');
@@ -230,8 +235,7 @@ class AuthService {
     }
 
     _otpTokens.remove(normalizePhone(phone));
-    _currentUser = email;
-    _currentUserPhone = _userPhones[email];
+    _startSession(email);
     AppLogger.logInfo('User verified with OTP');
     return true;
   }
@@ -311,9 +315,21 @@ class AuthService {
     return true;
   }
 
+  /// Remember the signed-in user across app restarts.
+  static void _startSession(String email) {
+    _currentUser = email;
+    _currentUserPhone = _userPhones[email];
+    _secureStorage.write(key: _sessionKey, value: email).catchError((Object e) {
+      AppLogger.logWarning('Could not save session: $e');
+    });
+  }
+
   static void logout() {
     _currentUser = null;
     _currentUserPhone = null;
+    _secureStorage.delete(key: _sessionKey).catchError((Object e) {
+      AppLogger.logWarning('Could not clear session: $e');
+    });
     AppLogger.logInfo('User logged out');
   }
 

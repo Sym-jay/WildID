@@ -1,4 +1,3 @@
-// Widgets index - re-exports all widget components
-export 'species_card.dart';
-export 'upload_detail_sheet.dart';
-export 'location_permission_screen.dart';
+// Widgets index - re-exports shared widget components
+export 'wild_widgets.dart';
+export 'auth_scaffold.dart';

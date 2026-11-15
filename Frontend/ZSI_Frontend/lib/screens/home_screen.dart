@@ -1,500 +1,350 @@
-
-import 'dart:io';
-import 'package:flutter/material.dart' hide Badge;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../core/services/archive_service.dart';
+import '../core/services/identification_service.dart';
+import '../core/services/species_lookup_service.dart';
 import '../core/theme/app_theme.dart';
 import '../shared/models/index.dart';
-// New feature imports
-import '../shared/widgets/user_profile_card.dart' as profile_widgets;
-import '../dialogs/index.dart';
-import '../core/services/index.dart';
-import 'login_screen.dart';
-import 'identification_screen.dart';
-import 'verification_queue_screen.dart';
-import 'upload_history_screen.dart';
+import '../widgets/wild_widgets.dart';
 import 'browse_species_screen.dart';
-import '../utils/app_utils.dart';
+import 'identification_screen.dart';
+import 'profile_screen.dart';
+import 'upload_history_screen.dart';
 
+/// Protection status of a saved sighting, from the species it was matched to.
+ProtectionStatus statusForRecord(UploadRecord record) {
+  final label = record.verifiedSpecies ?? record.identifiedSpecies;
+  if (label == null) return ProtectionStatus.unsure;
+  if ((record.confidence ?? 1) < 0.5 && record.verifiedSpecies == null) {
+    return ProtectionStatus.unsure;
+  }
+  final animal = SpeciesLookupService.lookupLoaded(label);
+  if (animal == null) return ProtectionStatus.unsure;
+  return ProtectionStatusX.fromSchedule(animal.schedule);
+}
 
-// ============================================================================
-// MAIN APP & THEME (Legacy - to be refactored)
-// ============================================================================
+/// Display name for a sighting's species (common name when we know it).
+String speciesNameForRecord(UploadRecord record) {
+  final label = record.verifiedSpecies ?? record.identifiedSpecies;
+  if (label == null) return 'Not recognised';
+  return SpeciesLookupService.lookupLoaded(label)?.name ?? label;
+}
 
-
+/// App shell: Identify, Species, History, Profile.
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.initialTab = 0});
+
+  final int initialTab;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
-  final ImagePicker _picker = ImagePicker();
-  late AnimationController _controller;
-  late Animation<double> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-    _slideAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeOutBack);
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickImage(ImageSource source) async {
-    try {
-      final XFile? pickedFile = await _picker.pickImage(
-        source: source,
-        imageQuality: 85,
-        maxWidth: 1920,
-        maxHeight: 1080,
-      );
-
-      if (pickedFile != null && mounted) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => IdentificationScreen(imageFile: File(pickedFile.path)),
-          ),
-        );
-      }
-    } on PlatformException catch (e) {
-      if (mounted) {
-        String message = 'Permission denied. Please enable ${source == ImageSource.camera ? "camera" : "photo library"} access in settings.';
-        if (Platform.isIOS && e.code == 'camera_access_denied') {
-          message = 'Camera access denied. Go to Settings > Privacy > Camera to enable access.';
-        } else if (Platform.isIOS && e.code == 'photo_access_denied') {
-          message = 'Photo library access denied. Go to Settings > Privacy > Photos to enable access.';
-        }
-        AppUtils.showError(context, message);
-      }
-    } catch (e) {
-      if (mounted) {
-        AppUtils.showError(context, 'Error picking image: ${e.toString()}');
-      }
-    }
-  }
-
-  void _handleLogout() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              AuthService.logout();
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-                (route) => false,
-              );
-            },
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAboutDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Contact Us'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Zoological Survey of India',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              _buildContactRow(Icons.location_on, 'M-Block, New Alipore, Kolkata - 700053'),
-              const SizedBox(height: 12),
-              _buildContactRow(Icons.email, 'zsi@gov.in'),
-              const SizedBox(height: 12),
-              _buildContactRow(Icons.phone, '+91-33-2400-1893'),
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 8),
-              const Text(
-                'For species identification assistance, please upload images through the app. Your uploads help conservation research.',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContactRow(IconData icon, String text) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 20, color: AppTheme.primaryColor),
-        const SizedBox(width: 8),
-        Expanded(child: Text(text)),
-      ],
-    );
-  }
-
-  void _showAlertHistory() {
-    final alerts = SMSService.getSentAlerts();
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('SMS History'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: alerts.isEmpty
-              ? const Center(child: Text('No SMS sent yet'))
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: alerts.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const Icon(Icons.sms, color: AppTheme.primaryColor),
-                      title: Text(alerts[index], style: const TextStyle(fontSize: 12)),
-                      dense: true,
-                    );
-                  },
-                ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
-        ],
-      ),
-    );
-  }
-
-  void _showProfileDialog() {
-    // Create sample user profile
-    final profile = UserProfile(
-      userId: AuthService.currentUser ?? 'guest',
-      email: AuthService.currentUser ?? 'not-logged-in@example.com',
-      displayName: 'Wildlife Observer',
-      joinDate: DateTime.now().subtract(const Duration(days: 90)),
-      totalSubmissions: ArchiveService.getUploadHistory().length,
-      verifiedSubmissions: ArchiveService.getUploadHistory()
-          .where((r) => r.status == 'verified')
-          .length,
-      accuracyScore: ArchiveService.getStatistics()['verifiedPercentage']?.toDouble() ?? 0.0,
-      badges: _calculateBadges(),
-    );
-
-    final badges = [
-      Badge(
-        id: 'first_observation',
-        name: 'First Step',
-        description: 'Submit your first observation',
-        icon: '🌱',
-        condition: 'totalSubmissions >= 1',
-      ),
-      Badge(
-        id: 'verified_100',
-        name: 'Verified Century',
-        description: 'Get 100 observations verified',
-        icon: '✅',
-        condition: 'verifiedSubmissions >= 100',
-      ),
-      Badge(
-        id: 'accuracy_90',
-        name: 'Expert Eye',
-        description: 'Achieve 90% accuracy rate',
-        icon: '👁️',
-        condition: 'accuracyScore >= 90',
-      ),
-    ];
-
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        insetPadding: const EdgeInsets.all(16),
-        child: profile_widgets.UserProfileCard(profile: profile, badges: badges),
-      ),
-    );
-  }
-
-  List<String> _calculateBadges() {
-    final badges = <String>[];
-    final uploadHistory = ArchiveService.getUploadHistory();
-    final verified = uploadHistory.where((r) => r.status == 'verified').length;
-    
-    if (uploadHistory.isNotEmpty) badges.add('first_observation');
-    if (verified >= 100) badges.add('verified_100');
-    
-    return badges;
-  }
+class _HomeScreenState extends State<HomeScreen> {
+  late int _tab = widget.initialTab;
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      IdentifyTab(onSeeHistory: () => setState(() => _tab = 2)),
+      const BrowseSpeciesScreen(),
+      const UploadHistoryScreen(),
+      const ProfileScreen(),
+    ];
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('FISH ID India'),
-        actions: [
-         /* IconButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const BrowseSpeciesScreen()),
-            ),
-            icon: const Icon(Icons.list),
-            tooltip: 'Browse Species', */
-         // ),
-            IconButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const HelpCenterScreen()),
-              ),
-              icon: const Icon(Icons.help_outline),
-              tooltip: 'Help',
-            ),
-
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'logout') {
-                _handleLogout();
-              } else if (value == 'alerts') {
-                _showAlertHistory();
-              } else if (value == 'profile') {
-                _showProfileDialog();
-              } else if (value == 'verification') {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const VerificationQueueScreen()),
-                );
-              } else if (value == 'uploads') {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const UploadHistoryScreen()),
-                );
-              } else if (value == 'about') {
-                _showAboutDialog();
-              } else if (value == 'login') {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                      (route) => false,
-                );
-              }
-            },
-            itemBuilder: (context) => [
-              if (AuthService.isLoggedIn) ...[
-                PopupMenuItem(
-                  value: 'profile',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.person, size: 20),
-                      const SizedBox(width: 8),
-                      const Text('My Profile'),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'verification',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.verified_user, size: 20),
-                      const SizedBox(width: 8),
-                      Text('Verification Queue (${ArchiveService.getNeedsVerification().length})'),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'uploads',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.history, size: 20),
-                      const SizedBox(width: 8),
-                      Text('Upload History (${ArchiveService.getUploadHistory().length})'),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'alerts',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.sms, size: 20),
-                      const SizedBox(width: 8),
-                      Text('SMS History (${SMSService.getSentAlerts().length})'),
-                    ],
-                  ),
-                ),
-                const PopupMenuDivider(),
-              ],
-              const PopupMenuItem(
-                value: 'about',
-                child: Row(
-                  children: [
-                    Icon(Icons.info_outline, size: 20),
-                    SizedBox(width: 8),
-                    Text('Contact Us'),
-                  ],
-                ),
-              ),
-              if (AuthService.isLoggedIn)
-                const PopupMenuItem(
-                  value: 'logout',
-                  child: Row(
-                    children: [
-                      Icon(Icons.logout, size: 20),
-                      SizedBox(width: 8),
-                      Text('Logout'),
-                    ],
-                  ),
-                )
-              else
-                const PopupMenuItem(
-                  value: 'login',
-                  child: Row(
-                    children: [
-                      Icon(Icons.login, size: 20),
-                      SizedBox(width: 8),
-                      Text('Login / Register'),
-                    ],
-                  ),
-                ),
-            ],
+      body: IndexedStack(index: _tab, children: pages),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _tab,
+        onDestinationSelected: (i) => setState(() => _tab = i),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.photo_camera_outlined),
+            selectedIcon: Icon(Icons.photo_camera),
+            label: 'Identify',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.set_meal_outlined),
+            selectedIcon: Icon(Icons.set_meal),
+            label: 'Species',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.history),
+            label: 'History',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
-      ),
-      body: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.white, AppTheme.backgroundColor],
-          ),
-        ),
-        child: SlideTransition(
-          position: Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(_slideAnimation),
-          child: FadeTransition(
-            opacity: _slideAnimation,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(25),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [AppTheme.primaryColor, AppTheme.secondaryColor]),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(Icons.camera_alt, size: 60, color: Colors.white),
-                ),
-                const SizedBox(height: 30),
-                Text(
-                  'Identify Wildlife',
-                  style: GoogleFonts.poppins(
-                    fontSize: 34,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.textPrimaryColor,
-                    letterSpacing: -0.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'Take a photo or upload an image to identify endangered species using AI',
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      color: Colors.grey[600],
-                      height: 1.5,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                if (AuthService.isLoggedIn) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.green[200]!),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.check_circle, color: Colors.green, size: 16),
-                        const SizedBox(width: 8),
-                        Text(
-                          'SMS alerts & data archiving enabled',
-                          style: TextStyle(color: Colors.green[800], fontSize: 14, fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 60),
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton.icon(
-                    onPressed: () => _pickImage(ImageSource.camera),
-                    icon: const Icon(Icons.camera_alt, size: 24),
-                    label: const Text('Take Photo', style: TextStyle(fontSize: 18)),
-                    style: ElevatedButton.styleFrom(
-                      elevation: 8,
-                      shadowColor: AppTheme.primaryColor.withValues(alpha: 0.3),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: OutlinedButton.icon(
-                    onPressed: () => _pickImage(ImageSource.gallery),
-                    icon: const Icon(Icons.image, size: 24),
-                    label: const Text('Upload from Gallery', style: TextStyle(fontSize: 18)),
-                  ),
-                ),
-                const SizedBox(height: 40),
-                const Divider(height: 40),
-                TextButton.icon(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const BrowseSpeciesScreen()),
-                  ),
-                  icon: const Icon(Icons.list_alt),
-                  label: const Text('Browse Species Database', style: TextStyle(fontSize: 16)),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
 }
 
-// ============================================================================
-// IDENTIFICATION SCREEN
-// ============================================================================
+/// Start an identification from the camera or gallery.
+Future<void> startIdentification(BuildContext context, ImageSource source) async {
+  final messenger = ScaffoldMessenger.of(context);
+  final navigator = Navigator.of(context);
+  try {
+    final image = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 90,
+      maxWidth: 2048,
+      maxHeight: 2048,
+    );
+    if (image == null) return;
+    await navigator.push(
+      MaterialPageRoute(builder: (_) => IdentificationScreen(image: image)),
+    );
+  } on PlatformException catch (e) {
+    final what = source == ImageSource.camera ? 'camera' : 'photos';
+    messenger.showSnackBar(SnackBar(
+      content: Text(
+        e.code.contains('denied')
+            ? 'WildID needs access to your $what. Allow it in your phone settings.'
+            : 'Could not open the $what. Try again.',
+      ),
+    ));
+  }
+}
 
+class IdentifyTab extends StatefulWidget {
+  const IdentifyTab({super.key, required this.onSeeHistory});
+
+  final VoidCallback onSeeHistory;
+
+  @override
+  State<IdentifyTab> createState() => _IdentifyTabState();
+}
+
+class _IdentifyTabState extends State<IdentifyTab> {
+  @override
+  void initState() {
+    super.initState();
+    // Species names and schedules for the recent list.
+    SpeciesLookupService.loadSpecies().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final wild = WildColors.of(context);
+    final topInset = MediaQuery.paddingOf(context).top;
+
+    return ColoredBox(
+      color: wild.ground,
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Container(
+              color: wild.shell,
+              padding: EdgeInsets.fromLTRB(20, topInset + 16, 20, 22),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _brandRow(wild),
+                  const SizedBox(height: 22),
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      'IS IT\nPROTECTED?',
+                      style: AppTheme.display(46, wild.onShell),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 320),
+                    child: Text(
+                      'Photograph the animal. You get its protection status in seconds.',
+                      style: GoogleFonts.anekLatin(
+                        fontSize: 17,
+                        height: 1.4,
+                        color: wild.shellMuted,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () => startIdentification(context, ImageSource.camera),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: wild.accent,
+                            foregroundColor: wild.onAccent,
+                            textStyle: GoogleFonts.anekLatin(fontSize: 18, fontWeight: FontWeight.w800),
+                          ),
+                          icon: const Icon(Icons.photo_camera, size: 24),
+                          label: const Text('Take photo'),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      SizedBox(
+                        width: 56,
+                        height: 56,
+                        child: OutlinedButton(
+                          onPressed: () => startIdentification(context, ImageSource.gallery),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            foregroundColor: wild.onShell,
+                            side: BorderSide(color: wild.shellMuted.withValues(alpha: 0.5), width: 1.5),
+                            minimumSize: const Size(56, 56),
+                          ),
+                          child: const Icon(Icons.photo_library_outlined, semanticLabel: 'Choose from gallery'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SliverToBoxAdapter(child: StatusKey()),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+            sliver: SliverToBoxAdapter(
+              child: ValueListenableBuilder<int>(
+                valueListenable: ArchiveService.changes,
+                builder: (context, _, __) => _recent(context, wild),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _brandRow(WildColors wild) {
+    return Row(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.asset('assets/images/logo.jpg', width: 38, height: 38, semanticLabel: 'ZSI logo'),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('WildID',
+                  style: GoogleFonts.anekLatin(fontSize: 21, fontWeight: FontWeight.w800, color: wild.onShell, height: 1)),
+              const SizedBox(height: 2),
+              Text('ZOOLOGICAL SURVEY OF INDIA',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.anekLatin(
+                      fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 1.2, color: wild.shellMuted)),
+            ],
+          ),
+        ),
+        if (IdentificationService.demoMode)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+            decoration: BoxDecoration(color: wild.shellRaised, borderRadius: BorderRadius.circular(16)),
+            child: Text('Demo mode',
+                style: GoogleFonts.anekLatin(fontSize: 13, fontWeight: FontWeight.w700, color: wild.warning)),
+          ),
+      ],
+    );
+  }
+
+  Widget _recent(BuildContext context, WildColors wild) {
+    final records = ArchiveService.getUploadHistory();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SectionHeader(
+          'Your recent reports',
+          action: records.length > 3 ? 'See all' : null,
+          onAction: widget.onSeeHistory,
+        ),
+        const SizedBox(height: 8),
+        if (records.isEmpty)
+          Container(
+            decoration: BoxDecoration(color: wild.card, borderRadius: BorderRadius.circular(16)),
+            child: const EmptyState(
+              icon: Icons.photo_camera_outlined,
+              title: 'No reports yet',
+              message: 'Your identified animals appear here, with their protection status.',
+            ),
+          )
+        else
+          Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(color: wild.card, borderRadius: BorderRadius.circular(16)),
+            child: Column(
+              children: [
+                for (final (i, r) in records.take(3).indexed) ...[
+                  if (i > 0) const Divider(indent: 78),
+                  SightingRow(record: r),
+                ],
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// One sighting in a list: photo, species, place/time, status tag.
+class SightingRow extends StatelessWidget {
+  const SightingRow({super.key, required this.record, this.onTap});
+
+  final UploadRecord record;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final wild = WildColors.of(context);
+    final status = statusForRecord(record);
+    final place = record.location?.address ??
+        record.habitatType ??
+        (record.location?.latitude != null ? 'Location saved' : null);
+    final when = friendlyTime(record.observationDateTime ?? record.timestamp);
+    final subtitle = [
+      if (record.status == 'verified') 'Verified',
+      if (place != null) place,
+      when,
+    ].join(' · ');
+
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            WildImage(record.imagePath, width: 52, height: 52),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    speciesNameForRecord(record),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.anekLatin(fontSize: 17, fontWeight: FontWeight.w700, color: wild.ink),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.anekLatin(fontSize: 14, color: wild.muted),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            StatusTag(status),
+          ],
+        ),
+      ),
+    );
+  }
+}

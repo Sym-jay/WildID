@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' hide Badge;
-import '../utils/index.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 // ============================================================================
@@ -110,7 +110,7 @@ class AboutScreen extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          AppUtils.launchURL(context, 'https://zsi.gov.in');
+                          launchUrl(Uri.parse('https://zsi.gov.in'), mode: LaunchMode.externalApplication);
                         },
                         icon: const Icon(Icons.open_in_new),
                         label: const Text('Visit ZSI Website'),

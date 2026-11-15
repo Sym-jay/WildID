@@ -1,121 +1,122 @@
-// Widget tests for ZSI Wildlife App
+import 'dart:math';
+import 'dart:io';
 
+import 'package:fish_id_india/core/services/archive_service.dart';
+import 'package:fish_id_india/core/services/identification_service.dart';
+import 'package:fish_id_india/core/services/species_lookup_service.dart';
+import 'package:fish_id_india/core/theme/app_theme.dart';
+import 'package:fish_id_india/shared/models/index.dart';
+import 'package:fish_id_india/widgets/wild_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fish_id_india/core/theme/app_theme.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
-  group('App Theme Color Tests', () {
-    test('AppTheme primary colors are defined', () {
-      expect(AppTheme.primaryColor, equals(const Color(0xFF1B5E20)));
-      expect(AppTheme.primaryLight, equals(const Color(0xFF2E7D32)));
-      expect(AppTheme.primaryDark, equals(const Color(0xFF0D3A1F)));
+  // Tests must not try to download fonts.
+  GoogleFonts.config.allowRuntimeFetching = false;
+
+  group('Species data', () {
+    final species = SpeciesLookupService.parse(
+      File('assets/species_data.json').readAsStringSync(),
+    );
+    final mapping = File('assets/ml/zsi_class_mapping.json').readAsStringSync();
+
+    setUp(() => SpeciesLookupService.useSpecies(species));
+
+    test('every species has a schedule from the ZSI dataset', () {
+      expect(species, hasLength(66));
+      expect(species.where((a) => a.schedule == null), isEmpty);
+      expect(species.where((a) => a.schedule == 1), hasLength(18));
     });
 
-    test('AppTheme secondary colors are defined', () {
-      expect(AppTheme.secondaryColor, equals(const Color(0xFF66BB6A)));
-      expect(AppTheme.accentColor, equals(const Color(0xFF8BC34A)));
+    test('every model label resolves to a species', () {
+      final labels = RegExp(r'"common_name":\s*"([^"]+)"')
+          .allMatches(mapping)
+          .map((m) => m.group(1)!)
+          .toList();
+      expect(labels, hasLength(66));
+      final unresolved = labels.where((l) => SpeciesLookupService.lookupLoaded(l) == null).toList();
+      expect(unresolved, isEmpty, reason: 'labels with no species info: $unresolved');
     });
 
-    test('AppTheme background colors are defined', () {
-      expect(AppTheme.backgroundColor, equals(const Color(0xFFF8FAF6)));
-      expect(AppTheme.surfaceColor, equals(Colors.white));
-    });
-
-    test('AppTheme text colors are defined', () {
-      expect(AppTheme.textPrimaryColor, equals(const Color(0xFF1B5E20)));
-      expect(AppTheme.textSecondaryColor, equals(const Color(0xFF546E7A)));
-    });
-
-    test('AppTheme utility colors are defined', () {
-      expect(AppTheme.dividerColor, equals(const Color(0xFFE0E0E0)));
-      expect(AppTheme.errorColor, equals(const Color(0xFFD32F2F)));
-    });
-
-    test('AppTheme returns valid ThemeData', () {
-      // This test only checks that theme is non-null and has correct property values
-      // without actually loading Google Fonts
-      expect(AppTheme.primaryColor, isNotNull);
-      expect(AppTheme.primaryLight, isNotNull);
+    test('scientific-name labels map to the common name', () {
+      expect(SpeciesLookupService.lookupLoaded('Prionace glauca')?.name, 'Blue Shark');
+      expect(SpeciesLookupService.lookupLoaded('  whale SHARK ')?.schedule, 1);
     });
   });
 
-  group('Simple Flutter Widget Tests', () {
-    testWidgets('Material app renders text widget',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: Text('Hello World'),
-            ),
-          ),
-        ),
-      );
-
-      expect(find.text('Hello World'), findsOneWidget);
+  group('IdentificationService.clean', () {
+    test('drops placeholders, keeps best per label, ranks and caps', () {
+      final cleaned = IdentificationService.clean([
+        IdentificationResult(label: 'Image Not Recognized', confidence: 0.0),
+        IdentificationResult(label: 'Whale Shark', confidence: 0.4),
+        IdentificationResult(label: 'whale shark', confidence: 0.7),
+        IdentificationResult(label: 'Bull Ray', confidence: 0.1),
+        IdentificationResult(label: 'Porcupine Ray', confidence: 0.2),
+        IdentificationResult(label: 'Giant Grouper', confidence: 0.05),
+      ]);
+      expect(cleaned.map((r) => r.label), ['whale shark', 'Porcupine Ray', 'Bull Ray']);
+      expect(cleaned.first.confidence, 0.7);
     });
 
-    testWidgets('Elevated button can be tapped',
-        (WidgetTester tester) async {
-      int tapCount = 0;
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: ElevatedButton(
-              onPressed: () {
-                tapCount++;
-              },
-              child: Text('Tap'),
-            ),
-          ),
-        ),
+    test('nothing usable means not recognised', () {
+      expect(
+        IdentificationService.clean([IdentificationResult(label: 'Unknown', confidence: 0.9)]),
+        isEmpty,
       );
+    });
+  });
 
-      expect(find.byType(ElevatedButton), findsOneWidget);
-      await tester.tap(find.byType(ElevatedButton));
-      expect(tapCount, equals(1));
+  group('CSV export', () {
+    test('quotes commas, quotes and newlines', () {
+      expect(ArchiveService.csvField('plain'), 'plain');
+      expect(ArchiveService.csvField('a,b'), '"a,b"');
+      expect(ArchiveService.csvField('say "hi"'), '"say ""hi"""');
+      expect(ArchiveService.csvField('two\nlines'), '"two\nlines"');
+      expect(ArchiveService.csvField(null), '');
+    });
+  });
+
+  group('Theme', () {
+    test('dark tokens are a real dark scheme, not a copy of light', () {
+      expect(WildColors.dark.ground.computeLuminance(), lessThan(0.05));
+      expect(WildColors.light.ground.computeLuminance(), greaterThan(0.8));
+      // Body text stays readable on its ground in both themes.
+      double contrast(Color a, Color b) {
+        final la = a.computeLuminance(), lb = b.computeLuminance();
+        return (max(la, lb) + 0.05) / (min(la, lb) + 0.05);
+      }
+      expect(contrast(WildColors.light.ink, WildColors.light.ground), greaterThan(4.5));
+      expect(contrast(WildColors.dark.ink, WildColors.dark.ground), greaterThan(4.5));
+      expect(contrast(WildColors.light.muted, WildColors.light.card), greaterThan(4.5));
+      expect(contrast(WildColors.dark.muted, WildColors.dark.card), greaterThan(4.5));
+      for (final s in ProtectionStatus.values) {
+        expect(contrast(s.onColor, s.color), greaterThan(4.5), reason: '$s band text');
+      }
     });
 
-    testWidgets('AppBar displays title correctly',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            appBar: AppBar(
-              title: Text('Test Title'),
-            ),
-            body: SizedBox(),
-          ),
-        ),
-      );
-
-      expect(find.text('Test Title'), findsOneWidget);
-      expect(find.byType(AppBar), findsOneWidget);
+    test('schedules map to statuses', () {
+      expect(ProtectionStatusX.fromSchedule(1), ProtectionStatus.scheduleI);
+      expect(ProtectionStatusX.fromSchedule(2), ProtectionStatus.scheduleII);
+      expect(ProtectionStatusX.fromSchedule(null), ProtectionStatus.notListed);
     });
 
-    testWidgets('Scaffold contains all expected widgets',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            appBar: AppBar(title: Text('Title')),
-            body: Center(
-              child: Text('Content'),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: null,
-              child: Icon(Icons.add),
-            ),
-          ),
-        ),
-      );
+    testWidgets('StatusTag shows the short label', (tester) async {
+      await tester.pumpWidget(const MaterialApp(
+        home: Scaffold(body: StatusTag(ProtectionStatus.scheduleI)),
+      ));
+      expect(find.text('SCH. I'), findsOneWidget);
+    });
+  });
 
-      expect(find.byType(Scaffold), findsOneWidget);
-      expect(find.byType(AppBar), findsOneWidget);
-      expect(find.byType(FloatingActionButton), findsOneWidget);
-      expect(find.byIcon(Icons.add), findsOneWidget);
+  group('friendlyTime', () {
+    final now = DateTime(2026, 11, 15, 12);
+    test('recent, yesterday and older dates', () {
+      expect(friendlyTime(now.subtract(const Duration(minutes: 5)), now: now), '5 min ago');
+      expect(friendlyTime(now.subtract(const Duration(hours: 2)), now: now), '2 h ago');
+      expect(friendlyTime(DateTime(2026, 11, 14, 20), now: now), 'Yesterday');
+      expect(friendlyTime(DateTime(2026, 11, 2), now: now), '2 Nov');
+      expect(friendlyTime(DateTime(2025, 3, 9), now: now), '9 Mar 2025');
     });
   });
 }

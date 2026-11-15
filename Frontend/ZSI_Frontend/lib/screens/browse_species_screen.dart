@@ -1,36 +1,13 @@
-
-import 'dart:io';
-import 'dart:math';
-import 'dart:convert';
-import 'package:flutter/material.dart' hide Badge;
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
+import '../core/services/species_lookup_service.dart';
 import '../core/theme/app_theme.dart';
 import '../shared/models/index.dart';
-import '../core/services/database_service.dart';
-// New feature imports
-import '../shared/widgets/user_profile_card.dart' as profile_widgets;
-import '../shared/widgets/filter_panel.dart';
-import '../core/services/index.dart';
-import '../core/providers/species_provider.dart';
-import '../widgets/index.dart';
-import '../core/utils/responsive_helper.dart';
+import '../widgets/wild_widgets.dart';
 import 'species_detail_screen.dart';
-import '../utils/app_utils.dart';
-import '../core/services/image_cache_service.dart';
 
-
-// ============================================================================
-// MAIN APP & THEME (Legacy - to be refactored)
-// ============================================================================
-
-
+/// Species tab: search and filter the 66 protected species.
 class BrowseSpeciesScreen extends StatefulWidget {
   const BrowseSpeciesScreen({super.key});
 
@@ -39,297 +16,179 @@ class BrowseSpeciesScreen extends StatefulWidget {
 }
 
 class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
-  String _searchQuery = '';
-  final TextEditingController _searchController = TextEditingController();
-  static List<SpeciesData>? _staticCache;
-  late Future<List<SpeciesData>> _speciesFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _speciesFuture = _loadSpecies();
-  }
+  late final Future<List<Animal>> _species = SpeciesLookupService.loadSpecies();
+  final _search = TextEditingController();
+  String _query = '';
+  int? _schedule; // null = all
 
   @override
   void dispose() {
-    _searchController.dispose();
+    _search.dispose();
     super.dispose();
+  }
+
+  List<Animal> _filter(List<Animal> all) {
+    final q = SpeciesLookupService.normalize(_query);
+    final list = all.where((a) {
+      if (_schedule != null && a.schedule != _schedule) return false;
+      if (q.isEmpty) return true;
+      return SpeciesLookupService.normalize(a.name).contains(q) ||
+          SpeciesLookupService.normalize(a.scientificName).contains(q);
+    }).toList()
+      ..sort((a, b) {
+        final bySchedule = (a.schedule ?? 9).compareTo(b.schedule ?? 9);
+        return bySchedule != 0 ? bySchedule : a.name.compareTo(b.name);
+      });
+    return list;
   }
 
   @override
   Widget build(BuildContext context) {
+    final wild = WildColors.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Browse Species'),
-        elevation: 2,
-      ),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: AppTheme.primaryColor,
-            child: TextField(
-              controller: _searchController,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: 'Search species...',
-                hintStyle: const TextStyle(color: Colors.white70),
-                prefixIcon: const Icon(Icons.search, color: Colors.white),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.white),
-                        onPressed: () {
-                          setState(() {
-                            _searchQuery = '';
-                            _searchController.clear();
-                          });
-                        },
-                      )
-                    : null,
-                filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.2),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              ),
-              onChanged: (value) => setState(() => _searchQuery = value),
-            ),
-          ),
-          Expanded(
-            child: _buildSpeciesList(),
-          ),
-        ],
-      ),
-    );
-  }
+      appBar: AppBar(title: const Text('Protected species')),
+      body: FutureBuilder<List<Animal>>(
+        future: _species,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const EmptyState(
+              icon: Icons.error_outline,
+              title: 'Could not load species',
+              message: 'Restart the app. If this keeps happening, reinstall it.',
+            );
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final all = snapshot.data!;
+          final shown = _filter(all);
+          final count1 = all.where((a) => a.schedule == 1).length;
+          final count2 = all.where((a) => a.schedule == 2).length;
 
-  Widget _buildSpeciesList() {
-    return FutureBuilder<List<SpeciesData>>(
-      future: _speciesFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (snapshot.hasError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
-                const SizedBox(height: 16),
-                Text('Error loading species: ${snapshot.error}'),
-              ],
-            ),
-          );
-        }
-
-        final species = snapshot.data ?? [];
-        final filtered = species
-            .where((s) =>
-                s.commonName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                s.scientificName.toLowerCase().contains(_searchQuery.toLowerCase()))
-            .toList();
-
-        if (filtered.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
-                const SizedBox(height: 16),
-                Text(
-                  'No species found',
-                  style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-                ),
-              ],
-            ),
-          );
-        }
-
-        // Use responsive layout: List on mobile, Grid on tablet
-        if (ResponsiveHelper.isMobile(context)) {
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: filtered.length,
-            addAutomaticKeepAlives: false,
-            addRepaintBoundaries: true,
-            itemBuilder: (context, index) {
-              final speciesData = filtered[index];
-              return _buildSpeciesGridCard(context, speciesData);
-            },
-          );
-        } else {
-          // Tablet/Desktop: Show as grid
-          final crossAxisCount = ResponsiveHelper.getResponsiveCrossAxisCount(context);
-          return GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              childAspectRatio: 0.85,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-            ),
-            itemCount: filtered.length,
-            addAutomaticKeepAlives: false,
-            addRepaintBoundaries: true,
-            itemBuilder: (context, index) {
-              final speciesData = filtered[index];
-              return _buildSpeciesGridCard(context, speciesData);
-            },
-          );
-        }
-      },
-    );
-  }
-
-  Future<List<SpeciesData>> _loadSpecies() async {
-    // Return cached data if available
-    if (_staticCache != null) {
-      return _staticCache!;
-    }
-    
-    final jsonString = await rootBundle.loadString('assets/species_data.json');
-    final jsonList = jsonDecode(jsonString) as List;
-    
-    final species = jsonList
-        .map((item) => SpeciesData.fromJson(item as Map<String, dynamic>))
-        .toList();
-    
-    // Sort by common name for easier browsing
-    species.sort((a, b) => a.commonName.compareTo(b.commonName));
-    
-    // Cache the result
-    _staticCache = species;
-    return species;
-  }
-
-  Widget _buildSpeciesCard(BuildContext context, SpeciesData speciesData) {
-    // TODO: Fix syntax errors in this method
-    return const SizedBox.shrink();
-  }
-
-  Widget _buildFallbackImage() {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: const Icon(
-        Icons.pets,
-        size: 40,
-        color: AppTheme.primaryColor,
-      ),
-    );
-  }
-
-  Widget _buildLoadingImage() {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: const Center(
-        child: CircularProgressIndicator(strokeWidth: 2),
-      ),
-    );
-  }
-
-  Widget _buildSpeciesGridCard(BuildContext context, SpeciesData speciesData) {
-    // Create Animal object for navigation to detail screen
-    final animal = Animal(
-      name: speciesData.commonName,
-      scientificName: speciesData.scientificName,
-      description: speciesData.description,
-      conservationStatus: speciesData.conservationStatus,
-      iucnUrl: speciesData.iucnUrl,
-      imageUrl: speciesData.imageUrl,
-      additionalImageUrls: speciesData.additionalImageUrls,
-    );
-
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => SpeciesDetailScreen(animal: animal),
-          ),
-        ),
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                speciesData.commonName,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimaryColor,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                speciesData.scientificName,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontStyle: FontStyle.italic,
-                  color: AppTheme.textSecondaryColor,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _getStatusColor(speciesData.conservationStatus).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  speciesData.conservationStatus,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: _getStatusColor(speciesData.conservationStatus),
+          return CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextField(
+                        controller: _search,
+                        onChanged: (v) => setState(() => _query = v),
+                        textInputAction: TextInputAction.search,
+                        decoration: InputDecoration(
+                          hintText: 'Search by common or scientific name',
+                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: _query.isEmpty
+                              ? null
+                              : IconButton(
+                                  tooltip: 'Clear search',
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () => setState(() {
+                                    _search.clear();
+                                    _query = '';
+                                  }),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        children: [
+                          ChoiceChip(
+                            label: Text('All ${all.length}'),
+                            selected: _schedule == null,
+                            onSelected: (_) => setState(() => _schedule = null),
+                          ),
+                          ChoiceChip(
+                            label: Text('Schedule I · $count1'),
+                            selected: _schedule == 1,
+                            onSelected: (_) => setState(() => _schedule = 1),
+                          ),
+                          ChoiceChip(
+                            label: Text('Schedule II · $count2'),
+                            selected: _schedule == 2,
+                            onSelected: (_) => setState(() => _schedule = 2),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
+              if (shown.isEmpty)
+                SliverToBoxAdapter(
+                  child: EmptyState(
+                    icon: Icons.search_off,
+                    title: 'No species match "$_query"',
+                    message: 'Try a shorter name, or the scientific name.',
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                  sliver: DecoratedSliver(
+                    decoration: BoxDecoration(color: wild.card, borderRadius: BorderRadius.circular(16)),
+                    sliver: SliverList.separated(
+                      itemCount: shown.length,
+                      separatorBuilder: (_, __) => const Divider(indent: 82),
+                      itemBuilder: (context, i) => _SpeciesRow(animal: shown[i]),
+                    ),
+                  ),
+                ),
             ],
-          ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _SpeciesRow extends StatelessWidget {
+  const _SpeciesRow({required this.animal});
+
+  final Animal animal;
+
+  @override
+  Widget build(BuildContext context) {
+    final wild = WildColors.of(context);
+    final showScientific = animal.scientificName.toLowerCase() != animal.name.toLowerCase();
+    return InkWell(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => SpeciesDetailScreen(animal: animal)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            WildImage(animal.imageUrl, width: 56, height: 56, background: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    animal.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.anekLatin(fontSize: 17, fontWeight: FontWeight.w700, color: wild.ink),
+                  ),
+                  if (showScientific)
+                    Text(
+                      animal.scientificName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.anekLatin(fontSize: 14, fontStyle: FontStyle.italic, color: wild.muted),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            StatusTag(ProtectionStatusX.fromSchedule(animal.schedule)),
+          ],
         ),
       ),
     );
   }
-
-  Color _getStatusColor(String status) {
-    switch (status.toUpperCase()) {
-      case 'CRITICALLY ENDANGERED':
-        return Colors.red;
-      case 'ENDANGERED':
-        return Colors.orange;
-      case 'VULNERABLE':
-        return Colors.yellow[700]!;
-      case 'NEAR THREATENED':
-        return Colors.yellow[600]!;
-      default:
-        return Colors.green;
-    }
-  }
 }
-
-// ============================================================================
-// SPECIES DETAIL SCREEN
-// ============================================================================
-
-

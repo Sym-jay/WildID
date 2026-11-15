@@ -9,9 +9,10 @@ class FishIDIndiaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FISH ID India',
+      title: 'WildID',
       theme: AppTheme.theme,
       debugShowCheckedModeBanner: false,
+      darkTheme: AppTheme.darkTheme,
       home: const SplashScreen(),
     );
   }

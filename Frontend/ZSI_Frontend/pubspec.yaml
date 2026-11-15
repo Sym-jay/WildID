@@ -74,6 +74,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/logo.jpg
     - assets/species_data.json
     - assets/ml/zsi_class_mapping.json
     - assets/species_images/
