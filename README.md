@@ -111,6 +111,47 @@ The app no longer ships a default API key. Pass the same key at build/run time:
 flutter run --dart-define=ZSI_API_KEY=<key> [--dart-define=ZSI_API_BASE_URL=http://10.0.2.2:5000]
 ```
 
+## 🧪 Testing
+
+```bash
+cd Frontend/ZSI_Frontend
+flutter test                                      # unit and widget tests
+```
+
+**Browser end-to-end tests (Playwright).** These run against the web build in demo mode
+(`ZSI_DEMO=true` returns a labelled sample result, so no API key is needed), on Pixel 7
+(light and dark) and iPhone 14 screen sizes, including screenshot comparisons:
+
+```bash
+cd Frontend/ZSI_Frontend
+flutter build web --dart-define=ZSI_DEMO=true
+cd e2e
+npm install
+npx playwright install chromium
+npm run test:e2e              # npm run test:e2e:update  to refresh screenshots
+```
+
+Playwright drives browsers only. GPS, permission dialogs and on-device storage are covered by
+the native Android test below.
+
+**Native Android end-to-end test (Patrol).** Runs on an emulator or phone and checks the real
+location permission dialog, the GPS fix, the SQLite database and saved photo files (reloaded as
+on a cold start), and expert verification. The photo is supplied through the image picker's
+test interface; the camera app's own shutter UI is not driven.
+
+```bash
+dart pub global activate patrol_cli 4.8.0
+cd Frontend/ZSI_Frontend
+adb uninstall com.example.zsi_app   # remove any manually installed build first
+adb emu geo fix 76.27 9.96          # optional: put the emulator at Kochi
+patrol test -t integration_test/app_flow_test.dart --dart-define=ZSI_DEMO=true
+```
+
+Requirements: Android SDK (API 34+ image), JDK 17. The Android project uses Gradle 9.5,
+Android Gradle Plugin 9.3.1 and Kotlin 2.4 as required by current Flutter. On Windows, if
+Gradle fails with "Unable to establish loopback connection", set
+`JAVA_TOOL_OPTIONS=-Djdk.net.unixdomain.tmpdir=C:/tmp` (a short path without spaces).
+
 ## 🏗️ Building for Production
 
 ### Android APK

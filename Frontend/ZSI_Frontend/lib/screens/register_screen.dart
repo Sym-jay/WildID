@@ -53,7 +53,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         MaterialPageRoute(builder: (_) => const HomeScreen()),
         (_) => false,
       );
-      messenger.showSnackBar(const SnackBar(content: Text('Account created. Welcome to WildID.')));
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Account created. Welcome to WildID.')),
+      );
     } on AppException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } finally {
@@ -66,7 +68,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final scheme = Theme.of(context).colorScheme;
     return AuthScaffold(
       title: 'Create account',
-      subtitle: 'Your phone number lets WildID text you when an expert checks your report.',
+      subtitle:
+          'Your phone number lets WildID text you when an expert checks your report.',
       showBack: true,
       child: Form(
         key: _formKey,
@@ -79,10 +82,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
                 autofillHints: const [AutofillHints.email],
-                decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.mail_outline)),
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.mail_outline),
+                ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) return 'Enter your email';
-                  if (!v.contains('@')) return 'Enter a valid email, like name@example.com';
+                  if (!v.contains('@'))
+                    return 'Enter a valid email, like name@example.com';
                   return null;
                 },
               ),
@@ -117,9 +124,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   helperText: 'At least 8 characters',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    tooltip: _obscurePassword ? 'Show password' : 'Hide password',
-                    icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                    tooltip: _obscurePassword
+                        ? 'Show password'
+                        : 'Hide password',
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
                 validator: (v) {
@@ -138,16 +152,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   labelText: 'Repeat password',
                   prefixIcon: Icon(Icons.lock_outline),
                 ),
-                validator: (v) => v != _passwordController.text ? 'The passwords do not match' : null,
+                validator: (v) => v != _passwordController.text
+                    ? 'The passwords do not match'
+                    : null,
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),
-                Text(_error!, style: TextStyle(color: scheme.error, fontSize: 15)),
+                Text(
+                  _error!,
+                  style: TextStyle(color: scheme.error, fontSize: 15),
+                ),
               ],
               const SizedBox(height: 20),
               FilledButton(
                 onPressed: _isLoading ? null : _handleRegister,
-                child: Text(_isLoading ? 'Creating account…' : 'Create account'),
+                child: Text(
+                  _isLoading ? 'Creating account…' : 'Create account',
+                ),
               ),
               const SizedBox(height: 8),
               TextButton(

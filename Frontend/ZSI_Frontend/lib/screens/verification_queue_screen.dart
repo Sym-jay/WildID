@@ -13,7 +13,8 @@ class VerificationQueueScreen extends StatefulWidget {
   const VerificationQueueScreen({super.key});
 
   @override
-  State<VerificationQueueScreen> createState() => _VerificationQueueScreenState();
+  State<VerificationQueueScreen> createState() =>
+      _VerificationQueueScreenState();
 }
 
 class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
@@ -38,7 +39,9 @@ class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
         result.notes,
         expertConfidence: result.confidence,
       );
-      messenger.showSnackBar(SnackBar(content: Text('Verified as ${result.speciesName}')));
+      messenger.showSnackBar(
+        SnackBar(content: Text('Verified as ${result.speciesName}')),
+      );
     }
   }
 
@@ -50,24 +53,28 @@ class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
       body: FutureBuilder<List<Animal>>(
         future: _species,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData)
+            return const Center(child: CircularProgressIndicator());
           final species = snapshot.data!;
           return ValueListenableBuilder<int>(
             valueListenable: ArchiveService.changes,
             builder: (context, _, __) {
-              final pending = ArchiveService.getUploadHistory()
-                  .where((r) => r.status == 'pending')
-                  .toList()
-                ..sort((a, b) {
-                  // Uncertain ones first, then oldest first.
-                  if (a.needsVerification != b.needsVerification) return a.needsVerification ? -1 : 1;
-                  return a.timestamp.compareTo(b.timestamp);
-                });
+              final pending =
+                  ArchiveService.getUploadHistory()
+                      .where((r) => r.status == 'pending')
+                      .toList()
+                    ..sort((a, b) {
+                      // Uncertain ones first, then oldest first.
+                      if (a.needsVerification != b.needsVerification)
+                        return a.needsVerification ? -1 : 1;
+                      return a.timestamp.compareTo(b.timestamp);
+                    });
               if (pending.isEmpty) {
                 return const EmptyState(
                   icon: Icons.fact_check_outlined,
                   title: 'Nothing to review',
-                  message: 'New reports appear here until an expert confirms or corrects them.',
+                  message:
+                      'New reports appear here until an expert confirms or corrects them.',
                 );
               }
               return ListView.separated(
@@ -92,15 +99,25 @@ class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(speciesNameForRecord(r),
-                                      style: GoogleFonts.anekLatin(fontSize: 17, fontWeight: FontWeight.w700, color: wild.ink)),
+                                  Text(
+                                    speciesNameForRecord(r),
+                                    style: GoogleFonts.anekLatin(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w700,
+                                      color: wild.ink,
+                                    ),
+                                  ),
                                   Text(
                                     [
-                                      if (r.confidence != null) 'AI ${(r.confidence! * 100).round()}%',
+                                      if (r.confidence != null)
+                                        'AI ${(r.confidence! * 100).round()}%',
                                       friendlyTime(r.timestamp),
                                       if (r.needsVerification) 'Uncertain',
                                     ].join(' · '),
-                                    style: GoogleFonts.anekLatin(fontSize: 14, color: wild.muted),
+                                    style: GoogleFonts.anekLatin(
+                                      fontSize: 14,
+                                      color: wild.muted,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -122,7 +139,13 @@ class _VerificationQueueScreenState extends State<VerificationQueueScreen> {
 }
 
 class _Decision {
-  const _Decision({this.species, this.speciesName, this.notes = '', this.confidence, this.reject = false});
+  const _Decision({
+    this.species,
+    this.speciesName,
+    this.notes = '',
+    this.confidence,
+    this.reject = false,
+  });
 
   final String? species;
   final String? speciesName;
@@ -151,7 +174,9 @@ class _ReviewSheetState extends State<_ReviewSheet> {
     super.initState();
     // Pre-select the AI's answer only if it is a known species.
     final label = widget.record.identifiedSpecies;
-    final match = label == null ? null : SpeciesLookupService.lookupLoaded(label);
+    final match = label == null
+        ? null
+        : SpeciesLookupService.lookupLoaded(label);
     _selected = match?.scientificName;
   }
 
@@ -164,7 +189,8 @@ class _ReviewSheetState extends State<_ReviewSheet> {
   @override
   Widget build(BuildContext context) {
     final wild = WildColors.of(context);
-    final sorted = [...widget.species]..sort((a, b) => a.name.compareTo(b.name));
+    final sorted = [...widget.species]
+      ..sort((a, b) => a.name.compareTo(b.name));
     final r = widget.record;
 
     return Padding(
@@ -175,7 +201,12 @@ class _ReviewSheetState extends State<_ReviewSheet> {
         children: [
           AspectRatio(
             aspectRatio: 4 / 3,
-            child: WildImage(r.imagePath, fit: BoxFit.contain, radius: 14, background: wild.ground),
+            child: WildImage(
+              r.imagePath,
+              fit: BoxFit.contain,
+              radius: 14,
+              background: wild.ground,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
@@ -194,7 +225,9 @@ class _ReviewSheetState extends State<_ReviewSheet> {
                 DropdownMenuItem(
                   value: a.scientificName,
                   child: Text(
-                    a.name == a.scientificName ? a.name : '${a.name} (${a.scientificName})',
+                    a.name == a.scientificName
+                        ? a.name
+                        : '${a.name} (${a.scientificName})',
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -202,8 +235,14 @@ class _ReviewSheetState extends State<_ReviewSheet> {
             onChanged: (v) => setState(() => _selected = v),
           ),
           const SizedBox(height: 16),
-          Text('How sure are you? ${_confidence.round()}%',
-              style: GoogleFonts.anekLatin(fontSize: 16, fontWeight: FontWeight.w600, color: wild.ink)),
+          Text(
+            'How sure are you? ${_confidence.round()}%',
+            style: GoogleFonts.anekLatin(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: wild.ink,
+            ),
+          ),
           Slider(
             value: _confidence,
             min: 0,
@@ -215,14 +254,19 @@ class _ReviewSheetState extends State<_ReviewSheet> {
           TextField(
             controller: _notes,
             maxLines: 3,
-            decoration: const InputDecoration(labelText: 'Notes', hintText: 'Features you checked'),
+            decoration: const InputDecoration(
+              labelText: 'Notes',
+              hintText: 'Features you checked',
+            ),
           ),
           const SizedBox(height: 16),
           FilledButton(
             onPressed: _selected == null
                 ? null
                 : () {
-                    final animal = SpeciesLookupService.lookupLoaded(_selected!);
+                    final animal = SpeciesLookupService.lookupLoaded(
+                      _selected!,
+                    );
                     Navigator.pop(
                       context,
                       _Decision(
@@ -237,8 +281,13 @@ class _ReviewSheetState extends State<_ReviewSheet> {
           ),
           const SizedBox(height: 8),
           TextButton(
-            onPressed: () => Navigator.pop(context, _Decision(reject: true, notes: _notes.text.trim())),
-            style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+            onPressed: () => Navigator.pop(
+              context,
+              _Decision(reject: true, notes: _notes.text.trim()),
+            ),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
             child: const Text('Not a usable photo'),
           ),
         ],

@@ -24,7 +24,10 @@ class StatusTag extends StatelessWidget {
       },
       excludeSemantics: true,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: compact ? 6 : 8, vertical: compact ? 4 : 6),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 6 : 8,
+          vertical: compact ? 4 : 6,
+        ),
         decoration: BoxDecoration(
           color: status.color,
           borderRadius: BorderRadius.circular(compact ? 5 : 6),
@@ -119,12 +122,12 @@ class WildImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final wild = WildColors.of(context);
     Widget fallback(BuildContext _, Object __, StackTrace? ___) => Container(
-          width: width,
-          height: height,
-          color: wild.line,
-          alignment: Alignment.center,
-          child: Icon(Icons.image_not_supported_outlined, color: wild.muted),
-        );
+      width: width,
+      height: height,
+      color: wild.line,
+      alignment: Alignment.center,
+      child: Icon(Icons.image_not_supported_outlined, color: wild.muted),
+    );
 
     final cacheWidth = width != null && width!.isFinite
         ? (width! * MediaQuery.devicePixelRatioOf(context)).round()
@@ -134,14 +137,31 @@ class WildImage extends StatelessWidget {
     if (path.isEmpty) {
       image = fallback(context, 'empty', null);
     } else if (path.startsWith('assets/')) {
-      image = Image.asset(path, width: width, height: height, fit: fit,
-          cacheWidth: cacheWidth, errorBuilder: fallback);
+      image = Image.asset(
+        path,
+        width: width,
+        height: height,
+        fit: fit,
+        cacheWidth: cacheWidth,
+        errorBuilder: fallback,
+      );
     } else if (kIsWeb || path.startsWith('http') || path.startsWith('blob:')) {
-      image = Image.network(path, width: width, height: height, fit: fit,
-          errorBuilder: fallback);
+      image = Image.network(
+        path,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: fallback,
+      );
     } else {
-      image = Image.file(File(path), width: width, height: height, fit: fit,
-          cacheWidth: cacheWidth, errorBuilder: fallback);
+      image = Image.file(
+        File(path),
+        width: width,
+        height: height,
+        fit: fit,
+        cacheWidth: cacheWidth,
+        errorBuilder: fallback,
+      );
     }
 
     return ClipRRect(
@@ -172,7 +192,9 @@ class SectionHeader extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontSize: 20),
           ),
         ),
         if (action != null)
@@ -207,13 +229,21 @@ class EmptyState extends StatelessWidget {
         children: [
           Icon(icon, size: 44, color: wild.muted),
           const SizedBox(height: 14),
-          Text(title,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 18)),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontSize: 18),
+          ),
           const SizedBox(height: 6),
-          Text(message,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: wild.muted)),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: wild.muted),
+          ),
           if (action != null) ...[const SizedBox(height: 18), action!],
         ],
       ),
@@ -227,12 +257,28 @@ String friendlyTime(DateTime time, {DateTime? now}) {
   final diff = current.difference(time);
   if (diff.inMinutes < 1) return 'Just now';
   if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
-  if (diff.inHours < 24 && current.day == time.day) return '${diff.inHours} h ago';
+  if (diff.inHours < 24 && current.day == time.day)
+    return '${diff.inHours} h ago';
   final yesterday = DateTime(current.year, current.month, current.day - 1);
-  if (time.year == yesterday.year && time.month == yesterday.month && time.day == yesterday.day) {
+  if (time.year == yesterday.year &&
+      time.month == yesterday.month &&
+      time.day == yesterday.day) {
     return 'Yesterday';
   }
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   final label = '${time.day} ${months[time.month - 1]}';
   return time.year == current.year ? label : '$label ${time.year}';
 }

@@ -30,9 +30,9 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
   }
 
   void _show(String text, {bool error = false}) => setState(() {
-        _message = text;
-        _messageIsError = error;
-      });
+    _message = text;
+    _messageIsError = error;
+  });
 
   Future<void> _handleSendOTP() async {
     if (!_formKey.currentState!.validate()) return;
@@ -47,9 +47,11 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
       if (result.sent) {
         setState(() => _otpSent = true);
         // devCode only comes from a backend running with ZSI_OTP_DEV_ECHO=1.
-        _show(result.devCode == null
-            ? 'We sent a 6-digit code by SMS. It works for 5 minutes.'
-            : 'Test server code: ${result.devCode}');
+        _show(
+          result.devCode == null
+              ? 'We sent a 6-digit code by SMS. It works for 5 minutes.'
+              : 'Test server code: ${result.devCode}',
+        );
       } else {
         _show('Could not send the code. Try again.', error: true);
       }
@@ -78,7 +80,10 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
           (_) => false,
         );
       } else {
-        _show('That code is not right. Check the SMS and try again.', error: true);
+        _show(
+          'That code is not right. Check the SMS and try again.',
+          error: true,
+        );
       }
     } on AppException catch (e) {
       if (mounted) _show(e.message, error: true);
@@ -92,7 +97,8 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
     final scheme = Theme.of(context).colorScheme;
     return AuthScaffold(
       title: 'Sign in by SMS',
-      subtitle: 'Use the mobile number on your WildID account. We text you a one-time code.',
+      subtitle:
+          'Use the mobile number on your WildID account. We text you a one-time code.',
       showBack: true,
       child: Form(
         key: _formKey,
@@ -112,7 +118,8 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
               validator: (v) {
                 final digits = AuthService.normalizePhone(v ?? '');
                 if (digits.isEmpty) return 'Enter your mobile number';
-                if (!RegExp(r'^[6-9]\d{9}$').hasMatch(digits)) return 'Enter a 10-digit Indian mobile number';
+                if (!RegExp(r'^[6-9]\d{9}$').hasMatch(digits))
+                  return 'Enter a 10-digit Indian mobile number';
                 return null;
               },
             ),
@@ -137,17 +144,26 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
               const SizedBox(height: 12),
               Text(
                 _message!,
-                style: TextStyle(fontSize: 15, color: _messageIsError ? scheme.error : scheme.onSurfaceVariant),
+                style: TextStyle(
+                  fontSize: 15,
+                  color: _messageIsError
+                      ? scheme.error
+                      : scheme.onSurfaceVariant,
+                ),
               ),
             ],
             const SizedBox(height: 20),
             FilledButton(
-              onPressed: _isLoading ? null : (_otpSent ? _handleVerifyOTP : _handleSendOTP),
-              child: Text(_isLoading
-                  ? 'Please wait…'
-                  : _otpSent
-                      ? 'Sign in'
-                      : 'Send code'),
+              onPressed: _isLoading
+                  ? null
+                  : (_otpSent ? _handleVerifyOTP : _handleSendOTP),
+              child: Text(
+                _isLoading
+                    ? 'Please wait…'
+                    : _otpSent
+                    ? 'Sign in'
+                    : 'Send code',
+              ),
             ),
             if (_otpSent) ...[
               const SizedBox(height: 8),
