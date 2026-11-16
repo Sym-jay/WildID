@@ -44,7 +44,9 @@ class _MetadataFormScreenState extends State<MetadataFormScreen> {
     _condition = parsed.$1;
     _notes = TextEditingController(text: parsed.$2);
     _depth = TextEditingController(
-      text: r.waterDepth == null ? '' : r.waterDepth!.toStringAsFixed(r.waterDepth! % 1 == 0 ? 0 : 1),
+      text: r.waterDepth == null
+          ? ''
+          : r.waterDepth!.toStringAsFixed(r.waterDepth! % 1 == 0 ? 0 : 1),
     );
     _when = r.observationDateTime ?? r.timestamp;
   }
@@ -59,7 +61,9 @@ class _MetadataFormScreenState extends State<MetadataFormScreen> {
   /// Notes are stored as "Condition: Alive. <free text>".
   static (String?, String) _splitNotes(String? stored) {
     if (stored == null) return (null, '');
-    final match = RegExp(r'^Condition: (Alive|Dead|Not sure)\.\s*').firstMatch(stored);
+    final match = RegExp(
+      r'^Condition: (Alive|Dead|Not sure)\.\s*',
+    ).firstMatch(stored);
     if (match == null) return (null, stored);
     return (match.group(1), stored.substring(match.end));
   }
@@ -72,10 +76,19 @@ class _MetadataFormScreenState extends State<MetadataFormScreen> {
       lastDate: DateTime.now(),
     );
     if (date == null || !mounted) return;
-    final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_when));
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_when),
+    );
     if (!mounted) return;
     setState(() {
-      _when = DateTime(date.year, date.month, date.day, time?.hour ?? _when.hour, time?.minute ?? _when.minute);
+      _when = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time?.hour ?? _when.hour,
+        time?.minute ?? _when.minute,
+      );
     });
   }
 
@@ -100,7 +113,11 @@ class _MetadataFormScreenState extends State<MetadataFormScreen> {
   @override
   Widget build(BuildContext context) {
     final wild = WildColors.of(context);
-    final labelStyle = GoogleFonts.anekLatin(fontSize: 16, fontWeight: FontWeight.w700, color: wild.ink);
+    final labelStyle = GoogleFonts.anekLatin(
+      fontSize: 16,
+      fontWeight: FontWeight.w700,
+      color: wild.ink,
+    );
     final loc = MaterialLocalizations.of(context);
 
     return Scaffold(
@@ -112,7 +129,11 @@ class _MetadataFormScreenState extends State<MetadataFormScreen> {
           children: [
             Text(
               'These details help ZSI researchers map where protected species are found. Everything is optional.',
-              style: GoogleFonts.anekLatin(fontSize: 15, height: 1.4, color: wild.muted),
+              style: GoogleFonts.anekLatin(
+                fontSize: 15,
+                height: 1.4,
+                color: wild.muted,
+              ),
             ),
             const SizedBox(height: 22),
             Text('Where was it found?', style: labelStyle),
@@ -135,9 +156,13 @@ class _MetadataFormScreenState extends State<MetadataFormScreen> {
             SegmentedButton<String>(
               emptySelectionAllowed: true,
               showSelectedIcon: false,
-              segments: [for (final c in conditions) ButtonSegment(value: c, label: Text(c))],
+              segments: [
+                for (final c in conditions)
+                  ButtonSegment(value: c, label: Text(c)),
+              ],
               selected: {if (_condition != null) _condition!},
-              onSelectionChanged: (s) => setState(() => _condition = s.isEmpty ? null : s.first),
+              onSelectionChanged: (s) =>
+                  setState(() => _condition = s.isEmpty ? null : s.first),
             ),
             const SizedBox(height: 22),
             Text('When did you see it?', style: labelStyle),
@@ -145,12 +170,16 @@ class _MetadataFormScreenState extends State<MetadataFormScreen> {
             OutlinedButton.icon(
               onPressed: _pickWhen,
               icon: const Icon(Icons.event_outlined),
-              label: Text('${loc.formatMediumDate(_when)}, ${loc.formatTimeOfDay(TimeOfDay.fromDateTime(_when))}'),
+              label: Text(
+                '${loc.formatMediumDate(_when)}, ${loc.formatTimeOfDay(TimeOfDay.fromDateTime(_when))}',
+              ),
             ),
             const SizedBox(height: 22),
             TextFormField(
               controller: _depth,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: const InputDecoration(
                 labelText: 'Water depth in metres (if known)',
               ),
@@ -158,7 +187,8 @@ class _MetadataFormScreenState extends State<MetadataFormScreen> {
                 final text = v?.trim() ?? '';
                 if (text.isEmpty) return null;
                 final value = double.tryParse(text);
-                if (value == null || value < 0 || value > 11000) return 'Enter a depth in metres, like 12';
+                if (value == null || value < 0 || value > 11000)
+                  return 'Enter a depth in metres, like 12';
                 return null;
               },
             ),
@@ -170,7 +200,8 @@ class _MetadataFormScreenState extends State<MetadataFormScreen> {
               textCapitalization: TextCapitalization.sentences,
               decoration: const InputDecoration(
                 labelText: 'Notes',
-                hintText: 'Size, number of animals, gear used, anything unusual',
+                hintText:
+                    'Size, number of animals, gear used, anything unusual',
                 alignLabelWithHint: true,
               ),
             ),

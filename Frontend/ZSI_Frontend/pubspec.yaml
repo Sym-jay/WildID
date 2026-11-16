@@ -36,12 +36,10 @@ dependencies:
   http: ^1.1.0
   flutter_launcher_icons: ^0.13.1
   geolocator: ^10.1.0          # NEW: For location tracking
-  geocoding: ^2.1.1            # NEW: For address from coordinates
-  permission_handler: ^11.0.1  # NEW: For permissions
   intl: ^0.18.1               # NEW: For date formatting
   path_provider: ^2.1.1        # NEW: For local storage
   sqflite: ^2.3.0             # NEW: For local database
-  share_plus: ^7.2.1          # NEW: For sharing CSV exports
+  share_plus: ^12.0.2         # Share the CSV export
   cached_network_image: ^3.3.0 # NEW: For efficient image loading
   flutter_image_compress: any # NEW: For image compression before upload
   flutter_secure_storage: ^9.2.4 # NEW: For secure credential storage
@@ -54,6 +52,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
+  patrol: 4.10.0
+  image_picker_platform_interface: ^2.11.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -116,3 +118,9 @@ flutter_launcher_icons:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# Native end-to-end tests: patrol test -t integration_test/app_flow_test.dart
+patrol:
+  app_name: WildID
+  android:
+    package_name: com.example.zsi_app

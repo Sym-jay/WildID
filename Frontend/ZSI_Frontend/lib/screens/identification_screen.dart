@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -260,58 +261,63 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
     final top = _outcome?.top;
     final alternatives = _outcome?.results.skip(1).toList() ?? const [];
 
-    return Scaffold(
-      backgroundColor: wild.ground,
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: _band(status)),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
-            sliver: SliverList.list(
-              children: [
-                if (_outcome?.isDemo ?? false) ...[
-                  _note(
-                    wild,
-                    Icons.science_outlined,
-                    'Demo result: this build does not contact the server.',
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                _matchCard(wild, top),
-                if (alternatives.isNotEmpty) ...[
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: _status == ProtectionStatus.unsure
+          ? SystemUiOverlayStyle.dark
+          : SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: wild.ground,
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(child: _band(status)),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
+              sliver: SliverList.list(
+                children: [
+                  if (_outcome?.isDemo ?? false) ...[
+                    _note(
+                      wild,
+                      Icons.science_outlined,
+                      'Demo result: this build does not contact the server.',
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  _matchCard(wild, top),
+                  if (alternatives.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    _alternatives(wild, alternatives, status),
+                  ],
                   const SizedBox(height: 14),
-                  _alternatives(wild, alternatives, status),
+                  _savedLine(wild),
                 ],
-                const SizedBox(height: 14),
-                _savedLine(wild),
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FilledButton.icon(
+                  onPressed: _addDetails,
+                  icon: const Icon(Icons.edit_note),
+                  label: Text(
+                    (_record?.habitatType != null)
+                        ? 'Edit report details'
+                        : 'Add details for ZSI',
+                  ),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: _retake,
+                  icon: const Icon(Icons.photo_camera_outlined),
+                  label: const Text('Retake photo'),
+                ),
               ],
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              FilledButton.icon(
-                onPressed: _addDetails,
-                icon: const Icon(Icons.edit_note),
-                label: Text(
-                  (_record?.habitatType != null)
-                      ? 'Edit report details'
-                      : 'Add details for ZSI',
-                ),
-              ),
-              const SizedBox(height: 8),
-              OutlinedButton.icon(
-                onPressed: _retake,
-                icon: const Icon(Icons.photo_camera_outlined),
-                label: const Text('Retake photo'),
-              ),
-            ],
           ),
         ),
       ),

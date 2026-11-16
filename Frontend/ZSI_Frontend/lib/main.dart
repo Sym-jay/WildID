@@ -11,6 +11,17 @@ import 'core/services/identification_service.dart';
 import 'app.dart';
 
 void main() async {
+  await bootstrap();
+  runApp(const ProviderScope(child: FishIDIndiaApp()));
+}
+
+/// Everything the app needs before the first frame. Shared with the native
+/// end-to-end test in integration_test/.
+/// [forceSemantics] keeps the accessibility tree on (demo builds, used by the
+/// browser tests); widget tests manage semantics themselves and pass false.
+Future<void> bootstrap({
+  bool forceSemantics = IdentificationService.demoMode,
+}) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Anek Latin ships in assets/google_fonts, so text never waits on a
@@ -27,19 +38,13 @@ void main() async {
 
   // Initialize feedback service
   await FeedbackService.initialize();
-  
+
   // Initialize auth service (load persisted credentials)
   await AuthService.initialize();
 
   // Demo builds are used for presentations and browser end-to-end tests;
   // keep the accessibility tree on so tests can find controls by label.
-  if (IdentificationService.demoMode) {
+  if (forceSemantics) {
     SemanticsBinding.instance.ensureSemantics();
   }
-
-  runApp(
-    const ProviderScope(
-      child: FishIDIndiaApp(),
-    ),
-  );
 }

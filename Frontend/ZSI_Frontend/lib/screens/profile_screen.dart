@@ -14,7 +14,8 @@ import 'verification_queue_screen.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  static const _address = 'Zoological Survey of India, M-Block, New Alipore, Kolkata 700053';
+  static const _address =
+      'Zoological Survey of India, M-Block, New Alipore, Kolkata 700053';
   static const _email = 'zsi@gov.in';
   static const _phone = '+91-33-2400-1893';
 
@@ -29,8 +30,14 @@ class ProfileScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Contact ZSI',
-                  style: GoogleFonts.anekLatin(fontSize: 22, fontWeight: FontWeight.w800, color: wild.ink)),
+              Text(
+                'Contact ZSI',
+                style: GoogleFonts.anekLatin(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: wild.ink,
+                ),
+              ),
               const SizedBox(height: 12),
               for (final (icon, value) in const [
                 (Icons.place_outlined, _address),
@@ -40,13 +47,18 @@ class ProfileScreen extends StatelessWidget {
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: Icon(icon),
-                  title: SelectableText(value, style: GoogleFonts.anekLatin(fontSize: 16, color: wild.ink)),
+                  title: SelectableText(
+                    value,
+                    style: GoogleFonts.anekLatin(fontSize: 16, color: wild.ink),
+                  ),
                   trailing: IconButton(
                     tooltip: 'Copy',
                     icon: const Icon(Icons.copy, size: 20),
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: value));
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copied')));
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(const SnackBar(content: Text('Copied')));
                     },
                   ),
                 ),
@@ -64,8 +76,14 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Sign out?'),
         content: const Text('Your reports stay on this phone.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(d, true), child: const Text('Sign out')),
+          TextButton(
+            onPressed: () => Navigator.pop(d, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(d, true),
+            child: const Text('Sign out'),
+          ),
         ],
       ),
     );
@@ -95,7 +113,10 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: wild.shell, borderRadius: BorderRadius.circular(16)),
+                decoration: BoxDecoration(
+                  color: wild.shell,
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Row(
                   children: [
                     CircleAvatar(
@@ -104,7 +125,10 @@ class ProfileScreen extends StatelessWidget {
                       foregroundColor: wild.onAccent,
                       child: Text(
                         (user ?? 'G').substring(0, 1).toUpperCase(),
-                        style: GoogleFonts.anekLatin(fontSize: 22, fontWeight: FontWeight.w800),
+                        style: GoogleFonts.anekLatin(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 14),
@@ -116,11 +140,21 @@ class ProfileScreen extends StatelessWidget {
                             user ?? 'Guest',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.anekLatin(fontSize: 19, fontWeight: FontWeight.w700, color: wild.onShell),
+                            style: GoogleFonts.anekLatin(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w700,
+                              color: wild.onShell,
+                            ),
                           ),
                           Text(
-                            phone ?? (user == null ? 'Sign in to get SMS alerts' : 'No phone number'),
-                            style: GoogleFonts.anekLatin(fontSize: 15, color: wild.shellMuted),
+                            phone ??
+                                (user == null
+                                    ? 'Sign in to get SMS alerts'
+                                    : 'No phone number'),
+                            style: GoogleFonts.anekLatin(
+                              fontSize: 15,
+                              color: wild.shellMuted,
+                            ),
                           ),
                         ],
                       ),
@@ -141,26 +175,53 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Container(
                 clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(color: wild.card, borderRadius: BorderRadius.circular(16)),
+                decoration: BoxDecoration(
+                  color: wild.card,
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Column(
                   children: [
-                    _tile(context, Icons.fact_check_outlined, 'Expert review queue',
-                        review == 0 ? 'Nothing waiting' : '$review waiting',
-                        () => Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const VerificationQueueScreen()),
-                            )),
+                    _tile(
+                      context,
+                      Icons.fact_check_outlined,
+                      'Expert review queue',
+                      review == 0 ? 'Nothing waiting' : '$review waiting',
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const VerificationQueueScreen(),
+                        ),
+                      ),
+                    ),
                     const Divider(indent: 56),
-                    _tile(context, Icons.help_outline, 'Help and photo tips', null,
-                        () => Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const HelpCenterScreen()),
-                            )),
+                    _tile(
+                      context,
+                      Icons.help_outline,
+                      'Help and photo tips',
+                      null,
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const HelpCenterScreen(),
+                        ),
+                      ),
+                    ),
                     const Divider(indent: 56),
-                    _tile(context, Icons.support_agent_outlined, 'Contact ZSI', null, () => _showContact(context)),
+                    _tile(
+                      context,
+                      Icons.support_agent_outlined,
+                      'Contact ZSI',
+                      null,
+                      () => _showContact(context),
+                    ),
                     const Divider(indent: 56),
-                    _tile(context, Icons.info_outline, 'About WildID', null,
-                        () => Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const AboutScreen()),
-                            )),
+                    _tile(
+                      context,
+                      Icons.info_outline,
+                      'About WildID',
+                      null,
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const AboutScreen()),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -189,29 +250,56 @@ class ProfileScreen extends StatelessWidget {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(color: wild.card, borderRadius: BorderRadius.circular(14)),
+        decoration: BoxDecoration(
+          color: wild.card,
+          borderRadius: BorderRadius.circular(14),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(value,
-                style: GoogleFonts.anekLatin(
-                    fontSize: 26, fontWeight: FontWeight.w800, color: wild.ink,
-                    fontFeatures: const [FontFeature.tabularFigures()])),
-            Text(label, style: GoogleFonts.anekLatin(fontSize: 14, color: wild.muted)),
+            Text(
+              value,
+              style: GoogleFonts.anekLatin(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                color: wild.ink,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+            Text(
+              label,
+              style: GoogleFonts.anekLatin(fontSize: 14, color: wild.muted),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _tile(BuildContext context, IconData icon, String title, String? subtitle, VoidCallback onTap) {
-    return ListTile(
-      minTileHeight: 56,
-      leading: Icon(icon),
-      title: Text(title, style: GoogleFonts.anekLatin(fontSize: 17, fontWeight: FontWeight.w600)),
-      subtitle: subtitle == null ? null : Text(subtitle),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: onTap,
+  Widget _tile(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String? subtitle,
+    VoidCallback onTap,
+  ) {
+    // Own ink surface: rows sit on a coloured card, which would hide the ripple.
+    return Material(
+      type: MaterialType.transparency,
+      child: ListTile(
+        minTileHeight: 56,
+        leading: Icon(icon),
+        title: Text(
+          title,
+          style: GoogleFonts.anekLatin(
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        subtitle: subtitle == null ? null : Text(subtitle),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: onTap,
+      ),
     );
   }
 }

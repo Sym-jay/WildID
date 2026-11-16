@@ -65,7 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final scheme = Theme.of(context).colorScheme;
     return AuthScaffold(
       title: 'Sign in',
-      subtitle: 'Sign in to keep your reports and get SMS alerts. You can also continue as a guest.',
+      subtitle:
+          'Sign in to keep your reports and get SMS alerts. You can also continue as a guest.',
       child: Form(
         key: _formKey,
         child: AutofillGroup(
@@ -77,10 +78,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
                 autofillHints: const [AutofillHints.email],
-                decoration: const InputDecoration(labelText: 'Email', prefixIcon: Icon(Icons.mail_outline)),
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.mail_outline),
+                ),
                 validator: (value) {
-                  if (value == null || value.trim().isEmpty) return 'Enter your email';
-                  if (!value.contains('@')) return 'Enter a valid email, like name@example.com';
+                  if (value == null || value.trim().isEmpty)
+                    return 'Enter your email';
+                  if (!value.contains('@'))
+                    return 'Enter a valid email, like name@example.com';
                   return null;
                 },
               ),
@@ -95,16 +101,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   labelText: 'Password',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    tooltip: _obscurePassword ? 'Show password' : 'Hide password',
-                    icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                    tooltip: _obscurePassword
+                        ? 'Show password'
+                        : 'Hide password',
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
-                validator: (value) => (value == null || value.isEmpty) ? 'Enter your password' : null,
+                validator: (value) => (value == null || value.isEmpty)
+                    ? 'Enter your password'
+                    : null,
               ),
               if (_error != null) ...[
                 const SizedBox(height: 12),
-                Text(_error!, style: TextStyle(color: scheme.error, fontSize: 15)),
+                Text(
+                  _error!,
+                  style: TextStyle(color: scheme.error, fontSize: 15),
+                ),
               ],
               const SizedBox(height: 20),
               FilledButton(

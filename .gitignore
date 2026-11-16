@@ -113,3 +113,6 @@ ehthumbs.db
 Frontend/ZSI_Frontend/e2e/node_modules/
 Frontend/ZSI_Frontend/e2e/test-results/
 Frontend/ZSI_Frontend/e2e/playwright-report/
+
+# Patrol (generated)
+Frontend/ZSI_Frontend/patrol_test/

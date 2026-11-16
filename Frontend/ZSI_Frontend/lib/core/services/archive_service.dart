@@ -225,6 +225,15 @@ class ArchiveService {
     return buffer.toString();
   }
 
+  /// Test hook: forget the in-memory list and read everything back from the
+  /// database, as a cold app start would.
+  @visibleForTesting
+  static Future<void> reloadFromStorageForTest() async {
+    _records.clear();
+    _loaded = false;
+    await initialize();
+  }
+
   /// Test hook: clear all in-memory state.
   @visibleForTesting
   static void resetForTest() {

@@ -29,16 +29,16 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
 
   List<Animal> _filter(List<Animal> all) {
     final q = SpeciesLookupService.normalize(_query);
-    final list = all.where((a) {
-      if (_schedule != null && a.schedule != _schedule) return false;
-      if (q.isEmpty) return true;
-      return SpeciesLookupService.normalize(a.name).contains(q) ||
-          SpeciesLookupService.normalize(a.scientificName).contains(q);
-    }).toList()
-      ..sort((a, b) {
-        final bySchedule = (a.schedule ?? 9).compareTo(b.schedule ?? 9);
-        return bySchedule != 0 ? bySchedule : a.name.compareTo(b.name);
-      });
+    final list =
+        all.where((a) {
+          if (_schedule != null && a.schedule != _schedule) return false;
+          if (q.isEmpty) return true;
+          return SpeciesLookupService.normalize(a.name).contains(q) ||
+              SpeciesLookupService.normalize(a.scientificName).contains(q);
+        }).toList()..sort((a, b) {
+          final bySchedule = (a.schedule ?? 9).compareTo(b.schedule ?? 9);
+          return bySchedule != 0 ? bySchedule : a.name.compareTo(b.name);
+        });
     return list;
   }
 
@@ -54,7 +54,8 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
             return const EmptyState(
               icon: Icons.error_outline,
               title: 'Could not load species',
-              message: 'Restart the app. If this keeps happening, reinstall it.',
+              message:
+                  'Restart the app. If this keeps happening, reinstall it.',
             );
           }
           if (!snapshot.hasData) {
@@ -129,11 +130,15 @@ class _BrowseSpeciesScreenState extends State<BrowseSpeciesScreen> {
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
                   sliver: DecoratedSliver(
-                    decoration: BoxDecoration(color: wild.card, borderRadius: BorderRadius.circular(16)),
+                    decoration: BoxDecoration(
+                      color: wild.card,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     sliver: SliverList.separated(
                       itemCount: shown.length,
                       separatorBuilder: (_, __) => const Divider(indent: 82),
-                      itemBuilder: (context, i) => _SpeciesRow(animal: shown[i]),
+                      itemBuilder: (context, i) =>
+                          _SpeciesRow(animal: shown[i]),
                     ),
                   ),
                 ),
@@ -153,40 +158,60 @@ class _SpeciesRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wild = WildColors.of(context);
-    final showScientific = animal.scientificName.toLowerCase() != animal.name.toLowerCase();
-    return InkWell(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => SpeciesDetailScreen(animal: animal)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Row(
-          children: [
-            WildImage(animal.imageUrl, width: 56, height: 56, background: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    animal.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.anekLatin(fontSize: 17, fontWeight: FontWeight.w700, color: wild.ink),
-                  ),
-                  if (showScientific)
+    final showScientific =
+        animal.scientificName.toLowerCase() != animal.name.toLowerCase();
+    // Own ink surface: rows sit on a coloured card, which would hide the ripple.
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => SpeciesDetailScreen(animal: animal),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Row(
+            children: [
+              WildImage(
+                animal.imageUrl,
+                width: 56,
+                height: 56,
+                background: Colors.white,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      animal.scientificName,
+                      animal.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.anekLatin(fontSize: 14, fontStyle: FontStyle.italic, color: wild.muted),
+                      style: GoogleFonts.anekLatin(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: wild.ink,
+                      ),
                     ),
-                ],
+                    if (showScientific)
+                      Text(
+                        animal.scientificName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.anekLatin(
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          color: wild.muted,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            StatusTag(ProtectionStatusX.fromSchedule(animal.schedule)),
-          ],
+              const SizedBox(width: 8),
+              StatusTag(ProtectionStatusX.fromSchedule(animal.schedule)),
+            ],
+          ),
         ),
       ),
     );
