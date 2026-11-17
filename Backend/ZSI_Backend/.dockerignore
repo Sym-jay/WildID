@@ -1,0 +1,12 @@
+# Keep the image small: the training photos alone are ~550 MB.
+ZSI/
+tests/
+__pycache__/
+*.pyc
+.env
+*.md
+*.txt
+!requirements-server.txt
+*.sh
+*.png
+train.py

@@ -62,18 +62,25 @@ sms_service = None
 if ENSEMBLE_AVAILABLE:
     try:
         ensemble_predictor = get_ensemble_predictor(num_classes=len(class_mapping.get('idx_to_info', {})))
-        ensemble_predictor.load_models('ensemble_models')
-        print("✓ Ensemble predictor loaded")
+        ensemble_dir = os.getenv(
+            'ZSI_ENSEMBLE_DIR',
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models', 'ensemble'),
+        )
+        # load_models() returns False when the weights are missing; only then
+        # advertise the ensemble, otherwise every request would fail with 500.
+        ENSEMBLE_AVAILABLE = bool(ensemble_predictor.load_models(ensemble_dir))
+        print("Ensemble predictor loaded" if ENSEMBLE_AVAILABLE
+              else f"Ensemble weights not found in {ensemble_dir}; using the single model")
     except Exception as e:
-        print(f"✗ Failed to load ensemble: {str(e)}")
+        print(f"Failed to load ensemble: {str(e)}")
         ENSEMBLE_AVAILABLE = False
 
 if SMS_AVAILABLE:
     try:
         sms_service = get_sms_service(SMS_PROVIDER)
-        print("✓ SMS service loaded")
+        print("SMS service loaded")
     except Exception as e:
-        print(f"✗ Failed to load SMS service: {str(e)}")
+        print(f"Failed to load SMS service: {str(e)}")
         SMS_AVAILABLE = False
 
 
@@ -270,8 +277,9 @@ def predict_ensemble():
         else:
             return jsonify({'error': result.get('error', 'Prediction failed')}), 500
 
-    except Exception as e:
-        return jsonify({'error': f'Ensemble prediction failed: {str(e)}'}), 500
+    except Exception:
+        app.logger.exception('Ensemble prediction failed')
+        return jsonify({'error': 'Failed to process image. Please try again.'}), 500
 
 
 # --- OTP login: server generates, sends and verifies the code ---

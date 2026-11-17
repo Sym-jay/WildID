@@ -117,11 +117,11 @@ class EnsemblePredictor:
             efficientnet_path = os.path.join(model_dir, 'model_efficientnet_b0_v3.pth')
             if os.path.exists(efficientnet_path):
                 self.models['efficientnet'].load_state_dict(
-                    torch.load(efficientnet_path, map_location=self.device)
+                    torch.load(efficientnet_path, map_location=self.device, weights_only=True)
                 )
-                logger.info(f"✓ EfficientNet-B0 loaded from {efficientnet_path}")
+                logger.info(f"EfficientNet-B0 loaded from {efficientnet_path}")
             else:
-                logger.warning(f"✗ EfficientNet model not found at {efficientnet_path}")
+                logger.warning(f"EfficientNet model not found at {efficientnet_path}")
                 logger.warning("  Falling back to single model mode")
                 return False
             
@@ -131,11 +131,11 @@ class EnsemblePredictor:
             resnet_path = os.path.join(model_dir, 'model_resnet50_v3.pth')
             if os.path.exists(resnet_path):
                 self.models['resnet'].load_state_dict(
-                    torch.load(resnet_path, map_location=self.device)
+                    torch.load(resnet_path, map_location=self.device, weights_only=True)
                 )
-                logger.info(f"✓ ResNet-50 loaded from {resnet_path}")
+                logger.info(f"ResNet-50 loaded from {resnet_path}")
             else:
-                logger.warning(f"✗ ResNet model not found at {resnet_path}")
+                logger.warning(f"ResNet model not found at {resnet_path}")
                 logger.warning("  Using only EfficientNet")
                 del self.models['resnet']
                 self.weights['resnet'] = 0
@@ -146,11 +146,11 @@ class EnsemblePredictor:
             mobilenet_path = os.path.join(model_dir, 'model_mobilenet_v3_v3.pth')
             if os.path.exists(mobilenet_path):
                 self.models['mobilenet'].load_state_dict(
-                    torch.load(mobilenet_path, map_location=self.device)
+                    torch.load(mobilenet_path, map_location=self.device, weights_only=True)
                 )
-                logger.info(f"✓ MobileNet-V3 loaded from {mobilenet_path}")
+                logger.info(f"MobileNet-V3 loaded from {mobilenet_path}")
             else:
-                logger.warning(f"✗ MobileNet model not found at {mobilenet_path}")
+                logger.warning(f"MobileNet model not found at {mobilenet_path}")
                 logger.warning("  Using only EfficientNet")
                 del self.models['mobilenet']
                 self.weights['mobilenet'] = 0
@@ -160,7 +160,7 @@ class EnsemblePredictor:
                 model.to(self.device)
                 model.eval()
             
-            logger.info(f"✓ Ensemble ready with {len(self.models)} models")
+            logger.info(f"Ensemble ready with {len(self.models)} models")
             return True
             
         except Exception as e:

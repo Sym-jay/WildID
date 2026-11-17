@@ -1,0 +1,15 @@
+# Runtime dependencies for the WildID API server (Cloud Run, CPU only).
+# requirements.txt is the training environment (CUDA, matplotlib, sklearn).
+#
+# torch/torchvision come from the CPU wheel index: same versions the model
+# was trained with, without ~3 GB of CUDA libraries.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.10.0+cpu
+torchvision==0.25.0+cpu
+
+Flask==3.1.2
+flask-cors==6.0.1
+gunicorn==22.0.0
+numpy==2.3.3
+pillow==11.3.0
+requests==2.34.2
