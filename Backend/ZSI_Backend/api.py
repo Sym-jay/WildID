@@ -52,12 +52,25 @@ class ZSIWildlifeClassifier(nn.Module):
 # --- Load Model and Mappings ---
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-with open('zsi_class_mapping.json', 'r') as f:
+# Paths are relative to this file, so the server starts from any directory.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MAPPING_PATH = os.getenv('ZSI_CLASS_MAPPING', os.path.join(BASE_DIR, 'zsi_class_mapping.json'))
+# The weights are not in git (*.pth is ignored); put them in models/ or point
+# ZSI_MODEL_PATH at them.
+MODEL_PATH = os.getenv('ZSI_MODEL_PATH', os.path.join(BASE_DIR, 'models', 'zsi_wildlife_model.pth'))
+
+with open(MAPPING_PATH, 'r', encoding='utf-8') as f:
     class_mapping = json.load(f)
 idx_to_info = class_mapping['idx_to_info']
 
+if not os.path.exists(MODEL_PATH):
+    raise RuntimeError(
+        f'Model weights not found at {MODEL_PATH}. Copy zsi_wildlife_model.pth into '
+        'Backend/ZSI_Backend/models/ or set ZSI_MODEL_PATH.'
+    )
+
 model = ZSIWildlifeClassifier(num_classes=len(idx_to_info))
-model.load_state_dict(torch.load('zsi_wildlife_model.pth', map_location=device))
+model.load_state_dict(torch.load(MODEL_PATH, map_location=device, weights_only=True))
 model.to(device)
 model.eval()
 
