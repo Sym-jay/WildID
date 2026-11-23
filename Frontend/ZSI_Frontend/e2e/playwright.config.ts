@@ -4,13 +4,19 @@ import { defineConfig, devices } from '@playwright/test';
 //   flutter build web --dart-define=ZSI_DEMO=true
 // Demo mode returns a labelled sample result, so no API key is needed.
 const port = 8799;
+const ci = !!process.env.CI;
 
 export default defineConfig({
   testDir: './tests',
   timeout: 60_000,
-  expect: { timeout: 10_000, toHaveScreenshot: { maxDiffPixelRatio: 0.02 } },
+  expect: { timeout: ci ? 15_000 : 10_000, toHaveScreenshot: { maxDiffPixelRatio: 0.02 } },
+  // Baselines are captured on Windows; Linux runners render fonts slightly
+  // differently, so CI runs every functional check but skips pixel diffs.
+  ignoreSnapshots: ci,
   fullyParallel: true,
-  retries: process.env.CI ? 1 : 0,
+  // CI runners have few cores; Flutter web is CPU-heavy, so cap the workers.
+  workers: ci ? 2 : undefined,
+  retries: ci ? 1 : 0,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: `http://127.0.0.1:${port}`,
