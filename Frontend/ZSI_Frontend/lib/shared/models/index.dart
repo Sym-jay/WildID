@@ -10,6 +10,10 @@ class Animal {
   final String imageUrl;
   final List<String> additionalImageUrls;
 
+  /// Other names the model may use for this species (old common names,
+  /// misspelt scientific names in the training labels).
+  final List<String> aliases;
+
   Animal({
     required this.name,
     required this.scientificName,
@@ -18,6 +22,7 @@ class Animal {
     required this.iucnUrl,
     required this.imageUrl,
     this.additionalImageUrls = const [],
+    this.aliases = const [],
   });
 
   bool get isProtected => schedule != null;

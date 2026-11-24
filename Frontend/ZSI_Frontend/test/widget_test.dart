@@ -24,7 +24,7 @@ void main() {
     setUp(() => SpeciesLookupService.useSpecies(species));
 
     test('every species has a schedule from the ZSI dataset', () {
-      expect(species, hasLength(66));
+      expect(species, hasLength(65));
       expect(species.where((a) => a.schedule == null), isEmpty);
       expect(species.where((a) => a.schedule == 1), hasLength(18));
     });
@@ -37,6 +37,27 @@ void main() {
       expect(labels, hasLength(66));
       final unresolved = labels.where((l) => SpeciesLookupService.lookupLoaded(l) == null).toList();
       expect(unresolved, isEmpty, reason: 'labels with no species info: $unresolved');
+    });
+
+    test('no species is listed twice', () {
+      String n(String s) => SpeciesLookupService.normalize(s);
+      final names = species.map((a) => n(a.name)).toList();
+      final scientific = species.map((a) => n(a.scientificName)).toList();
+      expect(names.toSet(), hasLength(names.length), reason: 'duplicate common name');
+      expect(scientific.toSet(), hasLength(scientific.length), reason: 'duplicate scientific name');
+    });
+
+    test('old and misspelt model labels resolve to the corrected entry', () {
+      String? name(String label) => SpeciesLookupService.lookupLoaded(label)?.name;
+      expect(name('Variegated Eagle Ray'), 'Stripenose Guitarfish');
+      expect(name('Glucostegus typus'), 'Giant Shovelnose Ray');
+      expect(name('Mobula kuhli'), 'Shortfin Devil Ray');
+      // The duplicate oceanic whitetip entry was merged into one.
+      expect(name('Carcharhinus longimanus'), 'Oceanic Whitetip Shark');
+      expect(name('Oceanic Whitetip Shark'), 'Oceanic Whitetip Shark');
+      // "Spotted Guitarfish" means only the real one.
+      expect(SpeciesLookupService.lookupLoaded('Spotted Guitarfish')?.scientificName,
+          'Rhinobatos punctifer');
     });
 
     test('scientific-name labels map to the common name', () {

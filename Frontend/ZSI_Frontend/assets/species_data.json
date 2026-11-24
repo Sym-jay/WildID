@@ -1,12 +1,15 @@
 [
   {
-    "name": "Variegated Eagle Ray",
+    "name": "Stripenose Guitarfish",
     "scientificName": "Acroteriobatus variegatus",
-    "description": "Variegated Eagle Ray (Acroteriobatus variegatus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
+    "description": "Stripenose Guitarfish (Acroteriobatus variegatus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Acroteriobatus%20variegatus",
     "imageUrl": "assets/species_images/variegated_eagle_ray.jpg",
     "additionalImageUrls": [],
-    "schedule": 2
+    "schedule": 2,
+    "aliases": [
+      "Variegated Eagle Ray"
+    ]
   },
   {
     "name": "Bull Ray",
@@ -19,9 +22,9 @@
   },
   {
     "name": "Ornate Eagle Ray",
-    "scientificName": "Aetomyleus verspartlio",
-    "description": "Ornate Eagle Ray (Aetomyleus verspartlio) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
-    "iucnUrl": "https://www.iucnredlist.org/search?query=Aetomyleus%20verspartlio",
+    "scientificName": "Aetomylaeus vespertilio",
+    "description": "Ornate Eagle Ray (Aetomylaeus vespertilio) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
+    "iucnUrl": "https://www.iucnredlist.org/search?query=Aetomylaeus%20vespertilio",
     "imageUrl": "assets/species_images/ornate_eagle_ray.jpg",
     "additionalImageUrls": [],
     "schedule": 2
@@ -81,9 +84,9 @@
     "schedule": 2
   },
   {
-    "name": "Flat-nose Shark",
+    "name": "Graceful Shark",
     "scientificName": "Carcharhinus amblyrhynchoides",
-    "description": "Flat-nose Shark (Carcharhinus amblyrhynchoides) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
+    "description": "Graceful Shark (Carcharhinus amblyrhynchoides) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20amblyrhynchoides",
     "imageUrl": "assets/species_images/carcharhinus_amblyrhynchoides.jpg",
     "additionalImageUrls": [],
@@ -149,15 +152,6 @@
     "description": "Blacktip Shark (Carcharhinus limbatus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20limbatus",
     "imageUrl": "assets/species_images/carcharhinus_limbatus.jpg",
-    "additionalImageUrls": [],
-    "schedule": 2
-  },
-  {
-    "name": "Carcharhinus longimanus",
-    "scientificName": "Carcharhinus longimanus",
-    "description": "Carcharhinus longimanus (Carcharhinus longimanus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
-    "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20longimanus",
-    "imageUrl": "assets/species_images/carcharhinus_longimanus.jpg",
     "additionalImageUrls": [],
     "schedule": 2
   },
@@ -243,9 +237,9 @@
     "schedule": 2
   },
   {
-    "name": "Granular Sawfish",
+    "name": "Sharpnose Guitarfish",
     "scientificName": "Glaucostegus granulatus",
-    "description": "Granular Sawfish (Glaucostegus granulatus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
+    "description": "Sharpnose Guitarfish (Glaucostegus granulatus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Glaucostegus%20granulatus",
     "imageUrl": "assets/species_images/glaucostegus_granulatus.jpg",
     "additionalImageUrls": [],
@@ -270,13 +264,16 @@
     "schedule": 1
   },
   {
-    "name": "Sawfish",
-    "scientificName": "Glucostegus typus",
-    "description": "Sawfish (Glucostegus typus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
-    "iucnUrl": "https://www.iucnredlist.org/search?query=Glucostegus%20typus",
+    "name": "Giant Shovelnose Ray",
+    "scientificName": "Glaucostegus typus",
+    "description": "Giant Shovelnose Ray (Glaucostegus typus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
+    "iucnUrl": "https://www.iucnredlist.org/search?query=Glaucostegus%20typus",
     "imageUrl": "assets/species_images/glucostegus_typus.jpg",
     "additionalImageUrls": [],
-    "schedule": 2
+    "schedule": 2,
+    "aliases": [
+      "Glucostegus typus"
+    ]
   },
   {
     "name": "Ganges Shark",
@@ -351,13 +348,16 @@
     "schedule": 1
   },
   {
-    "name": "Longhead Eagle Ray",
-    "scientificName": "Mobula kuhli",
-    "description": "Longhead Eagle Ray (Mobula kuhli) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
-    "iucnUrl": "https://www.iucnredlist.org/search?query=Mobula%20kuhli",
+    "name": "Shortfin Devil Ray",
+    "scientificName": "Mobula kuhlii",
+    "description": "Shortfin Devil Ray (Mobula kuhlii) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
+    "iucnUrl": "https://www.iucnredlist.org/search?query=Mobula%20kuhlii",
     "imageUrl": "assets/species_images/mobula_kuhli.jpg",
     "additionalImageUrls": [],
-    "schedule": 2
+    "schedule": 2,
+    "aliases": [
+      "Mobula kuhli"
+    ]
   },
   {
     "name": "Giant Devil Ray",
@@ -378,9 +378,9 @@
     "schedule": 2
   },
   {
-    "name": "Bentfin Eagle Ray",
+    "name": "Bentfin Devil Ray",
     "scientificName": "Mobula thurstoni",
-    "description": "Bentfin Eagle Ray (Mobula thurstoni) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
+    "description": "Bentfin Devil Ray (Mobula thurstoni) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Mobula%20thurstoni",
     "imageUrl": "assets/species_images/mobula_thurstoni.jpg",
     "additionalImageUrls": [],
@@ -424,9 +424,9 @@
   },
   {
     "name": "Bowmouth Guitarfish",
-    "scientificName": "Rhina anchylostomus",
-    "description": "Bowmouth Guitarfish (Rhina anchylostomus) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
-    "iucnUrl": "https://www.iucnredlist.org/search?query=Rhina%20anchylostomus",
+    "scientificName": "Rhina ancylostomus",
+    "description": "Bowmouth Guitarfish (Rhina ancylostomus) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
+    "iucnUrl": "https://www.iucnredlist.org/search?query=Rhina%20ancylostomus",
     "imageUrl": "assets/species_images/bowmouth_guitarfish.jpg",
     "additionalImageUrls": [],
     "schedule": 1
@@ -441,18 +441,18 @@
     "schedule": 1
   },
   {
-    "name": "Günther's Guitarfish",
+    "name": "Annandale's Guitarfish",
     "scientificName": "Rhinobatos annandalei",
-    "description": "Günther's Guitarfish (Rhinobatos annandalei) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
+    "description": "Annandale's Guitarfish (Rhinobatos annandalei) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Rhinobatos%20annandalei",
     "imageUrl": "assets/species_images/rhinobatos_annandalei.jpg",
     "additionalImageUrls": [],
     "schedule": 2
   },
   {
-    "name": "Spotted Guitarfish",
+    "name": "Smoothback Guitarfish",
     "scientificName": "Rhinobatos lionotus",
-    "description": "Spotted Guitarfish (Rhinobatos lionotus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
+    "description": "Smoothback Guitarfish (Rhinobatos lionotus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
     "iucnUrl": "https://www.iucnredlist.org/search?query=Rhinobatos%20lionotus",
     "imageUrl": "assets/species_images/rhinobatos_lionotus.jpg",
     "additionalImageUrls": [],
@@ -568,27 +568,27 @@
   },
   {
     "name": "Gollum Snakehead",
-    "scientificName": "aenigmachanna gollum",
-    "description": "Gollum Snakehead (aenigmachanna gollum) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
-    "iucnUrl": "https://www.iucnredlist.org/search?query=aenigmachanna%20gollum",
+    "scientificName": "Aenigmachanna gollum",
+    "description": "Gollum Snakehead (Aenigmachanna gollum) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
+    "iucnUrl": "https://www.iucnredlist.org/search?query=Aenigmachanna%20gollum",
     "imageUrl": "assets/species_images/gollum_snakehead.jpg",
     "additionalImageUrls": [],
     "schedule": 2
   },
   {
     "name": "Oceanic Whitetip Shark",
-    "scientificName": "carcharhinus longimanus",
-    "description": "Oceanic Whitetip Shark (carcharhinus longimanus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
-    "iucnUrl": "https://www.iucnredlist.org/search?query=carcharhinus%20longimanus",
+    "scientificName": "Carcharhinus longimanus",
+    "description": "Oceanic Whitetip Shark (Carcharhinus longimanus) is listed in Schedule II of India's Wildlife (Protection) Act, 1972. It is a protected species; catching or trading it is regulated by law.",
+    "iucnUrl": "https://www.iucnredlist.org/search?query=Carcharhinus%20longimanus",
     "imageUrl": "assets/species_images/oceanic_whitetip_shark.jpg",
     "additionalImageUrls": [],
     "schedule": 2
   },
   {
     "name": "Largetooth Sawfish",
-    "scientificName": "pristis pristis",
-    "description": "Largetooth Sawfish (pristis pristis) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
-    "iucnUrl": "https://www.iucnredlist.org/search?query=pristis%20pristis",
+    "scientificName": "Pristis pristis",
+    "description": "Largetooth Sawfish (Pristis pristis) is listed in Schedule I of India's Wildlife (Protection) Act, 1972. Catching, keeping, trading or harming it is prohibited.",
+    "iucnUrl": "https://www.iucnredlist.org/search?query=Pristis%20pristis",
     "imageUrl": "assets/species_images/largetooth_sawfish.jpg",
     "additionalImageUrls": [],
     "schedule": 1
