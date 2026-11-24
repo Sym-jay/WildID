@@ -7,7 +7,7 @@ import '../shared/models/index.dart';
 import '../widgets/wild_widgets.dart';
 import 'species_detail_screen.dart';
 
-/// Species tab: search and filter the 66 protected species.
+/// Species tab: search and filter the protected species.
 class BrowseSpeciesScreen extends StatefulWidget {
   const BrowseSpeciesScreen({super.key});
 

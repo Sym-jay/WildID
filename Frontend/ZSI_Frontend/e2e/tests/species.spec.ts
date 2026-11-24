@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('filters by schedule', async ({ page }) => {
-  await expect(page.getByRole('checkbox', { name: 'All 66' })).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: 'All 65' })).toBeVisible();
   await page.getByRole('checkbox', { name: 'Schedule I · 18' }).click();
   await expect(page.getByText('Bowmouth Guitarfish').first()).toBeVisible();
   await expect(page.getByText('Blue Shark')).toHaveCount(0);

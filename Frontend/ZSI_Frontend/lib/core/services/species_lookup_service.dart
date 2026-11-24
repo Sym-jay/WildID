@@ -7,8 +7,9 @@ import '../../shared/models/index.dart';
 /// Looks up species from assets/species_data.json.
 ///
 /// The model returns a common name for some classes and a scientific name for
-/// others (35 of the 66 labels are scientific names), so [findByLabel] matches
-/// either.
+/// others (35 of its 66 labels are scientific names), and a few labels use old
+/// or misspelt names, so [findByLabel] matches the common name, the scientific
+/// name or any alias.
 class SpeciesLookupService {
   SpeciesLookupService._();
 
@@ -24,6 +25,9 @@ class SpeciesLookupService {
         imageUrl: json['imageUrl'] as String? ?? '',
         additionalImageUrls: json['additionalImageUrls'] != null
             ? List<String>.from(json['additionalImageUrls'] as List)
+            : const [],
+        aliases: json['aliases'] != null
+            ? List<String>.from(json['aliases'] as List)
             : const [],
       );
 
@@ -56,6 +60,7 @@ class SpeciesLookupService {
       for (final s in species) ...{
         normalize(s.name): s,
         normalize(s.scientificName): s,
+        for (final alias in s.aliases) normalize(alias): s,
       },
     };
   }

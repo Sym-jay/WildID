@@ -177,7 +177,7 @@ class _IdentificationScreenState extends State<IdentificationScreen> {
               ),
               const SizedBox(height: 14),
               Text(
-                'Comparing with 66 protected species…',
+                "Checking against India's protected species…",
                 style: GoogleFonts.anekLatin(fontSize: 17, color: wild.onShell),
               ),
               const SizedBox(height: 4),

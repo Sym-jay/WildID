@@ -14,8 +14,8 @@ export default defineConfig({
   // differently, so CI runs every functional check but skips pixel diffs.
   ignoreSnapshots: ci,
   fullyParallel: true,
-  // CI runners have few cores; Flutter web is CPU-heavy, so cap the workers.
-  workers: ci ? 2 : undefined,
+  // Flutter web is CPU-heavy; too many parallel browsers cause timeouts.
+  workers: ci ? 2 : 4,
   retries: ci ? 1 : 0,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
