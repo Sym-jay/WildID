@@ -2,6 +2,8 @@
 
 Thank you for your interest in contributing to the ZSI Wildlife Identifier project! This document provides guidelines and instructions for contributing.
 
+> The Flutter app lives in `Frontend/ZSI_Frontend/` and the API in `Backend/ZSI_Backend/`; run the `flutter` and `python` commands below from those folders. See the main [README](README.md) for setup and the full test suite.
+
 ## Code of Conduct
 
 We are committed to providing a welcoming and inclusive environment for all contributors. Please:
