@@ -2,6 +2,32 @@
 
 All notable changes to the ZSI Wildlife Identifier project are documented in this file.
 
+## [Unreleased]
+
+### Changed
+- New "Sea-warning" design: colour-coded protection verdict (Schedule I, Schedule II, unsure,
+  not listed), bottom navigation (Identify, Species, History, Profile), light and dark themes,
+  bundled Anek Latin font.
+- Species data: protection schedule for every species from the ZSI dataset; corrected common
+  and scientific names; duplicate oceanic whitetip entry merged (65 species).
+- Android build updated to Gradle 9.5, AGP 9.3.1, Kotlin 2.4 and Java 17 (current Flutter).
+- Backend deployable on Cloud Run: CPU-only image, `api_extended:app`, weights from `models/`.
+
+### Fixed
+- Species information was missing for 35 of the model's labels.
+- Reports were lost on restart, duplicated when details were added, and verify/delete did not
+  update the list.
+- Ensemble failures did not fall back to the single model.
+- Expert review screen crashed; status bar and screen-reader issues; unbuildable Android project.
+
+### Security
+- Salted PBKDF2 password hashing; OTP codes generated and checked by the server; no default
+  API keys.
+
+### Added
+- Tests: Playwright phone-size tests for the web build, Patrol native Android test, backend
+  server smoke test; GitHub Actions CI.
+
 ## [1.0.0] - 2026-03-13
 
 ### Added
